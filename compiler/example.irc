@@ -1,0 +1,3 @@
+store #1, 33
+int_print #1
+exit
