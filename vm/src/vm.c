@@ -21,8 +21,7 @@ vm_t *vm_new(unsigned char *code, unsigned int size) {
      * Allocate 64k for the program.
      */
     vm->code = malloc(0xFFFF);
-    if (vm->code == NULL)
-    {
+    if (vm->code == NULL) {
         free(vm);
         return NULL;
     }
@@ -47,8 +46,7 @@ vm_t *vm_new(unsigned char *code, unsigned int size) {
     /**
      * Explicitly zero each register and set to be a number.
      */
-    for (i = 0; i < REGISTER_COUNT; i++)
-    {
+    for (i = 0; i < REGISTER_COUNT; i++) {
         vm->registers[i].type = INTEGER;
         vm->registers[i].content.integer = 0;
         vm->registers[i].content.string = NULL;
@@ -68,10 +66,6 @@ vm_t *vm_new(unsigned char *code, unsigned int size) {
  *
  *  This function will walk through the code passed to the constructor
  * and attempt to execute each bytecode instruction.
- *
- *  If 20+ instructions are fond which can't be executed then the function
- * will abort - otherwise it will keep going until an EXIT instruction is
- * encountered, or the end of the code-block is reached.
  *
  */
 void vm_run(vm_t * cpup) {
@@ -98,8 +92,7 @@ void vm_run(vm_t * cpup) {
      *
      * However the system can cope with IP wrap-around.
      */
-    while (cpup->running == true)
-    {
+    while (cpup->running == true) {
         /**
          * Wrap IP on the 64k boundary, if required.
          */
@@ -111,11 +104,7 @@ void vm_run(vm_t * cpup) {
          * Lookup the instruction at the instruction-pointer.
          */
         int opcode = cpup->code[cpup->ip];
-
-
-        if (getenv("DEBUG") != NULL)
-            printf("%04x - Parsing OpCode Hex:%02X\n", cpup->ip, opcode);
-
+        DEBUG("%04x - Parsing OpCode Hex:%02X\n", cpup->ip, opcode);
 
         /**
          * Call the opcode implementation, if defined.
