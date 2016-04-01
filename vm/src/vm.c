@@ -5,8 +5,7 @@
 #include "vm.h"
 #include "opcodes.h"
 
-vm_t *vm_new(unsigned char *code, unsigned int size)
-{
+vm_t *vm_new(unsigned char *code, unsigned int size) {
     vm_t *vm;
     int i;
 
