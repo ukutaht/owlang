@@ -75,11 +75,7 @@ vm_t *vm_new(unsigned char *code, unsigned int size)
  * encountered, or the end of the code-block is reached.
  *
  */
-void vm_run(vm_t * cpup)
-{
-    /**
-     * How many instructions have we handled?
-     */
+void vm_run(vm_t * cpup) {
     int iterations = 0;
 
     /**
@@ -144,6 +140,5 @@ void vm_run(vm_t * cpup)
         iterations++;
     }
 
-    if (getenv("DEBUG") != NULL)
-        printf("Executed %u instructions\n", iterations);
+    DEBUG("Executed %u instructions\n", iterations);
 }
