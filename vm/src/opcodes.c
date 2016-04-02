@@ -120,6 +120,16 @@ void op_jmpz(struct vm *vm) {
     }
 }
 
+
+void op_call(struct vm *vm) {
+    unsigned int location = next_byte(vm);
+    unsigned int arity = next_byte(vm);
+
+    DEBUG("CALL(Instr:%d, Arity: %d)\n", location, arity);
+
+    vm->ip = location;
+}
+
 void opcode_init(vm_t * vm) {
     // All instructions will default to unknown.
     for (int i = 0; i < 255; i++)
@@ -130,4 +140,5 @@ void opcode_init(vm_t * vm) {
     vm->opcodes[INT_PRINT] = op_int_print;
     vm->opcodes[CMP] = op_cmp;
     vm->opcodes[JMPZ] = op_jmpz;
+    vm->opcodes[CALL] = op_call;
 }

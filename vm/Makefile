@@ -10,7 +10,3 @@ vm:
 
 clean:
 	@rm -rf target
-
-compile:
-	for i in examples/*.in; do ./compiler $$i >/dev/null  ; done
-

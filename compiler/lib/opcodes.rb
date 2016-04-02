@@ -5,4 +5,5 @@ module OpCodes
   INT_PRINT = 0x02
   CMP = 0x03
   JMPZ = 0x04
+  CALL = 0x05
 end

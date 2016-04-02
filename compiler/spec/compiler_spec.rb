@@ -30,13 +30,17 @@ RSpec.describe Compiler do
     expect(compile("print:\njmpz print")).to eq([OpCodes::JMPZ, 0])
   end
 
+  it 'compiles a CALL instruction' do
+    expect(compile("call main/0\nfn main/0:")).to eq([OpCodes::CALL, 3, 0])
+  end
+
   describe 'formatting' do
     it 'ignores whitespace on either side of the line' do
       expect(compile("  exit  1")).to eq([OpCodes::EXIT, 1])
     end
 
     it 'ignores empty lines' do
-      expect(compile("")).to eq([])
+      expect(compile("\n")).to eq([])
     end
 
     it 'ignores comments' do

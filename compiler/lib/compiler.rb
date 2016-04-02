@@ -5,6 +5,7 @@ CompileError = Class.new(StandardError)
 class Compiler
   include OpCodes
   LABEL = /([_a-zA-Z][_a-zA-Z0-9]+):/
+  FN    = /([_a-zA-Z][_a-zA-Z0-9]+\/(\d+)):/
 
   def initialize(code, out)
     @code = code
@@ -12,7 +13,9 @@ class Compiler
     @output = []
     @instruction = 0
     @labels = {}
+    @functions = {}
     @label_usages = []
+    @fn_callsites = []
   end
 
   def compile
@@ -28,12 +31,17 @@ class Compiler
   attr_reader :out, :code
 
   def process(line)
+    return if line.nil?
+
     op, *args = line
 
     case op
     when LABEL
       label = op.match(LABEL)[1]
       @labels[label] = @instruction
+    when "fn"
+      sig = args[0].match(FN)[1]
+      @functions[sig] = @instruction
     when "exit"
       emit(EXIT)
       emit(extract_int(args[0]))
@@ -54,6 +62,12 @@ class Compiler
     when "jmpz"
       emit(JMPZ)
       emit(extract_label(args[0]))
+    when "call"
+      emit(CALL)
+
+      name, arity = extract_function(args[0])
+      emit(name)
+      emit(arity)
     else
       raise "Unkown operation: #{op}"
     end
@@ -63,9 +77,16 @@ class Compiler
     @label_usages.each do |instr|
       @output[instr] = @labels[@output[instr]]
     end
+    @fn_callsites.each do |instr|
+      name = @output[instr]
+      arity = @output[instr + 1]
+      @output[instr] = @functions["#{name}/#{arity}"]
+    end
   end
 
   def prepare(line)
+    return nil if line =~ /^\s$/
+
     op, args = line.strip.split(' ', 2)
     if args
       [op] + args.split(',').map(&:strip)
@@ -93,6 +114,12 @@ class Compiler
   def extract_label(label)
     @label_usages << @instruction
     label
+  end
+
+  def extract_function(f)
+    @fn_callsites << @instruction
+    name, arity = f.split('/')
+    [name, arity.to_i]
   end
 
   def emit(opcode)

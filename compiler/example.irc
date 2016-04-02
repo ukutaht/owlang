@@ -1,8 +1,11 @@
-store %1, 33
+store %1, 32
 store %2, 33
-cmp %1, %2
-jmpz print
-exit 1
+call maybe_print/0
+
+fn maybe_print/0:
+  cmp %1, %2
+  jmpz print
+  exit 1
 print:
-int_print %1
-exit 0
+  int_print %1
+  exit 0

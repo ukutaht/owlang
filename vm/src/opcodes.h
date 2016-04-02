@@ -19,7 +19,8 @@ enum opcode_values {
     INT_STORE,
     INT_PRINT,
     CMP,
-    JMPZ
+    JMPZ,
+    CALL
 };
 
 void op_exit(vm_t *in);
@@ -27,6 +28,7 @@ void op_int_store(vm_t *in);
 void op_int_print(vm_t *in);
 void op_cmp(vm_t *in);
 void op_jmpz(vm_t *in);
+void op_call(vm_t *in);
 
 /**
  * Initialization function.
