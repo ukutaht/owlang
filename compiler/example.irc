@@ -1,7 +1,8 @@
 store %1, 33
 store %2, 33
 cmp %1, %2
-jmpz 15
-exit
+jmpz print
+exit 1
+print:
 int_print %1
-exit
+exit 0

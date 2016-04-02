@@ -14,10 +14,6 @@ RSpec.describe Compiler do
     expect(compile("exit 0")).to eq([OpCodes::EXIT, 0])
   end
 
-  it 'ignores whitespace on either side of the line' do
-    expect(compile("  exit  1")).to eq([OpCodes::EXIT, 1])
-  end
-
   it 'compiles an INT_STORE instruction' do
     expect(compile("store %1, 33")).to eq([OpCodes::INT_STORE, 1, 33, 0])
   end
@@ -31,6 +27,59 @@ RSpec.describe Compiler do
   end
 
   it 'compiles a JUMPZ instruction' do
-    expect(compile("jmpz 10")).to eq([OpCodes::JMPZ, 10])
+    expect(compile("print:\njmpz print")).to eq([OpCodes::JMPZ, 0])
+  end
+
+  describe 'formatting' do
+    it 'ignores whitespace on either side of the line' do
+      expect(compile("  exit  1")).to eq([OpCodes::EXIT, 1])
+    end
+
+    it 'ignores empty lines' do
+      expect(compile("")).to eq([])
+    end
+
+    it 'ignores comments' do
+      expect(compile("exit 1; here be dragons")).to eq([OpCodes::EXIT, 1])
+    end
+
+    it 'raises when not enough arguments are given' do
+      expect { compile("exit") }.to raise_error(CompileError)
+    end
+
+    it 'raises when bad arguments are given' do
+      expect { compile("exit %2") }.to raise_error(CompileError)
+      expect { compile("store 2") }.to raise_error(CompileError)
+      expect { compile("store 2, 2") }.to raise_error(CompileError)
+    end
+  end
+
+  describe 'label -> address translation' do
+    it 'does not output anything for labels' do
+      expect(compile("label:")).to eq([])
+    end
+
+    it 'translates label to the addres of instruction' do
+      expect(compile("store %1, 33\nprint:\njmpz print")).to eq([
+        OpCodes::INT_STORE, 1, 33, 0,
+        OpCodes::JMPZ, 4
+      ])
+    end
+
+    it 'can translate forward addresses' do
+      expect(compile("store %1, 33\njmpz print\nprint:\nint_print %1")).to eq([
+        OpCodes::INT_STORE, 1, 33, 0,
+        OpCodes::JMPZ, 6,
+        OpCodes::INT_PRINT, 1
+      ])
+    end
+
+    it 'labels do not collide with opcodes' do
+      expect(compile("int_print %1\njmpz print\nprint:\nint_print %1")).to eq([
+        OpCodes::INT_PRINT, 1,
+        OpCodes::JMPZ, 4,
+        OpCodes::INT_PRINT, 1
+      ])
+    end
   end
 end

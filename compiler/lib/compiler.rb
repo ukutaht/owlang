@@ -1,17 +1,27 @@
 require 'opcodes'
 
+CompileError = Class.new(StandardError)
+
 class Compiler
   include OpCodes
+  LABEL = /([_a-zA-Z][_a-zA-Z0-9]+):/
 
   def initialize(code, out)
     @code = code
     @out = out
+    @output = []
+    @instruction = 0
+    @labels = {}
+    @label_usages = []
   end
 
   def compile
     code.each_line do |line|
       process(prepare(line))
     end
+
+    translate_labels
+    out.print(@output.pack('C*'))
   end
 
   private
@@ -21,6 +31,9 @@ class Compiler
     op, *args = line
 
     case op
+    when LABEL
+      label = op.match(LABEL)[1]
+      @labels[label] = @instruction
     when "exit"
       emit(EXIT)
       emit(extract_int(args[0]))
@@ -40,9 +53,15 @@ class Compiler
       emit(extract_reg(args[1]))
     when "jmpz"
       emit(JMPZ)
-      emit(extract_int(args[0]))
+      emit(extract_label(args[0]))
     else
       raise "Unkown operation: #{op}"
+    end
+  end
+
+  def translate_labels
+    @label_usages.each do |instr|
+      @output[instr] = @labels[@output[instr]]
     end
   end
 
@@ -56,14 +75,28 @@ class Compiler
   end
 
   def extract_reg(reg)
-    reg.match(/%(\d+)/)[1].to_i
+    if match = reg.match(/%(\d+)/)
+      match[1].to_i
+    else
+      raise CompileError.new('Expected register')
+    end
   end
 
   def extract_int(int)
-    int.to_i
+    if int && match = int.match(/^(\d+)/)
+      match[1].to_i
+    else
+      raise CompileError.new('Expected integer')
+    end
+  end
+
+  def extract_label(label)
+    @label_usages << @instruction
+    label
   end
 
   def emit(opcode)
-    out.print([opcode].pack('C*'))
+    @instruction += 1
+    @output << opcode
   end
 end
