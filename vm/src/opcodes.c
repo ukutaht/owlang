@@ -63,7 +63,7 @@ void op_int_store(vm_t *vm) {
     unsigned int reg = next_reg(vm);
     unsigned int value = next_int(vm);
 
-    DEBUG("STORE_INT(Reg:%02x) => %04d [Hex:%04x]\n", reg, value, value);
+    DEBUG("STORE_INT(Reg:%02x) => %d\n", reg, value);
 
     /* if the register stores a string .. free it */
     if ((vm->registers[reg].type == STRING) && (vm->registers[reg].content.string))
@@ -88,6 +88,38 @@ void op_int_print(struct vm *vm) {
     vm->ip += 1;
 }
 
+// Compare contents of two registers for equality
+// If they are equal, sets the `z_flag` to true on the vm
+void op_cmp(struct vm *vm) {
+    unsigned int reg1 = next_reg(vm);
+    unsigned int reg2 = next_reg(vm);
+
+    DEBUG("CMP(Reg1:%02x, Reg2:%02x)\n", reg1, reg2);
+
+    /* get the register contents. */
+    int val1 = get_int_reg(vm, reg1);
+    int val2 = get_int_reg(vm, reg2);
+
+    if (val1 == val2) {
+      vm->z_flag = true;
+    }
+
+    vm->ip += 1;
+}
+
+// Jumps to the given instruction if the z-flag is true
+void op_jmpz(struct vm *vm) {
+    unsigned int instr = next_int(vm);
+
+    DEBUG("JMPZ(Instr:%02x)\n", instr);
+
+    if (vm->z_flag == true) {
+      vm->ip = instr;
+    } else {
+      vm->ip += 1;
+    }
+}
+
 void opcode_init(vm_t * vm) {
     // All instructions will default to unknown.
     for (int i = 0; i < 255; i++)
@@ -96,4 +128,6 @@ void opcode_init(vm_t * vm) {
     vm->opcodes[EXIT] = op_exit;
     vm->opcodes[INT_STORE] = op_int_store;
     vm->opcodes[INT_PRINT] = op_int_print;
+    vm->opcodes[CMP] = op_cmp;
+    vm->opcodes[JMPZ] = op_jmpz;
 }

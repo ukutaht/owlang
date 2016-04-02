@@ -19,10 +19,18 @@ RSpec.describe Compiler do
   end
 
   it 'compiles an INT_STORE instruction' do
-    expect(compile("store #1, 33")).to eq([OpCodes::INT_STORE, 1, 33, 0])
+    expect(compile("store %1, 33")).to eq([OpCodes::INT_STORE, 1, 33, 0])
   end
 
   it 'compiles an INT_PRINT instruction' do
-    expect(compile("int_print #1")).to eq([OpCodes::INT_PRINT, 1])
+    expect(compile("int_print %1")).to eq([OpCodes::INT_PRINT, 1])
+  end
+
+  it 'compiles a CMP instruction' do
+    expect(compile("cmp %1, %2")).to eq([OpCodes::CMP, 1, 2])
+  end
+
+  it 'compiles a JUMPZ instruction' do
+    expect(compile("jmpz 10")).to eq([OpCodes::JMPZ, 10])
   end
 end

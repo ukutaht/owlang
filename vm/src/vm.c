@@ -104,8 +104,6 @@ void vm_run(vm_t * cpup) {
          * Lookup the instruction at the instruction-pointer.
          */
         int opcode = cpup->code[cpup->ip];
-        DEBUG("%04x - Parsing OpCode Hex:%02X\n", cpup->ip, opcode);
-
         /**
          * Call the opcode implementation, if defined.
          */

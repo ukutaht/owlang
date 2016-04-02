@@ -33,7 +33,14 @@ class Compiler
       emit(div)
     when "int_print"
       emit(INT_PRINT)
-      emit(extract_reg(args.first))
+      emit(extract_reg(args[0]))
+    when "cmp"
+      emit(CMP)
+      emit(extract_reg(args[0]))
+      emit(extract_reg(args[1]))
+    when "jmpz"
+      emit(JMPZ)
+      emit(extract_int(args[0]))
     else
       raise "Unkown operation: #{op}"
     end
@@ -49,7 +56,7 @@ class Compiler
   end
 
   def extract_reg(reg)
-    reg.match(/#(\d+)/)[1].to_i
+    reg.match(/%(\d+)/)[1].to_i
   end
 
   def extract_int(int)
