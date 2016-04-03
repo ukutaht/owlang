@@ -27,8 +27,7 @@ enum opcode_values {
     CALL,
     RETURN,
     MOV,
-    RESTORE,
-    TAILCALL
+    TAILCALL,
 };
 
 void opcode_init(vm_t *vm);

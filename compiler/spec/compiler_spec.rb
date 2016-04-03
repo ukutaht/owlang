@@ -54,10 +54,6 @@ RSpec.describe Compiler do
     expect(compile("mov %3, %1")).to eq([OpCodes::MOV, 3, 1])
   end
 
-  it 'compiles a RESTORE instruction' do
-    expect(compile("restore %3")).to eq([OpCodes::RESTORE, 3])
-  end
-
   it 'compiles a CALL instruction' do
     expect(compile("call main/1, %1\nfn main/1:")).to eq([OpCodes::CALL, 4, 1, 1])
   end

@@ -109,9 +109,6 @@ class Compiler
       emit(MOV)
       emit(extract_reg(args[0]))
       emit(extract_reg(args[1]))
-    when "restore"
-      emit(RESTORE)
-      emit(extract_reg(args[0]))
     else
       raise "Unkown operation: #{op}"
     end

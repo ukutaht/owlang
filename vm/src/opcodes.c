@@ -284,15 +284,6 @@ void op_mov(struct vm *vm) {
     vm->ip += 1;
 }
 
-void op_restore(struct vm *vm) {
-    unsigned int offset = next_byte(vm);
-
-    DEBUG("RESTORE(OFFSET: %02x)\n", offset);
-
-    vm->reg_offset -= offset;
-    vm->ip += 1;
-}
-
 void opcode_init(vm_t * vm) {
     // All instructions will default to unknown.
     for (int i = 0; i < 255; i++)
@@ -311,6 +302,5 @@ void opcode_init(vm_t * vm) {
     vm->opcodes[CALL] = op_call;
     vm->opcodes[RETURN] = op_return;
     vm->opcodes[MOV] = op_mov;
-    vm->opcodes[RESTORE] = op_restore;
     vm->opcodes[TAILCALL] = op_tailcall;
 }
