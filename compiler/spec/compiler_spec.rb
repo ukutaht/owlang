@@ -50,8 +50,16 @@ RSpec.describe Compiler do
     expect(compile("sub %3, %1, %2")).to eq([OpCodes::SUB, 3, 1, 2])
   end
 
+  it 'compiles a MOV instruction' do
+    expect(compile("mov %3, %1")).to eq([OpCodes::MOV, 3, 1])
+  end
+
+  it 'compiles a RESTORE instruction' do
+    expect(compile("restore %3")).to eq([OpCodes::RESTORE, 3])
+  end
+
   it 'compiles a CALL instruction' do
-    expect(compile("call main/0\nfn main/0:")).to eq([OpCodes::CALL, 3, 0])
+    expect(compile("call main/0, %1\nfn main/0:")).to eq([OpCodes::CALL, 3, 1])
   end
 
   it 'compiles a RETURN instruction' do

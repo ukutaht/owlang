@@ -93,11 +93,18 @@ class Compiler
     when "call"
       emit(CALL)
 
-      name, arity = extract_function(args[0])
+      name = extract_function(args[0])
       emit(name)
-      emit(arity)
+      emit(extract_reg(args[1]))
     when "return"
       emit(RETURN)
+    when "mov"
+      emit(MOV)
+      emit(extract_reg(args[0]))
+      emit(extract_reg(args[1]))
+    when "restore"
+      emit(RESTORE)
+      emit(extract_reg(args[0]))
     else
       raise "Unkown operation: #{op}"
     end
@@ -109,8 +116,7 @@ class Compiler
     end
     @fn_callsites.each do |instr|
       name = @output[instr]
-      arity = @output[instr + 1]
-      @output[instr] = @functions["#{name}/#{arity}"]
+      @output[instr] = @functions[name]
     end
   end
 
@@ -148,8 +154,7 @@ class Compiler
 
   def extract_function(f)
     @fn_callsites << @instruction
-    name, arity = f.split('/')
-    [name, arity.to_i]
+    f
   end
 
   def emit(opcode)

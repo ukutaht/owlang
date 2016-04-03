@@ -21,7 +21,8 @@ unsigned char next_byte(vm_t *vm) {
 // as a register number. This is used when we expect an argument op
 // to describe a register
 unsigned int next_reg(vm_t *vm) {
-    unsigned int reg = next_byte(vm);
+    unsigned int relative_reg = next_byte(vm);
+    unsigned int reg = vm->reg_offset + relative_reg;
     assert(reg < REGISTER_COUNT);
     return reg;
 }
@@ -212,7 +213,7 @@ void op_sub(struct vm *vm) {
     unsigned int reg2  = next_reg(vm);
     unsigned int reg3  = next_reg(vm);
 
-    DEBUG("ADD(Reg1: %02x, Reg2: %02x, REG3:%02x)\n", reg1, reg2, reg3);
+    DEBUG("SUB(Reg1: %02x, Reg2: %02x, REG3:%02x)\n", reg1, reg2, reg3);
 
     int val1 = get_int_reg(vm, reg2);
     int val2 = get_int_reg(vm, reg3);
@@ -226,18 +227,48 @@ void op_sub(struct vm *vm) {
 
 void op_call(struct vm *vm) {
     unsigned int location = next_byte(vm);
-    unsigned int arity = next_byte(vm);
+    unsigned int reg_offset = next_byte(vm);
 
-    DEBUG("CALL(Instr:%d, Arity: %d)\n", location, arity);
+    DEBUG("CALL(Instr:%d, REG_OFFSET: %d)\n", location, reg_offset);
 
-    vm->ret_address = vm->ip + 1;
+
+    // Account for return address
+    int new_offset = vm->reg_offset + reg_offset;
+    vm->reg_offset = new_offset;
+
+    // return address
+    vm->registers[new_offset - 1].content.integer = vm->ip + 1;
+    vm->registers[new_offset - 1].type = INTEGER;
     vm->ip = location;
 }
 
 void op_return(struct vm *vm) {
     DEBUG("RETURN\n");
 
-    vm->ip = vm->ret_address;
+    int ret_address_loc = vm->reg_offset - 1;
+    vm->ip = get_int_reg(vm, ret_address_loc);
+}
+
+void op_mov(struct vm *vm) {
+    unsigned int reg1 = next_reg(vm);
+    unsigned int reg2 = next_reg(vm);
+
+    DEBUG("MOV(Reg1: %02x, Reg2: %02x)\n", reg1, reg2);
+
+    int val = get_int_reg(vm, reg2);
+    vm->registers[reg1].content.integer = val;
+    vm->registers[reg1].type = INTEGER;
+
+    vm->ip += 1;
+}
+
+void op_restore(struct vm *vm) {
+    unsigned int offset = next_byte(vm);
+
+    DEBUG("RESTORE(OFFSET: %02x)\n", offset);
+
+    vm->reg_offset -= offset;
+    vm->ip += 1;
 }
 
 void opcode_init(vm_t * vm) {
@@ -257,4 +288,6 @@ void opcode_init(vm_t * vm) {
     vm->opcodes[SUB] = op_sub;
     vm->opcodes[CALL] = op_call;
     vm->opcodes[RETURN] = op_return;
+    vm->opcodes[MOV] = op_mov;
+    vm->opcodes[RESTORE] = op_restore;
 }

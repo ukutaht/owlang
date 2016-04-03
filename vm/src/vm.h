@@ -1,4 +1,4 @@
-#define REGISTER_COUNT 10
+#define REGISTER_COUNT 100
 
 #ifndef _Bool
 #define _Bool short
@@ -25,7 +25,7 @@ typedef void opcode_impl(struct vm *in);
 
 typedef struct vm {
     reg_t registers[REGISTER_COUNT]; // VM registers
-    unsigned int ret_address;
+    unsigned int reg_offset;
     unsigned int ip;                 // Instruction pointer
     unsigned char *code;             // loaded code
     unsigned int size;               // loaded code size

@@ -26,6 +26,8 @@ enum opcode_values {
     SUB,
     CALL,
     RETURN,
+    MOV,
+    RESTORE
 };
 
 void op_exit(vm_t *in);
@@ -40,6 +42,7 @@ void op_add(vm_t *in);
 void op_sub(vm_t *in);
 void op_call(vm_t *in);
 void op_return(vm_t *in);
+void op_mov(vm_t *in);
 
 void opcode_init(vm_t *vm);
 
