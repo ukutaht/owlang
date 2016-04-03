@@ -1,10 +1,10 @@
-store %1, 34
+store %1, 33
 store %2, 33
 call maybe_print/0
 exit 0
 
 fn maybe_print/0:
-  test_gt %1, %2, print
+  test_gte %1, %2, print
   return
 print:
   int_print %1
