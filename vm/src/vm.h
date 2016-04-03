@@ -30,7 +30,6 @@ typedef struct vm {
     unsigned char *code;             // loaded code
     unsigned int size;               // loaded code size
     opcode_impl *opcodes[255];       // opcode lookup table
-    _Bool z_flag;
     _Bool running;
 } vm_t;
 
