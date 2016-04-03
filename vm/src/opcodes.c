@@ -42,9 +42,11 @@ unsigned int next_int(vm_t *vm) {
 
 // Helper to return the integer-content of a register.
 int get_int_reg(vm_t *vm, int reg) {
-  assert(vm->registers[reg].type == INTEGER);
+  frame_t curr_frame = vm->frames[vm->current_frame];
 
-  return vm->registers[reg].content.integer;
+  assert(curr_frame.registers[reg].type == INTEGER);
+
+  return curr_frame.registers[reg].content.integer;
 }
 
 void op_unknown(vm_t * vm) {
@@ -66,12 +68,9 @@ void op_int_store(vm_t *vm) {
 
     DEBUG("STORE_INT(Reg:%02x) => %d\n", reg, value);
 
-    /* if the register stores a string .. free it */
-    if ((vm->registers[reg].type == STRING) && (vm->registers[reg].content.string))
-        free(vm->registers[reg].content.string);
-
-    vm->registers[reg].content.integer = value;
-    vm->registers[reg].type = INTEGER;
+    frame_t *curr_frame = &vm->frames[vm->current_frame];
+    curr_frame->registers[reg].content.integer = value;
+    curr_frame->registers[reg].type = INTEGER;
 
     vm->ip += 1;
 }
@@ -201,8 +200,10 @@ void op_add(struct vm *vm) {
     int val2 = get_int_reg(vm, reg3);
     int result = val1 + val2;
 
-    vm->registers[reg1].content.integer = result;
-    vm->registers[reg1].type = INTEGER;
+    frame_t *curr_frame = &vm->frames[vm->current_frame];
+
+    curr_frame->registers[reg1].content.integer = result;
+    curr_frame->registers[reg1].type = INTEGER;
 
     vm->ip += 1;
 }
@@ -219,34 +220,47 @@ void op_sub(struct vm *vm) {
     int val2 = get_int_reg(vm, reg3);
     int result = val1 - val2;
 
-    vm->registers[reg1].content.integer = result;
-    vm->registers[reg1].type = INTEGER;
+    frame_t *curr_frame = &vm->frames[vm->current_frame];
+    curr_frame->registers[reg1].content.integer = result;
+    curr_frame->registers[reg1].type = INTEGER;
 
     vm->ip += 1;
 }
 
 void op_call(struct vm *vm) {
     unsigned int location = next_byte(vm);
-    unsigned int reg_offset = next_byte(vm);
+    unsigned int arity = next_byte(vm);
 
-    DEBUG("CALL(Instr:%d, REG_OFFSET: %d)\n", location, reg_offset);
+    DEBUG("CALL(Instr:%d, Arity: %d)\n", location, arity);
 
+    assert(vm->current_frame + 1 <= STACK_DEPTH);
 
-    // Account for return address
-    int new_offset = vm->reg_offset + reg_offset;
-    vm->reg_offset = new_offset;
+    unsigned int next_frame = vm->current_frame + 1;
+
+    for(unsigned int i = 0; i < arity; i++) {
+      unsigned int arg = get_int_reg(vm, next_reg(vm));
+      vm->frames[next_frame].registers[i + 1].content.integer = arg;
+      vm->frames[next_frame].registers[i + 1].type = INTEGER;
+    }
+
+    vm->frames[next_frame].ret_address = vm->ip + 1;
+    vm->current_frame += 1;
 
     // return address
-    vm->registers[new_offset - 1].content.integer = vm->ip + 1;
-    vm->registers[new_offset - 1].type = INTEGER;
     vm->ip = location;
 }
 
 void op_return(struct vm *vm) {
     DEBUG("RETURN\n");
 
-    int ret_address_loc = vm->reg_offset - 1;
-    vm->ip = get_int_reg(vm, ret_address_loc);
+    frame_t *curr_frame = &vm->frames[vm->current_frame];
+    frame_t *prev_frame = &vm->frames[vm->current_frame - 1];
+    unsigned int ret_address = curr_frame->ret_address;
+
+    prev_frame->registers[0] = curr_frame->registers[0];
+
+    vm->current_frame -= 1;
+    vm->ip = ret_address;
 }
 
 void op_mov(struct vm *vm) {
@@ -255,9 +269,8 @@ void op_mov(struct vm *vm) {
 
     DEBUG("MOV(Reg1: %02x, Reg2: %02x)\n", reg1, reg2);
 
-    int val = get_int_reg(vm, reg2);
-    vm->registers[reg1].content.integer = val;
-    vm->registers[reg1].type = INTEGER;
+    frame_t *curr_frame = &vm->frames[vm->current_frame];
+    curr_frame->registers[reg1] = curr_frame->registers[reg2];
 
     vm->ip += 1;
 }

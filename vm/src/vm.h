@@ -1,4 +1,5 @@
 #define REGISTER_COUNT 100
+#define STACK_DEPTH 100
 
 #ifndef _Bool
 #define _Bool short
@@ -20,11 +21,18 @@ typedef struct registers {
     enum { INTEGER, STRING } type;
 } reg_t;
 
+
+typedef struct frame_t {
+    reg_t registers[REGISTER_COUNT]; // Each frame has their own registers
+    unsigned int ret_address;
+} frame_t;
+
 struct vm;
 typedef void opcode_impl(struct vm *in);
 
 typedef struct vm {
-    reg_t registers[REGISTER_COUNT]; // VM registers
+    frame_t frames[STACK_DEPTH];
+    unsigned int current_frame;
     unsigned int reg_offset;
     unsigned int ip;                 // Instruction pointer
     unsigned char *code;             // loaded code

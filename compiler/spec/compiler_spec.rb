@@ -59,7 +59,7 @@ RSpec.describe Compiler do
   end
 
   it 'compiles a CALL instruction' do
-    expect(compile("call main/0, %1\nfn main/0:")).to eq([OpCodes::CALL, 3, 1])
+    expect(compile("call main/1, %1\nfn main/1:")).to eq([OpCodes::CALL, 4, 1, 1])
   end
 
   it 'compiles a RETURN instruction' do

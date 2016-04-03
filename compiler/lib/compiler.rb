@@ -93,8 +93,9 @@ class Compiler
     when "call"
       emit(CALL)
 
-      name = extract_function(args[0])
+      name, arity = extract_function(args[0])
       emit(name)
+      emit(arity)
       emit(extract_reg(args[1]))
     when "return"
       emit(RETURN)
@@ -116,7 +117,8 @@ class Compiler
     end
     @fn_callsites.each do |instr|
       name = @output[instr]
-      @output[instr] = @functions[name]
+      arity = @output[instr + 1]
+      @output[instr] = @functions["#{name}/#{arity}"]
     end
   end
 
@@ -154,7 +156,8 @@ class Compiler
 
   def extract_function(f)
     @fn_callsites << @instruction
-    f
+    name, arity = f.split('/')
+    [name, arity.to_i]
   end
 
   def emit(opcode)

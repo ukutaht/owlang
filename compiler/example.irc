@@ -1,23 +1,18 @@
 store %3, 90
-call mccarthy/1, %2
-restore %2
-int_print %2
+call mccarthy/1, %3
+int_print %0
 exit 0
 
 fn mccarthy/1:
   store %2, 100
   test_gt %1, %2, iftrue
-  store %3, 11
-  add %5, %3, %1
-  call mccarthy/1, %4
-  restore %4
-  mov %5, %4
-  call mccarthy/1, %4
-  restore %4
-  mov %0, %4
+  store %2, 11
+  add %3, %2, %1
+  call mccarthy/1, %3
+  call mccarthy/1, %0
   return
 
 iftrue:
-  store %3, 10
-  sub %0, %1, %3
+  store %2, 10
+  sub %0, %1, %2
   return

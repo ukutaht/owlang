@@ -7,7 +7,6 @@
 
 vm_t *vm_new(unsigned char *code, unsigned int size) {
     vm_t *vm;
-    int i;
 
     if (!code || !size || (size > 0xFFFF))
         return NULL;
@@ -47,12 +46,11 @@ vm_t *vm_new(unsigned char *code, unsigned int size) {
     /**
      * Explicitly zero each register and set to be a number.
      */
-    for (i = 0; i < REGISTER_COUNT; i++) {
-        vm->registers[i].type = INTEGER;
-        vm->registers[i].content.integer = 0;
-        vm->registers[i].content.string = NULL;
-    }
-
+//    for (i = 0; i < REGISTER_COUNT; i++) {
+//        vm->registers[i].type = INTEGER;
+//        vm->registers[i].content.integer = 0;
+//        vm->registers[i].content.string = NULL;
+//    }
 
     /**
      * Setup our default opcode-handlers
