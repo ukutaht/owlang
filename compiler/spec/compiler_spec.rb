@@ -22,12 +22,8 @@ RSpec.describe Compiler do
     expect(compile("int_print %1")).to eq([OpCodes::INT_PRINT, 1])
   end
 
-  it 'compiles a CMP instruction' do
-    expect(compile("cmp %1, %2")).to eq([OpCodes::CMP, 1, 2])
-  end
-
-  it 'compiles a JUMPZ instruction' do
-    expect(compile("print:\njmpz print")).to eq([OpCodes::JMPZ, 0])
+  it 'compiles a TEST_EQ instruction' do
+    expect(compile("print:\ntest_eq %1, %2, print")).to eq([OpCodes::TEST_EQ, 1, 2, 0])
   end
 
   it 'compiles a CALL instruction' do
@@ -64,24 +60,16 @@ RSpec.describe Compiler do
     end
 
     it 'translates label to the addres of instruction' do
-      expect(compile("store %1, 33\nprint:\njmpz print")).to eq([
+      expect(compile("store %1, 33\nprint:\ntest_eq %1, %2, print")).to eq([
         OpCodes::INT_STORE, 1, 33, 0,
-        OpCodes::JMPZ, 4
+        OpCodes::TEST_EQ, 1, 2, 4
       ])
     end
 
     it 'can translate forward addresses' do
-      expect(compile("store %1, 33\njmpz print\nprint:\nint_print %1")).to eq([
+      expect(compile("store %1, 33\ntest_eq %1, %2, print\nprint:\nint_print %1")).to eq([
         OpCodes::INT_STORE, 1, 33, 0,
-        OpCodes::JMPZ, 6,
-        OpCodes::INT_PRINT, 1
-      ])
-    end
-
-    it 'labels do not collide with opcodes' do
-      expect(compile("int_print %1\njmpz print\nprint:\nint_print %1")).to eq([
-        OpCodes::INT_PRINT, 1,
-        OpCodes::JMPZ, 4,
+        OpCodes::TEST_EQ, 1, 2, 8,
         OpCodes::INT_PRINT, 1
       ])
     end

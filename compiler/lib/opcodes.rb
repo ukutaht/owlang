@@ -3,7 +3,6 @@ module OpCodes
 
   INT_STORE = 0x01
   INT_PRINT = 0x02
-  CMP = 0x03
-  JMPZ = 0x04
-  CALL = 0x05
+  TEST_EQ = 0x03
+  CALL = 0x04
 end

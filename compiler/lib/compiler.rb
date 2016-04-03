@@ -55,13 +55,11 @@ class Compiler
     when "int_print"
       emit(INT_PRINT)
       emit(extract_reg(args[0]))
-    when "cmp"
-      emit(CMP)
+    when "test_eq"
+      emit(TEST_EQ)
       emit(extract_reg(args[0]))
       emit(extract_reg(args[1]))
-    when "jmpz"
-      emit(JMPZ)
-      emit(extract_label(args[0]))
+      emit(extract_label(args[2]))
     when "call"
       emit(CALL)
 

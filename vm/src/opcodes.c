@@ -88,38 +88,25 @@ void op_int_print(struct vm *vm) {
     vm->ip += 1;
 }
 
-// Compare contents of two registers for equality
-// If they are equal, sets the `z_flag` to true on the vm
-void op_cmp(struct vm *vm) {
-    unsigned int reg1 = next_reg(vm);
-    unsigned int reg2 = next_reg(vm);
+// Tests if two registers are equal
+// If they are equal, continue running. If not equal,
+// jumps to the provided label
+void op_test_eq(struct vm *vm) {
+    unsigned int reg1  = next_reg(vm);
+    unsigned int reg2  = next_reg(vm);
+    unsigned int instr = next_int(vm);
 
-    DEBUG("CMP(Reg1:%02x, Reg2:%02x)\n", reg1, reg2);
+    DEBUG("TEST_EQ(Reg1: %02x, Reg2: %02x, Instr:%02x)\n", reg1, reg2, instr);
 
-    /* get the register contents. */
     int val1 = get_int_reg(vm, reg1);
     int val2 = get_int_reg(vm, reg2);
 
     if (val1 == val2) {
-      vm->z_flag = true;
-    }
-
-    vm->ip += 1;
-}
-
-// Jumps to the given instruction if the z-flag is true
-void op_jmpz(struct vm *vm) {
-    unsigned int instr = next_int(vm);
-
-    DEBUG("JMPZ(Instr:%02x)\n", instr);
-
-    if (vm->z_flag == true) {
       vm->ip = instr;
     } else {
       vm->ip += 1;
     }
 }
-
 
 void op_call(struct vm *vm) {
     unsigned int location = next_byte(vm);
@@ -138,7 +125,6 @@ void opcode_init(vm_t * vm) {
     vm->opcodes[EXIT] = op_exit;
     vm->opcodes[INT_STORE] = op_int_store;
     vm->opcodes[INT_PRINT] = op_int_print;
-    vm->opcodes[CMP] = op_cmp;
-    vm->opcodes[JMPZ] = op_jmpz;
+    vm->opcodes[TEST_EQ] = op_test_eq;
     vm->opcodes[CALL] = op_call;
 }

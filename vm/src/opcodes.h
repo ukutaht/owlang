@@ -18,16 +18,14 @@ enum opcode_values {
     EXIT = 0,
     INT_STORE,
     INT_PRINT,
-    CMP,
-    JMPZ,
+    TEST_EQ,
     CALL
 };
 
 void op_exit(vm_t *in);
 void op_int_store(vm_t *in);
 void op_int_print(vm_t *in);
-void op_cmp(vm_t *in);
-void op_jmpz(vm_t *in);
+void op_test_eq(vm_t *in);
 void op_call(vm_t *in);
 
 /**

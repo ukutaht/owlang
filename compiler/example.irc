@@ -1,10 +1,9 @@
-store %1, 32
+store %1, 33
 store %2, 33
 call maybe_print/0
 
 fn maybe_print/0:
-  cmp %1, %2
-  jmpz print
+  test_eq %1, %2, print
   exit 1
 print:
   int_print %1
