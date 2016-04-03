@@ -12,18 +12,10 @@
 #ifndef VM_H
 #define VM_H 1
 
-// Registers can hold multiple types of values
-typedef struct registers {
-    union {
-        unsigned int integer;
-        char *string;
-    } content;
-    enum { INTEGER, STRING } type;
-} reg_t;
-
+typedef int ir_term;
 
 typedef struct frame_t {
-    reg_t registers[REGISTER_COUNT]; // Each frame has their own registers
+    ir_term registers[REGISTER_COUNT]; // Each frame has their own registers
     unsigned int ret_address;
 } frame_t;
 

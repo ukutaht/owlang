@@ -44,9 +44,7 @@ unsigned int next_int(vm_t *vm) {
 int get_int_reg(vm_t *vm, int reg) {
   frame_t curr_frame = vm->frames[vm->current_frame];
 
-  assert(curr_frame.registers[reg].type == INTEGER);
-
-  return curr_frame.registers[reg].content.integer;
+  return curr_frame.registers[reg];
 }
 
 void op_unknown(vm_t * vm) {
@@ -69,8 +67,7 @@ void op_int_store(vm_t *vm) {
     DEBUG("STORE_INT(Reg:%02x) => %d\n", reg, value);
 
     frame_t *curr_frame = &vm->frames[vm->current_frame];
-    curr_frame->registers[reg].content.integer = value;
-    curr_frame->registers[reg].type = INTEGER;
+    curr_frame->registers[reg] = value;
 
     vm->ip += 1;
 }
@@ -202,8 +199,7 @@ void op_add(struct vm *vm) {
 
     frame_t *curr_frame = &vm->frames[vm->current_frame];
 
-    curr_frame->registers[reg1].content.integer = result;
-    curr_frame->registers[reg1].type = INTEGER;
+    curr_frame->registers[reg1] = result;
 
     vm->ip += 1;
 }
@@ -221,8 +217,7 @@ void op_sub(struct vm *vm) {
     int result = val1 - val2;
 
     frame_t *curr_frame = &vm->frames[vm->current_frame];
-    curr_frame->registers[reg1].content.integer = result;
-    curr_frame->registers[reg1].type = INTEGER;
+    curr_frame->registers[reg1] = result;
 
     vm->ip += 1;
 }
@@ -239,8 +234,7 @@ void op_call(struct vm *vm) {
 
     for(unsigned int i = 0; i < arity; i++) {
       unsigned int arg = get_int_reg(vm, next_reg(vm));
-      vm->frames[next_frame].registers[i + 1].content.integer = arg;
-      vm->frames[next_frame].registers[i + 1].type = INTEGER;
+      vm->frames[next_frame].registers[i + 1] = arg;
     }
 
     vm->frames[next_frame].ret_address = vm->ip + 1;
