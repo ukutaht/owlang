@@ -90,7 +90,7 @@ void op_print(struct vm *vm) {
 void op_test_eq(struct vm *vm) {
     unsigned int reg1  = next_reg(vm);
     unsigned int reg2  = next_reg(vm);
-    unsigned int instr = next_byte(vm);
+    signed char instr  = next_byte(vm);
 
     debug_print("TEST_EQ(Reg1: %02x, Reg2: %02x, IfTrue:%02x)\n", reg1, reg2, instr);
 
