@@ -25,7 +25,6 @@ typedef void opcode_impl(struct vm *in);
 typedef struct vm {
     frame_t frames[STACK_DEPTH];
     unsigned int current_frame;
-    unsigned int reg_offset;
     unsigned int ip;                 // Instruction pointer
     unsigned char *code;             // loaded code
     unsigned int size;               // loaded code size

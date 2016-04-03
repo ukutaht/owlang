@@ -21,8 +21,7 @@ unsigned char next_byte(vm_t *vm) {
 // as a register number. This is used when we expect an argument op
 // to describe a register
 unsigned int next_reg(vm_t *vm) {
-    unsigned int relative_reg = next_byte(vm);
-    unsigned int reg = vm->reg_offset + relative_reg;
+    unsigned int reg = next_byte(vm);
     assert(reg < REGISTER_COUNT);
     return reg;
 }
