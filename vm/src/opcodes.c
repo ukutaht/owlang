@@ -98,7 +98,7 @@ void op_test_eq(struct vm *vm) {
     int val2 = get_int_reg(vm, reg2);
 
     if (val1 == val2) {
-      vm->ip = instr;
+      vm->ip += instr;
     } else {
       vm->ip += 1;
     }
@@ -118,7 +118,7 @@ void op_test_gt(struct vm *vm) {
     int val2 = get_int_reg(vm, reg2);
 
     if (val1 > val2) {
-      vm->ip = instr;
+      vm->ip += instr;
     } else {
       vm->ip += 1;
     }
@@ -138,7 +138,7 @@ void op_test_gte(struct vm *vm) {
     int val2 = get_int_reg(vm, reg2);
 
     if (val1 >= val2) {
-      vm->ip = instr;
+      vm->ip += instr;
     } else {
       vm->ip += 1;
     }
@@ -158,7 +158,7 @@ void op_test_lt(struct vm *vm) {
     int val2 = get_int_reg(vm, reg2);
 
     if (val1 < val2) {
-      vm->ip = instr;
+      vm->ip += instr;
     } else {
       vm->ip += 1;
     }
@@ -178,7 +178,7 @@ void op_test_lte(struct vm *vm) {
     int val2 = get_int_reg(vm, reg2);
 
     if (val1 <= val2) {
-      vm->ip = instr;
+      vm->ip += instr;
     } else {
       vm->ip += 1;
     }

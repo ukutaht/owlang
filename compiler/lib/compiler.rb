@@ -24,7 +24,7 @@ class Compiler
     end
 
     translate_labels
-    out.print(@output.pack('C*'))
+    out.print(@output.pack('c*'))
   end
 
   private
@@ -116,7 +116,7 @@ class Compiler
 
   def translate_labels
     @label_usages.each do |instr|
-      @output[instr] = @labels[@output[instr]]
+      @output[instr] = @labels[@output[instr]] - instr
     end
     @fn_callsites.each do |instr|
       name = @output[instr]

@@ -7,7 +7,7 @@ RSpec.describe Compiler do
     out = StringIO.new
     Compiler.new(code, out).compile
     out.rewind
-    out.string.unpack('C*')
+    out.string.unpack('c*')
   end
 
   it 'compiles an EXIT instruction' do
@@ -23,23 +23,23 @@ RSpec.describe Compiler do
   end
 
   it 'compiles a TEST_EQ instruction' do
-    expect(compile("print:\ntest_eq %1, %2, print")).to eq([OpCodes::TEST_EQ, 1, 2, 0])
+    expect(compile("print:\ntest_eq %1, %2, print")).to eq([OpCodes::TEST_EQ, 1, 2, -3])
   end
 
   it 'compiles a TEST_GT instruction' do
-    expect(compile("print:\ntest_gt %1, %2, print")).to eq([OpCodes::TEST_GT, 1, 2, 0])
+    expect(compile("print:\ntest_gt %1, %2, print")).to eq([OpCodes::TEST_GT, 1, 2, -3])
   end
 
   it 'compiles a TEST_GTE instruction' do
-    expect(compile("print:\ntest_gte %1, %2, print")).to eq([OpCodes::TEST_GTE, 1, 2, 0])
+    expect(compile("print:\ntest_gte %1, %2, print")).to eq([OpCodes::TEST_GTE, 1, 2, -3])
   end
 
   it 'compiles a TEST_LT instruction' do
-    expect(compile("print:\ntest_lt %1, %2, print")).to eq([OpCodes::TEST_LT, 1, 2, 0])
+    expect(compile("print:\ntest_lt %1, %2, print")).to eq([OpCodes::TEST_LT, 1, 2, -3])
   end
 
   it 'compiles a TEST_LTE instruction' do
-    expect(compile("print:\ntest_lte %1, %2, print")).to eq([OpCodes::TEST_LTE, 1, 2, 0])
+    expect(compile("print:\ntest_lte %1, %2, print")).to eq([OpCodes::TEST_LTE, 1, 2, -3])
   end
 
   it 'compiles an ADD instruction' do
@@ -98,14 +98,14 @@ RSpec.describe Compiler do
     it 'translates label to the addres of instruction' do
       expect(compile("store %1, 33\nprint:\ntest_eq %1, %2, print")).to eq([
         OpCodes::STORE, 1, 33, 0,
-        OpCodes::TEST_EQ, 1, 2, 4
+        OpCodes::TEST_EQ, 1, 2, -3
       ])
     end
 
     it 'can translate forward addresses' do
       expect(compile("store %1, 33\ntest_eq %1, %2, print\nprint:\nprint %1")).to eq([
         OpCodes::STORE, 1, 33, 0,
-        OpCodes::TEST_EQ, 1, 2, 8,
+        OpCodes::TEST_EQ, 1, 2, 1,
         OpCodes::PRINT, 1
       ])
     end
