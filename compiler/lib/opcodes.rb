@@ -1,7 +1,7 @@
 module OpCodes
   EXIT = 0x00
-  INT_STORE = 0x01
-  INT_PRINT = 0x02
+  STORE = 0x01
+  PRINT = 0x02
   TEST_EQ  = 0x03
   TEST_GT  = 0x04
   TEST_GTE = 0x05

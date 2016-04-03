@@ -46,14 +46,14 @@ class Compiler
       emit(EXIT)
       emit(extract_int(args[0]))
     when "store"
-      emit(INT_STORE)
+      emit(STORE)
       emit(extract_reg(args[0]))
 
       div, mod = extract_int(args[1]).divmod(256)
       emit(mod)
       emit(div)
-    when "int_print"
-      emit(INT_PRINT)
+    when "print"
+      emit(PRINT)
       emit(extract_reg(args[0]))
     when "test_eq"
       emit(TEST_EQ)

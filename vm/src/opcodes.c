@@ -59,7 +59,7 @@ void op_exit(vm_t *vm) {
     vm->ip += 1;
 }
 
-void op_int_store(vm_t *vm) {
+void op_store(vm_t *vm) {
     unsigned int reg = next_reg(vm);
     unsigned int value = next_int(vm);
 
@@ -71,7 +71,7 @@ void op_int_store(vm_t *vm) {
     vm->ip += 1;
 }
 
-void op_int_print(struct vm *vm) {
+void op_print(struct vm *vm) {
     unsigned int reg = next_reg(vm);
 
     debug_print("INT_PRINT(Reg:%02x)\n", reg);
@@ -283,8 +283,8 @@ void opcode_init(vm_t * vm) {
         vm->opcodes[i] = op_unknown;
 
     vm->opcodes[EXIT] = op_exit;
-    vm->opcodes[INT_STORE] = op_int_store;
-    vm->opcodes[INT_PRINT] = op_int_print;
+    vm->opcodes[STORE] = op_store;
+    vm->opcodes[PRINT] = op_print;
     vm->opcodes[TEST_EQ] = op_test_eq;
     vm->opcodes[TEST_GT] = op_test_gt;
     vm->opcodes[TEST_GTE] = op_test_gte;

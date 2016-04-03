@@ -15,8 +15,8 @@
  */
 enum opcode_values {
     EXIT = 0,
-    INT_STORE,
-    INT_PRINT,
+    STORE,
+    PRINT,
     TEST_EQ,
     TEST_GT,
     TEST_GTE,
