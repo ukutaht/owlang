@@ -34,6 +34,10 @@ RSpec.describe Compiler do
     expect(compile("print:\ntest_gte %1, %2, print")).to eq([OpCodes::TEST_GTE, 1, 2, 0])
   end
 
+  it 'compiles a TEST_LT instruction' do
+    expect(compile("print:\ntest_lt %1, %2, print")).to eq([OpCodes::TEST_LT, 1, 2, 0])
+  end
+
   it 'compiles a CALL instruction' do
     expect(compile("call main/0\nfn main/0:")).to eq([OpCodes::CALL, 3, 0])
   end

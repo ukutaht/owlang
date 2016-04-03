@@ -5,6 +5,7 @@ module OpCodes
   TEST_EQ  = 0x03
   TEST_GT  = 0x04
   TEST_GTE = 0x05
-  CALL = 0x06
-  RETURN = 0x07
+  TEST_LT  = 0x06
+  CALL = 0x07
+  RETURN = 0x08
 end

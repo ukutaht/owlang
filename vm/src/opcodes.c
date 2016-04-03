@@ -148,6 +148,26 @@ void op_test_gte(struct vm *vm) {
     }
 }
 
+// Tests if the first register is less than other
+// If true, continue running. If not equal,
+// jumps to the provided label
+void op_test_lt(struct vm *vm) {
+    unsigned int reg1  = next_reg(vm);
+    unsigned int reg2  = next_reg(vm);
+    unsigned int instr = next_byte(vm);
+
+    DEBUG("TEST_LT(Reg1: %02x, Reg2: %02x, IfTrue:%d)\n", reg1, reg2, instr);
+
+    int val1 = get_int_reg(vm, reg1);
+    int val2 = get_int_reg(vm, reg2);
+
+    if (val1 < val2) {
+      vm->ip = instr;
+    } else {
+      vm->ip += 1;
+    }
+}
+
 void op_call(struct vm *vm) {
     unsigned int location = next_byte(vm);
     unsigned int arity = next_byte(vm);
@@ -175,6 +195,7 @@ void opcode_init(vm_t * vm) {
     vm->opcodes[TEST_EQ] = op_test_eq;
     vm->opcodes[TEST_GT] = op_test_gt;
     vm->opcodes[TEST_GTE] = op_test_gte;
+    vm->opcodes[TEST_LT] = op_test_lt;
     vm->opcodes[CALL] = op_call;
     vm->opcodes[RETURN] = op_return;
 }

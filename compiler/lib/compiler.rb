@@ -70,6 +70,11 @@ class Compiler
       emit(extract_reg(args[0]))
       emit(extract_reg(args[1]))
       emit(extract_label(args[2]))
+    when "test_lt"
+      emit(TEST_LT)
+      emit(extract_reg(args[0]))
+      emit(extract_reg(args[1]))
+      emit(extract_label(args[2]))
     when "call"
       emit(CALL)
 

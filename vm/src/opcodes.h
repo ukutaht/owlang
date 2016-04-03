@@ -20,6 +20,7 @@ enum opcode_values {
     TEST_EQ,
     TEST_GT,
     TEST_GTE,
+    TEST_LT,
     CALL,
     RETURN,
 };
@@ -30,6 +31,7 @@ void op_int_print(vm_t *in);
 void op_test_eq(vm_t *in);
 void op_test_gt(vm_t *in);
 void op_test_gte(vm_t *in);
+void op_test_lt(vm_t *in);
 void op_call(vm_t *in);
 void op_return(vm_t *in);
 
