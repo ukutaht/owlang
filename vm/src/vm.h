@@ -1,11 +1,7 @@
+#include <stdbool.h>
+
 #define REGISTER_COUNT 100
 #define STACK_DEPTH 100
-
-#ifndef _Bool
-#define _Bool short
-#define true   1
-#define false  0
-#endif
 
 #define DEBUG(...) if (getenv("DEBUG") != NULL) printf(__VA_ARGS__);
 
@@ -29,7 +25,7 @@ typedef struct vm {
     unsigned char *code;             // loaded code
     unsigned int size;               // loaded code size
     opcode_impl *opcodes[255];       // opcode lookup table
-    _Bool running;
+    bool running;
 } vm_t;
 
 
