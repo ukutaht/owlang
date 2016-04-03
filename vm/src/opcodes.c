@@ -168,6 +168,62 @@ void op_test_lt(struct vm *vm) {
     }
 }
 
+// Tests if the first register is less than or equal to other
+// If true, continue running. If not equal,
+// jumps to the provided label
+void op_test_lte(struct vm *vm) {
+    unsigned int reg1  = next_reg(vm);
+    unsigned int reg2  = next_reg(vm);
+    unsigned int instr = next_byte(vm);
+
+    DEBUG("TEST_LTE(Reg1: %02x, Reg2: %02x, IfTrue:%d)\n", reg1, reg2, instr);
+
+    int val1 = get_int_reg(vm, reg1);
+    int val2 = get_int_reg(vm, reg2);
+
+    if (val1 <= val2) {
+      vm->ip = instr;
+    } else {
+      vm->ip += 1;
+    }
+}
+
+// Adds regsiters 2 and 3. Stores result in 1
+void op_add(struct vm *vm) {
+    unsigned int reg1  = next_reg(vm);
+    unsigned int reg2  = next_reg(vm);
+    unsigned int reg3  = next_reg(vm);
+
+    DEBUG("ADD(Reg1: %02x, Reg2: %02x, REG3:%02x)\n", reg1, reg2, reg3);
+
+    int val1 = get_int_reg(vm, reg2);
+    int val2 = get_int_reg(vm, reg3);
+    int result = val1 + val2;
+
+    vm->registers[reg1].content.integer = result;
+    vm->registers[reg1].type = INTEGER;
+
+    vm->ip += 1;
+}
+
+// Subtracts regsiters 2 and 3. Stores result in 1
+void op_sub(struct vm *vm) {
+    unsigned int reg1  = next_reg(vm);
+    unsigned int reg2  = next_reg(vm);
+    unsigned int reg3  = next_reg(vm);
+
+    DEBUG("ADD(Reg1: %02x, Reg2: %02x, REG3:%02x)\n", reg1, reg2, reg3);
+
+    int val1 = get_int_reg(vm, reg2);
+    int val2 = get_int_reg(vm, reg3);
+    int result = val1 - val2;
+
+    vm->registers[reg1].content.integer = result;
+    vm->registers[reg1].type = INTEGER;
+
+    vm->ip += 1;
+}
+
 void op_call(struct vm *vm) {
     unsigned int location = next_byte(vm);
     unsigned int arity = next_byte(vm);
@@ -196,6 +252,9 @@ void opcode_init(vm_t * vm) {
     vm->opcodes[TEST_GT] = op_test_gt;
     vm->opcodes[TEST_GTE] = op_test_gte;
     vm->opcodes[TEST_LT] = op_test_lt;
+    vm->opcodes[TEST_LTE] = op_test_lte;
+    vm->opcodes[ADD] = op_add;
+    vm->opcodes[SUB] = op_sub;
     vm->opcodes[CALL] = op_call;
     vm->opcodes[RETURN] = op_return;
 }

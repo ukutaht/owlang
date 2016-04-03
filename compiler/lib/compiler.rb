@@ -75,6 +75,21 @@ class Compiler
       emit(extract_reg(args[0]))
       emit(extract_reg(args[1]))
       emit(extract_label(args[2]))
+    when "test_lte"
+      emit(TEST_LTE)
+      emit(extract_reg(args[0]))
+      emit(extract_reg(args[1]))
+      emit(extract_label(args[2]))
+    when "sub"
+      emit(SUB)
+      emit(extract_reg(args[0]))
+      emit(extract_reg(args[1]))
+      emit(extract_reg(args[2]))
+    when "add"
+      emit(ADD)
+      emit(extract_reg(args[0]))
+      emit(extract_reg(args[1]))
+      emit(extract_reg(args[2]))
     when "call"
       emit(CALL)
 

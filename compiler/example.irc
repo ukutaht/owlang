@@ -1,11 +1,13 @@
-store %1, 32
-store %2, 33
-call maybe_print/0
+store %1, 91
+store %2, 9
+add %3, %1, %2
+int_print %3
 exit 0
 
-fn maybe_print/0:
-  test_lt %1, %2, print
+fn mccarthy/0:
+  store %2, 100
+  test_gt %1, %2, else
   return
-print:
+else:
   int_print %1
   return

@@ -6,6 +6,9 @@ module OpCodes
   TEST_GT  = 0x04
   TEST_GTE = 0x05
   TEST_LT  = 0x06
-  CALL = 0x07
-  RETURN = 0x08
+  TEST_LTE  = 0x07
+  ADD = 0x08
+  SUB = 0x09
+  CALL = 0x0a
+  RETURN = 0x0b
 end

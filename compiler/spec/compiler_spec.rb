@@ -38,6 +38,18 @@ RSpec.describe Compiler do
     expect(compile("print:\ntest_lt %1, %2, print")).to eq([OpCodes::TEST_LT, 1, 2, 0])
   end
 
+  it 'compiles a TEST_LTE instruction' do
+    expect(compile("print:\ntest_lte %1, %2, print")).to eq([OpCodes::TEST_LTE, 1, 2, 0])
+  end
+
+  it 'compiles an ADD instruction' do
+    expect(compile("add %3, %1, %2")).to eq([OpCodes::ADD, 3, 1, 2])
+  end
+
+  it 'compiles a SUB instruction' do
+    expect(compile("sub %3, %1, %2")).to eq([OpCodes::SUB, 3, 1, 2])
+  end
+
   it 'compiles a CALL instruction' do
     expect(compile("call main/0\nfn main/0:")).to eq([OpCodes::CALL, 3, 0])
   end
