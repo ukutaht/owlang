@@ -3,7 +3,9 @@
 #define REGISTER_COUNT 100
 #define STACK_DEPTH 100
 
-#define DEBUG(...) if (getenv("DEBUG") != NULL) printf(__VA_ARGS__);
+#define DEBUG false
+#define debug_print(fmt, ...) \
+            do { if (DEBUG) fprintf(stderr, fmt, __VA_ARGS__); } while (0)
 
 #ifndef VM_H
 #define VM_H 1

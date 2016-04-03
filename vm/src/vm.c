@@ -125,5 +125,5 @@ void vm_run(vm_t * cpup) {
         iterations++;
     }
 
-    DEBUG("Executed %u instructions\n", iterations);
+    debug_print("Executed %u instructions\n", iterations);
 }

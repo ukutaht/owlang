@@ -54,7 +54,7 @@ void op_unknown(vm_t * vm) {
 }
 
 void op_exit(vm_t *vm) {
-    DEBUG("Exiting\n");
+    debug_print("Exiting%s", "\n");
     vm->running = false;
     vm->ip += 1;
 }
@@ -63,7 +63,7 @@ void op_int_store(vm_t *vm) {
     unsigned int reg = next_reg(vm);
     unsigned int value = next_int(vm);
 
-    DEBUG("STORE_INT(Reg:%02x) => %d\n", reg, value);
+    debug_print("STORE_INT(Reg:%02x) => %d\n", reg, value);
 
     frame_t *curr_frame = &vm->frames[vm->current_frame];
     curr_frame->registers[reg] = value;
@@ -74,7 +74,7 @@ void op_int_store(vm_t *vm) {
 void op_int_print(struct vm *vm) {
     unsigned int reg = next_reg(vm);
 
-    DEBUG("INT_PRINT(Reg:%02x)\n", reg);
+    debug_print("INT_PRINT(Reg:%02x)\n", reg);
 
     /* get the register contents. */
     int val = get_int_reg(vm, reg);
@@ -92,7 +92,7 @@ void op_test_eq(struct vm *vm) {
     unsigned int reg2  = next_reg(vm);
     unsigned int instr = next_byte(vm);
 
-    DEBUG("TEST_EQ(Reg1: %02x, Reg2: %02x, IfTrue:%02x)\n", reg1, reg2, instr);
+    debug_print("TEST_EQ(Reg1: %02x, Reg2: %02x, IfTrue:%02x)\n", reg1, reg2, instr);
 
     int val1 = get_int_reg(vm, reg1);
     int val2 = get_int_reg(vm, reg2);
@@ -112,7 +112,7 @@ void op_test_gt(struct vm *vm) {
     unsigned int reg2  = next_reg(vm);
     unsigned int instr = next_byte(vm);
 
-    DEBUG("TEST_GT(Reg1: %02x, Reg2: %02x, IfTrue:%d)\n", reg1, reg2, instr);
+    debug_print("TEST_GT(Reg1: %02x, Reg2: %02x, IfTrue:%d)\n", reg1, reg2, instr);
 
     int val1 = get_int_reg(vm, reg1);
     int val2 = get_int_reg(vm, reg2);
@@ -132,7 +132,7 @@ void op_test_gte(struct vm *vm) {
     unsigned int reg2  = next_reg(vm);
     unsigned int instr = next_byte(vm);
 
-    DEBUG("TEST_GTE(Reg1: %02x, Reg2: %02x, IfTrue:%d)\n", reg1, reg2, instr);
+    debug_print("TEST_GTE(Reg1: %02x, Reg2: %02x, IfTrue:%d)\n", reg1, reg2, instr);
 
     int val1 = get_int_reg(vm, reg1);
     int val2 = get_int_reg(vm, reg2);
@@ -152,7 +152,7 @@ void op_test_lt(struct vm *vm) {
     unsigned int reg2  = next_reg(vm);
     unsigned int instr = next_byte(vm);
 
-    DEBUG("TEST_LT(Reg1: %02x, Reg2: %02x, IfTrue:%d)\n", reg1, reg2, instr);
+    debug_print("TEST_LT(Reg1: %02x, Reg2: %02x, IfTrue:%d)\n", reg1, reg2, instr);
 
     int val1 = get_int_reg(vm, reg1);
     int val2 = get_int_reg(vm, reg2);
@@ -172,7 +172,7 @@ void op_test_lte(struct vm *vm) {
     unsigned int reg2  = next_reg(vm);
     unsigned int instr = next_byte(vm);
 
-    DEBUG("TEST_LTE(Reg1: %02x, Reg2: %02x, IfTrue:%d)\n", reg1, reg2, instr);
+    debug_print("TEST_LTE(Reg1: %02x, Reg2: %02x, IfTrue:%d)\n", reg1, reg2, instr);
 
     int val1 = get_int_reg(vm, reg1);
     int val2 = get_int_reg(vm, reg2);
@@ -190,7 +190,7 @@ void op_add(struct vm *vm) {
     unsigned int reg2  = next_reg(vm);
     unsigned int reg3  = next_reg(vm);
 
-    DEBUG("ADD(Reg1: %02x, Reg2: %02x, REG3:%02x)\n", reg1, reg2, reg3);
+    debug_print("ADD(Reg1: %02x, Reg2: %02x, REG3:%02x)\n", reg1, reg2, reg3);
 
     int val1 = get_int_reg(vm, reg2);
     int val2 = get_int_reg(vm, reg3);
@@ -209,7 +209,7 @@ void op_sub(struct vm *vm) {
     unsigned int reg2  = next_reg(vm);
     unsigned int reg3  = next_reg(vm);
 
-    DEBUG("SUB(Reg1: %02x, Reg2: %02x, REG3:%02x)\n", reg1, reg2, reg3);
+    debug_print("SUB(Reg1: %02x, Reg2: %02x, REG3:%02x)\n", reg1, reg2, reg3);
 
     int val1 = get_int_reg(vm, reg2);
     int val2 = get_int_reg(vm, reg3);
@@ -225,7 +225,7 @@ void op_call(struct vm *vm) {
     unsigned int location = next_byte(vm);
     unsigned int arity = next_byte(vm);
 
-    DEBUG("CALL(Instr:%d, Arity: %d)\n", location, arity);
+    debug_print("CALL(Instr:%d, Arity: %d)\n", location, arity);
 
     assert(vm->current_frame + 1 <= STACK_DEPTH);
 
@@ -247,13 +247,13 @@ void op_tailcall(struct vm *vm) {
     unsigned int location = next_byte(vm);
     unsigned int arity = next_byte(vm);
 
-    DEBUG("TAILCALL(Instr:%d, Arity: %d)\n", location, arity);
+    debug_print("TAILCALL(Instr:%d, Arity: %d)\n", location, arity);
 
     vm->ip = location;
 }
 
 void op_return(struct vm *vm) {
-    DEBUG("RETURN\n");
+    debug_print("RETURN%s", "\n");
 
     frame_t *curr_frame = &vm->frames[vm->current_frame];
     frame_t *prev_frame = &vm->frames[vm->current_frame - 1];
@@ -269,7 +269,7 @@ void op_mov(struct vm *vm) {
     unsigned int reg1 = next_reg(vm);
     unsigned int reg2 = next_reg(vm);
 
-    DEBUG("MOV(Reg1: %02x, Reg2: %02x)\n", reg1, reg2);
+    debug_print("MOV(Reg1: %02x, Reg2: %02x)\n", reg1, reg2);
 
     frame_t *curr_frame = &vm->frames[vm->current_frame];
     curr_frame->registers[reg1] = curr_frame->registers[reg2];
