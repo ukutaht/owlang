@@ -17,7 +17,6 @@ typedef struct registers {
         unsigned int integer;
         char *string;
     } content;
-    char *str;
     enum { INTEGER, STRING } type;
 } reg_t;
 
@@ -26,6 +25,7 @@ typedef void opcode_impl(struct vm *in);
 
 typedef struct vm {
     reg_t registers[REGISTER_COUNT]; // VM registers
+    unsigned int ret_address;
     unsigned int ip;                 // Instruction pointer
     unsigned char *code;             // loaded code
     unsigned int size;               // loaded code size

@@ -94,14 +94,34 @@ void op_int_print(struct vm *vm) {
 void op_test_eq(struct vm *vm) {
     unsigned int reg1  = next_reg(vm);
     unsigned int reg2  = next_reg(vm);
-    unsigned int instr = next_int(vm);
+    unsigned int instr = next_byte(vm);
 
-    DEBUG("TEST_EQ(Reg1: %02x, Reg2: %02x, Instr:%02x)\n", reg1, reg2, instr);
+    DEBUG("TEST_EQ(Reg1: %02x, Reg2: %02x, IfTrue:%02x)\n", reg1, reg2, instr);
 
     int val1 = get_int_reg(vm, reg1);
     int val2 = get_int_reg(vm, reg2);
 
     if (val1 == val2) {
+      vm->ip = instr;
+    } else {
+      vm->ip += 1;
+    }
+}
+
+// Tests if the first register is greater than other
+// If true, continue running. If not equal,
+// jumps to the provided label
+void op_test_gt(struct vm *vm) {
+    unsigned int reg1  = next_reg(vm);
+    unsigned int reg2  = next_reg(vm);
+    unsigned int instr = next_byte(vm);
+
+    DEBUG("TEST_GT(Reg1: %02x, Reg2: %02x, IfTrue:%d)\n", reg1, reg2, instr);
+
+    int val1 = get_int_reg(vm, reg1);
+    int val2 = get_int_reg(vm, reg2);
+
+    if (val1 > val2) {
       vm->ip = instr;
     } else {
       vm->ip += 1;
@@ -114,7 +134,14 @@ void op_call(struct vm *vm) {
 
     DEBUG("CALL(Instr:%d, Arity: %d)\n", location, arity);
 
+    vm->ret_address = vm->ip + 1;
     vm->ip = location;
+}
+
+void op_return(struct vm *vm) {
+    DEBUG("RETURN\n");
+
+    vm->ip = vm->ret_address;
 }
 
 void opcode_init(vm_t * vm) {
@@ -126,5 +153,7 @@ void opcode_init(vm_t * vm) {
     vm->opcodes[INT_STORE] = op_int_store;
     vm->opcodes[INT_PRINT] = op_int_print;
     vm->opcodes[TEST_EQ] = op_test_eq;
+    vm->opcodes[TEST_GT] = op_test_gt;
     vm->opcodes[CALL] = op_call;
+    vm->opcodes[RETURN] = op_return;
 }

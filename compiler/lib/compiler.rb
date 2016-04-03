@@ -60,12 +60,19 @@ class Compiler
       emit(extract_reg(args[0]))
       emit(extract_reg(args[1]))
       emit(extract_label(args[2]))
+    when "test_gt"
+      emit(TEST_GT)
+      emit(extract_reg(args[0]))
+      emit(extract_reg(args[1]))
+      emit(extract_label(args[2]))
     when "call"
       emit(CALL)
 
       name, arity = extract_function(args[0])
       emit(name)
       emit(arity)
+    when "return"
+      emit(RETURN)
     else
       raise "Unkown operation: #{op}"
     end

@@ -27,6 +27,7 @@ vm_t *vm_new(unsigned char *code, unsigned int size) {
     }
 
     vm->ip = 0;
+    vm->ret_address = 0;
     vm->running = true;
     vm->size = size;
 
