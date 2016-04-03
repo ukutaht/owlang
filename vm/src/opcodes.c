@@ -250,6 +250,15 @@ void op_call(struct vm *vm) {
     vm->ip = location;
 }
 
+void op_tailcall(struct vm *vm) {
+    unsigned int location = next_byte(vm);
+    unsigned int arity = next_byte(vm);
+
+    DEBUG("TAILCALL(Instr:%d, Arity: %d)\n", location, arity);
+
+    vm->ip = location;
+}
+
 void op_return(struct vm *vm) {
     DEBUG("RETURN\n");
 
@@ -303,4 +312,5 @@ void opcode_init(vm_t * vm) {
     vm->opcodes[RETURN] = op_return;
     vm->opcodes[MOV] = op_mov;
     vm->opcodes[RESTORE] = op_restore;
+    vm->opcodes[TAILCALL] = op_tailcall;
 }

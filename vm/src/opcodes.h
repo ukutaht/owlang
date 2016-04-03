@@ -27,22 +27,9 @@ enum opcode_values {
     CALL,
     RETURN,
     MOV,
-    RESTORE
+    RESTORE,
+    TAILCALL
 };
-
-void op_exit(vm_t *in);
-void op_int_store(vm_t *in);
-void op_int_print(vm_t *in);
-void op_test_eq(vm_t *in);
-void op_test_gt(vm_t *in);
-void op_test_gte(vm_t *in);
-void op_test_lt(vm_t *in);
-void op_test_lte(vm_t *in);
-void op_add(vm_t *in);
-void op_sub(vm_t *in);
-void op_call(vm_t *in);
-void op_return(vm_t *in);
-void op_mov(vm_t *in);
 
 void opcode_init(vm_t *vm);
 

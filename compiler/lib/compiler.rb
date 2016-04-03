@@ -97,6 +97,12 @@ class Compiler
       emit(name)
       emit(arity)
       emit(extract_reg(args[1]))
+    when "tailcall"
+      emit(TAILCALL)
+
+      name, arity = extract_function(args[0])
+      emit(name)
+      emit(arity)
     when "return"
       emit(RETURN)
     when "mov"

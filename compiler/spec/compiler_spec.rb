@@ -62,6 +62,10 @@ RSpec.describe Compiler do
     expect(compile("call main/1, %1\nfn main/1:")).to eq([OpCodes::CALL, 4, 1, 1])
   end
 
+  it 'compiles a TAILCALL instruction' do
+    expect(compile("tailcall main/1\nfn main/1:")).to eq([OpCodes::TAILCALL, 3, 1])
+  end
+
   it 'compiles a RETURN instruction' do
     expect(compile("return")).to eq([OpCodes::RETURN])
   end

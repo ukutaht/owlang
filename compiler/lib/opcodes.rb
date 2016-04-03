@@ -13,4 +13,5 @@ module OpCodes
   RETURN = 0x0b
   MOV = 0x0c
   RESTORE = 0x0d
+  TAILCALL = 0x0e
 end
