@@ -5,6 +5,7 @@ pub type Reg = u8;
 #[derive(Debug, Eq, PartialEq)]
 pub enum Instruction {
     Add(Reg, Reg, Reg),
+    Sub(Reg, Reg, Reg),
     Store(Reg, u16),
     Mov(Reg, Reg)
 }
@@ -62,7 +63,7 @@ impl<'a> GenContext<'a> {
                 let arg1_loc = self.pop();
                 let ret_loc  = self.push();
 
-                let mut me = vec![Instruction::Add(ret_loc, arg1_loc, arg2_loc)];
+                let mut me = self.apply_op(a.name, ret_loc, arg1_loc, arg2_loc);
                 arg1.append(&mut arg2);
                 arg1.append(&mut me);
                 arg1
@@ -73,6 +74,15 @@ impl<'a> GenContext<'a> {
             },
             _ => panic!("WAT")
         }
+    }
+
+    fn apply_op(&self, name: &'a str, ret_loc: Reg, arg1_loc: Reg, arg2_loc: Reg) -> Bytecode {
+        match name {
+            "+" => vec![Instruction::Add(ret_loc, arg1_loc, arg2_loc)],
+            "-" => vec![Instruction::Sub(ret_loc, arg1_loc, arg2_loc)],
+            _   => panic!("Unknown function {}", name)
+        }
+
     }
 
     fn push(&mut self) -> u8 {
