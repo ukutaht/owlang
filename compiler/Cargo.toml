@@ -1,0 +1,12 @@
+[package]
+name = "iris_compiler"
+version = "0.1.0"
+authors = ["Uku Taht <uku.taht@gmail.com>"]
+
+[lib]
+doctest = false
+doc = false
+bench = false
+
+[dependencies]
+chomp = "0.2.5"

@@ -25,3 +25,13 @@ iftrue:
   store %2, 10
   sub %0, %1, %2
   return
+
+
+
+fn main/0:
+  store %1, 1
+  store %2, 2
+  store %3, 3,
+  add %4, %2, %3
+  add %0, %1, %4
+  return
