@@ -15,6 +15,7 @@ fn generates_simple_addition() {
         name: "main",
         arity: 0,
         code: vec![
+            bytecode::Instruction::Function("main".to_string(), 0),
             bytecode::Instruction::Store(1, 1),
             bytecode::Instruction::Store(2, 2),
             bytecode::Instruction::Add(1, 1, 2),
@@ -41,6 +42,7 @@ fn generates_nested_arithmetic() {
         name: "main",
         arity: 0,
         code: vec![
+            bytecode::Instruction::Function("main".to_string(), 0),
             bytecode::Instruction::Store(1, 1),
             bytecode::Instruction::Store(2, 2),
             bytecode::Instruction::Store(3, 3),

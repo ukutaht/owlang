@@ -11,7 +11,7 @@ pub fn parse(input: &[u8]) -> Result<Expr, ParseError<u8, Error<u8>>> {
     parse_only(expr, input)
 }
 
-fn expr(i: Input<u8>) -> U8Result<Expr> {
+pub fn expr(i: Input<u8>) -> U8Result<Expr> {
     parse!{i;
         function() <|> apply() <|> infix() <|> ident() <|> int()
     }
@@ -27,12 +27,13 @@ pub fn function(i: Input<u8>) -> U8Result<Expr> {
         let args: Vec<_> = sep_by(argument, comma);
         skip_whitespace();
         token(b')');
-        skip_whitespace();
+        skip_newline_and_whitespace();
         token(b'{');
-        skip_whitespace();
+        skip_newline_and_whitespace();
         let body: Vec<_> = sep_by(expr, skip_newline_and_whitespace);
-        skip_whitespace();
+        skip_newline_and_whitespace();
         token(b'}');
+        skip_newline_and_whitespace();
 
         ret mk_function(name, args, body)
     }

@@ -10,3 +10,4 @@ bench = false
 
 [dependencies]
 chomp = "0.2.5"
+getopts = "0.2"

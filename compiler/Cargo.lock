@@ -3,6 +3,7 @@ name = "iris_compiler"
 version = "0.1.0"
 dependencies = [
  "chomp 0.2.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "getopts 0.2.14 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -30,5 +31,10 @@ dependencies = [
 [[package]]
 name = "custom_derive"
 version = "0.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "getopts"
+version = "0.2.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 

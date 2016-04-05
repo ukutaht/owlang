@@ -1,5 +1,8 @@
 use ast;
 
+mod opcodes;
+use std::io::Write;
+
 pub type Reg = u8;
 
 #[derive(Debug, Eq, PartialEq)]
@@ -7,7 +10,49 @@ pub enum Instruction {
     Add(Reg, Reg, Reg),
     Sub(Reg, Reg, Reg),
     Store(Reg, u16),
-    Mov(Reg, Reg)
+    Mov(Reg, Reg),
+}
+
+impl Instruction {
+    pub fn emit<'a, T: Write>(&self, out: &'a mut T) {
+        match self {
+            &Instruction::Add(to, arg1, arg2) => {
+                out.write(&[opcodes::ADD, to, arg1, arg2]).unwrap();
+            },
+            &Instruction::Sub(to, arg1, arg2) => {
+                out.write(&[opcodes::SUB, to, arg1, arg2]).unwrap();
+            },
+            &Instruction::Store(to, val) => {
+                let first = val % 250;
+                let second = val / 250;
+                out.write(&[opcodes::STORE, to, first as u8, second as u8]).unwrap();
+            }
+            &Instruction::Mov(to, from) => {
+                out.write(&[opcodes::MOV, to, from]).unwrap();
+            }
+        }
+    }
+
+    pub fn emit_human_readable<'a, T: Write>(&self, out: &'a mut T) {
+        match self {
+            &Instruction::Add(to, arg1, arg2) => {
+                let string = format!("add %{}, %{}, %{}\n", to, arg1, arg2);
+                out.write(&string.as_bytes()).unwrap();
+            },
+            &Instruction::Sub(to, arg1, arg2) => {
+                let string = format!("sub %{}, %{}, %{}\n", to, arg1, arg2);
+                out.write(&string.as_bytes()).unwrap();
+            },
+            &Instruction::Store(to, val) => {
+                let string = format!("store %{}, {}\n", to, val);
+                out.write(&string.as_bytes()).unwrap();
+            }
+            &Instruction::Mov(to, from) => {
+                let string = format!("mov %{}, %{}\n", to, from);
+                out.write(&string.as_bytes()).unwrap();
+            }
+        }
+    }
 }
 
 pub type Bytecode = Vec<Instruction>;
@@ -17,6 +62,24 @@ pub struct Function<'a> {
     pub name: &'a str,
     pub arity: u8,
     pub code: Bytecode
+}
+
+impl<'a> Function<'a> {
+    pub fn emit<T: Write>(&self, out: &'a mut T) {
+        for instr in self.code.iter() {
+            instr.emit(out);
+        }
+    }
+
+    pub fn emit_human_readable<T: Write>(&self, out: &'a mut T) {
+        let header = format!("{}/{}:\n", self.name, self.arity);
+        out.write(&header.as_bytes()).unwrap();
+
+        for instr in self.code.iter() {
+            out.write(b"  ").unwrap();
+            instr.emit_human_readable(out);
+        }
+    }
 }
 
 pub struct GenContext<'a> {
