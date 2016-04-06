@@ -1,23 +1,65 @@
 use std::str;
+use std::io::Read;
 use chomp::{Input, U8Result, ParseError, Error, parse_only, take_while1, take_while};
 use chomp::{token, string};
 use chomp::parsers::{satisfy, peek_next};
 use chomp::ascii::{is_digit, is_alpha, is_lowercase, skip_whitespace, is_end_of_line, is_whitespace};
 use chomp::combinators::{sep_by, option};
+use chomp::buffer::{Source, Stream, StreamError};
 
 use ast::*;
 
-pub fn parse(input: &[u8]) -> Result<Expr, ParseError<u8, Error<u8>>> {
-    parse_only(expr, input)
-}
+pub fn parse<R, F>(src: R, mut action: F)
+    where R: Read, F: FnMut(&Module) {
 
-pub fn expr(i: Input<u8>) -> U8Result<Expr> {
-    parse!{i;
-        _if() <|> function() <|> apply() <|> infix() <|> ident() <|> int()
+    let mut i = Source::new(src);
+
+    loop {
+        match i.parse(module) {
+            Ok(expr)                     => action(&expr),
+            Err(StreamError::Retry)      => {},
+            Err(StreamError::EndOfInput) => break,
+            Err(e)                       => { panic!("{:?}", e); }
+        }
     }
 }
 
-pub fn _if(i: Input<u8>) -> U8Result<Expr> {
+pub fn parse_expr(input: &[u8]) -> Result<Expr, ParseError<u8, Error<u8>>> {
+    parse_only(expr, input)
+}
+
+pub fn parse_fn(input: &[u8]) -> Result<Function, ParseError<u8, Error<u8>>> {
+    parse_only(function, input)
+}
+
+pub fn parse_module(input: &[u8]) -> Result<Module, ParseError<u8, Error<u8>>> {
+    parse_only(module, input)
+}
+
+fn expr(i: Input<u8>) -> U8Result<Expr> {
+    parse!{i;
+        _if() <|> apply() <|> infix() <|> ident() <|> int()
+    }
+}
+
+fn module(i: Input<u8>) -> U8Result<Module> {
+    parse!{i;
+        string(b"module");
+        satisfy(|i| is_whitespace(i));
+        let name = identifier();
+        skip_newline_and_whitespace();
+        token(b'{');
+        skip_newline_and_whitespace();
+        let functions: Vec<_> = sep_by(function, skip_newline_and_whitespace);
+        skip_newline_and_whitespace();
+        token(b'}');
+        skip_newline_and_whitespace();
+
+        ret mk_module(name, functions)
+    }
+}
+
+fn _if(i: Input<u8>) -> U8Result<Expr> {
     parse!{i;
         string(b"if");
         satisfy(|i| is_whitespace(i));
@@ -34,7 +76,7 @@ pub fn _if(i: Input<u8>) -> U8Result<Expr> {
     }
 }
 
-pub fn function(i: Input<u8>) -> U8Result<Expr> {
+fn function(i: Input<u8>) -> U8Result<Function> {
     parse!{i;
         string(b"fn");
         satisfy(|i| is_whitespace(i));
@@ -151,6 +193,6 @@ fn comma(i: Input<u8>) -> U8Result<()> {
     )
 }
 
-pub fn skip_newline_and_whitespace(i: Input<u8>) -> U8Result<()> {
+fn skip_newline_and_whitespace(i: Input<u8>) -> U8Result<()> {
     take_while(i, |i| is_end_of_line(i) || is_whitespace(i)).map(|_| ())
 }

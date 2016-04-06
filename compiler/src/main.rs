@@ -2,20 +2,20 @@ extern crate iris_compiler;
 extern crate getopts;
 extern crate chomp;
 
+use iris_compiler::*;
 use getopts::Options;
-use chomp::buffer::{Source, Stream, StreamError};
 use std::env;
 use std::fs::File;
 use std::path::PathBuf;
 
-fn generate_to_file(expr: &iris_compiler::ast::Expr, file: &mut File) {
-    let bytecode = iris_compiler::bytecode::generate(expr);
+fn generate_to_file(expr: &ast::Module, file: &mut File) {
+    let bytecode = bytecode::generate(expr);
 
     bytecode.emit(file);
 }
 
-fn generate_to_stdout(expr: &iris_compiler::ast::Expr) {
-    let bytecode = iris_compiler::bytecode::generate(expr);
+fn generate_to_stdout(expr: &ast::Module) {
+    let bytecode = bytecode::generate(expr);
     let mut writer = std::io::BufWriter::new(std::io::stdout());
 
     bytecode.emit_human_readable(&mut writer);
@@ -28,28 +28,13 @@ fn compile_to_file(inp: &PathBuf, out: &PathBuf) {
     let out_name = out.join(inp.with_extension("irc"));
     let mut out_buffer = File::create(out_name).unwrap();
 
-    let mut i = Source::new(file);
-    loop {
-        match i.parse(iris_compiler::parser::expr) {
-            Ok(expr)                     => generate_to_file(&expr, &mut out_buffer),
-            Err(StreamError::Retry)      => {},
-            Err(StreamError::EndOfInput) => break,
-            Err(e)                       => { panic!("{:?}", e); }
-        }
-    }
+    parser::parse(file, |module| generate_to_file(module, &mut out_buffer))
 }
 
 fn compile_to_stdout(inp: &PathBuf) {
     let file  = File::open(inp).ok().expect(&format!("Failed to open file: {}", &inp.to_str().unwrap()));
-    let mut i = Source::new(file);
-    loop {
-        match i.parse(iris_compiler::parser::expr) {
-            Ok(expr)                     => generate_to_stdout(&expr),
-            Err(StreamError::Retry)      => {},
-            Err(StreamError::EndOfInput) => break,
-            Err(e)                       => { panic!("{:?}", e); }
-        }
-    }
+
+    parser::parse(file, |expr| generate_to_stdout(expr))
 }
 
 fn print_usage(program: &str, opts: Options) {

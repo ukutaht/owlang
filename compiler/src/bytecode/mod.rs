@@ -1,36 +1,14 @@
 use ast;
 
 mod opcodes;
+mod function;
+mod module;
 mod instruction;
 
 pub use self::instruction::{Bytecode, Instruction, Reg};
-use std::io::Write;
+pub use self::function::Function;
+pub use self::module::Module;
 
-
-#[derive(Debug, Eq, PartialEq)]
-pub struct Function<'a> {
-    pub name: &'a str,
-    pub arity: u8,
-    pub code: Bytecode
-}
-
-impl<'a> Function<'a> {
-    pub fn emit<T: Write>(&self, out: &'a mut T) {
-        for instr in self.code.iter() {
-            instr.emit(out);
-        }
-    }
-
-    pub fn emit_human_readable<T: Write>(&self, out: &'a mut T) {
-        let header = format!("{}/{}:\n", self.name, self.arity);
-        out.write(&header.as_bytes()).unwrap();
-
-        for instr in self.code.iter() {
-            out.write(b"  ").unwrap();
-            instr.emit_human_readable(out);
-        }
-    }
-}
 
 pub struct GenContext<'a> {
     var_count: u8,
@@ -139,9 +117,20 @@ impl<'a> GenContext<'a> {
     }
 }
 
-pub fn generate<'a>(ast: &'a ast::Expr) -> Function<'a> {
-    match ast {
-        &ast::Expr::Function(ref f) => GenContext::new(f).generate(),
-        _ => panic!("Need function here")
+pub fn generate_function<'a>(f: &'a ast::Function) -> Function<'a> {
+    GenContext::new(f).generate()
+}
+
+pub fn generate<'a>(module: &'a ast::Module) -> Module<'a> {
+    let mut functions = Vec::new();
+
+    for f in module.functions.iter() {
+        functions.push(GenContext::new(f).generate())
     }
+
+    Module {
+        name: module.name,
+        functions: functions
+    }
+
 }

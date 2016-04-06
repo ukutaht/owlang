@@ -9,7 +9,7 @@ fn generates_simple_addition() {
         mk_apply(None, "+", vec![mk_int("1"), mk_int("2")])
     ]);
 
-    let res = bytecode::generate(&ast);
+    let res = bytecode::generate_function(&ast);
 
     assert_eq!(res, bytecode::Function {
         name: "main",
@@ -35,7 +35,7 @@ fn generates_nested_arithmetic() {
         ])
     ]);
 
-    let res = bytecode::generate(&ast);
+    let res = bytecode::generate_function(&ast);
 
     assert_eq!(res, bytecode::Function {
         name: "main",
@@ -57,7 +57,7 @@ fn generates_print_op() {
         mk_apply(None, "print", vec![mk_int("1")])
     ]);
 
-    let res = bytecode::generate(&ast);
+    let res = bytecode::generate_function(&ast);
 
     assert_eq!(res.code, vec![
             bytecode::Instruction::Store(1, 1),
@@ -76,7 +76,7 @@ fn generates_simple_if_statement() {
             )
     ]);
 
-    let res = bytecode::generate(&ast);
+    let res = bytecode::generate_function(&ast);
 
     assert_eq!(res.code, vec![
             bytecode::Instruction::Store(1, 1),
@@ -88,4 +88,16 @@ fn generates_simple_if_statement() {
             bytecode::Instruction::Mov(0, 1),
         ]
     )
+}
+
+#[test]
+fn generates_simple_module() {
+    let module = mk_module("mod", vec![
+        mk_function("main", Vec::new(), vec![mk_int("1")])
+    ]);
+
+    let res = bytecode::generate(&module);
+
+    assert_eq!(res.name, "mod");
+    assert_eq!(res.functions.len(), 1);
 }

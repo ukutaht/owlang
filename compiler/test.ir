@@ -1,5 +1,9 @@
-fn main() {
-  if 2 > 1 {
-    print(1)
+module test {
+  fn main() {
+    if 2 > 1 {
+      if 4 > 3 {
+        print(1)
+      }
+    }
   }
 }

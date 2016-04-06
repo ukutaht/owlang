@@ -1,5 +1,5 @@
-use bytecode::opcodes;
 use std::io::Write;
+use bytecode::opcodes;
 
 pub type Reg = u8;
 pub type Bytecode = Vec<Instruction>;
