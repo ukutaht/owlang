@@ -3,7 +3,7 @@
 #define REGISTER_COUNT 100
 #define STACK_DEPTH 100
 
-#define DEBUG false
+#define DEBUG true
 #define debug_print(fmt, ...) \
             do { if (DEBUG) fprintf(stderr, fmt, __VA_ARGS__); } while (0)
 

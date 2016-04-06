@@ -15,7 +15,6 @@ fn generates_simple_addition() {
         name: "main",
         arity: 0,
         code: vec![
-            bytecode::Instruction::Function("main".to_string(), 0),
             bytecode::Instruction::Store(1, 1),
             bytecode::Instruction::Store(2, 2),
             bytecode::Instruction::Add(1, 1, 2),
@@ -42,7 +41,6 @@ fn generates_nested_arithmetic() {
         name: "main",
         arity: 0,
         code: vec![
-            bytecode::Instruction::Function("main".to_string(), 0),
             bytecode::Instruction::Store(1, 1),
             bytecode::Instruction::Store(2, 2),
             bytecode::Instruction::Store(3, 3),
@@ -51,4 +49,43 @@ fn generates_nested_arithmetic() {
             bytecode::Instruction::Mov(0, 1),
         ]
     })
+}
+
+#[test]
+fn generates_print_op() {
+    let ast = mk_function("main", Vec::new(), vec![
+        mk_apply(None, "print", vec![mk_int("1")])
+    ]);
+
+    let res = bytecode::generate(&ast);
+
+    assert_eq!(res.code, vec![
+            bytecode::Instruction::Store(1, 1),
+            bytecode::Instruction::Print(1),
+            bytecode::Instruction::Mov(0, 1),
+        ]
+    )
+}
+
+#[test]
+fn generates_simple_if_statement() {
+    let ast = mk_function("main", Vec::new(), vec![
+        mk_if(
+            mk_apply(None, ">", vec![mk_int("1"), mk_int("2")]),
+            vec![mk_apply(None, "print", vec![mk_int("1")])]
+            )
+    ]);
+
+    let res = bytecode::generate(&ast);
+
+    assert_eq!(res.code, vec![
+            bytecode::Instruction::Store(1, 1),
+            bytecode::Instruction::Store(2, 2),
+            bytecode::Instruction::TestGt(1, 2, 2),
+            bytecode::Instruction::Exit,
+            bytecode::Instruction::Store(1, 1),
+            bytecode::Instruction::Print(1),
+            bytecode::Instruction::Mov(0, 1),
+        ]
+    )
 }

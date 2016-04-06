@@ -67,3 +67,33 @@ fn parses_function_def_with_args() {
         mk_apply(None, "+", vec![mk_ident("a"), mk_ident("b")])
     ])));
 }
+
+#[test]
+fn parses_greater_than_comp() {
+    let res = parser::parse(b"a > b");
+    assert_eq!(res, Ok(mk_apply(None, ">", vec![mk_ident("a"), mk_ident("b")])));
+}
+
+#[test]
+fn parses_greater_than_equal_comp() {
+    let res = parser::parse(b"a >= b");
+    assert_eq!(res, Ok(mk_apply(None, ">=", vec![mk_ident("a"), mk_ident("b")])));
+}
+
+#[test]
+fn parses_less_than_comp() {
+    let res = parser::parse(b"a < b");
+    assert_eq!(res, Ok(mk_apply(None, "<", vec![mk_ident("a"), mk_ident("b")])));
+}
+
+#[test]
+fn parses_less_than_or_equal_comp() {
+    let res = parser::parse(b"a <= b");
+    assert_eq!(res, Ok(mk_apply(None, "<=", vec![mk_ident("a"), mk_ident("b")])));
+}
+
+#[test]
+fn parses_if_statement() {
+    let res = parser::parse(b"if a { 1 }");
+    assert_eq!(res, Ok(mk_if(mk_ident("a"), vec![mk_int("1")])));
+}

@@ -3,7 +3,7 @@ use chomp::{Input, U8Result, ParseError, Error, parse_only, take_while1, take_wh
 use chomp::{token, string};
 use chomp::parsers::{satisfy, peek_next};
 use chomp::ascii::{is_digit, is_alpha, is_lowercase, skip_whitespace, is_end_of_line, is_whitespace};
-use chomp::combinators::{or, sep_by, option};
+use chomp::combinators::{sep_by, option};
 
 use ast::*;
 
@@ -13,7 +13,24 @@ pub fn parse(input: &[u8]) -> Result<Expr, ParseError<u8, Error<u8>>> {
 
 pub fn expr(i: Input<u8>) -> U8Result<Expr> {
     parse!{i;
-        function() <|> apply() <|> infix() <|> ident() <|> int()
+        _if() <|> function() <|> apply() <|> infix() <|> ident() <|> int()
+    }
+}
+
+pub fn _if(i: Input<u8>) -> U8Result<Expr> {
+    parse!{i;
+        string(b"if");
+        satisfy(|i| is_whitespace(i));
+        let condition = expr();
+        skip_newline_and_whitespace();
+        token(b'{');
+        skip_newline_and_whitespace();
+        let body: Vec<_> = sep_by(expr, skip_newline_and_whitespace);
+        skip_newline_and_whitespace();
+        token(b'}');
+        skip_newline_and_whitespace();
+
+        ret mk_if(condition, body)
     }
 }
 
@@ -93,9 +110,10 @@ fn infix(i: Input<u8>) -> U8Result<Expr> {
 }
 
 fn infix_op(i: Input<u8>) -> U8Result<&str> {
-    or(i, |i| string(i, b"+"),
-          |i| string(i, b"-"))
-        .map(|op| unsafe { str::from_utf8_unchecked(op) })
+    parse!{i;
+        let op = string(b"+") <|> string(b"-") <|> string(b">=") <|> string(b">")  <|> string(b"<=") <|> string(b"<");
+        ret unsafe { str::from_utf8_unchecked(op) }
+    }
 }
 
 fn argument(i: Input<u8>) -> U8Result<Argument> {

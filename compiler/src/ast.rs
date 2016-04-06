@@ -16,6 +16,12 @@ pub struct Apply<'a> {
 }
 
 #[derive(Debug, Eq, PartialEq)]
+pub struct If<'a> {
+    pub condition: Box<Expr<'a>>,
+    pub body: Vec<Expr<'a>>,
+}
+
+#[derive(Debug, Eq, PartialEq)]
 pub struct Function<'a> {
     pub name: &'a str,
     pub args: Vec<Argument<'a>>,
@@ -38,6 +44,7 @@ pub enum Expr<'a> {
     Int(Int<'a>),
     Ident(Ident<'a>),
     Apply(Apply<'a>),
+    If(If<'a>),
     Function(Function<'a>)
 }
 
@@ -59,4 +66,8 @@ pub fn mk_function<'a>(name: &'a str, args: Vec<Argument<'a>>, body: Vec<Expr<'a
 
 pub fn mk_argument(name: &str) -> Argument {
     Argument {name: name}
+}
+
+pub fn mk_if<'a>(condition: Expr<'a>, body: Vec<Expr<'a>>) -> Expr<'a> {
+    Expr::If(If{condition: Box::new(condition), body: body})
 }

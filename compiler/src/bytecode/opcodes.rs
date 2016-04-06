@@ -1,11 +1,8 @@
-#[allow(dead_code)]
 pub const EXIT: u8 = 0x00;
 pub const STORE: u8 = 0x01;
-#[allow(dead_code)]
 pub const PRINT: u8 = 0x02;
 #[allow(dead_code)]
 pub const TEST_EQ: u8  = 0x03;
-#[allow(dead_code)]
 pub const TEST_GT: u8  = 0x04;
 #[allow(dead_code)]
 pub const TEST_GTE: u8 = 0x05;
