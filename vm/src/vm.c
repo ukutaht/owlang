@@ -5,11 +5,8 @@
 #include "vm.h"
 #include "opcodes.h"
 
-vm_t *vm_new(unsigned char *code, unsigned int size) {
+vm_t *vm_new() {
     vm_t *vm;
-
-    if (!code || !size || (size > 0xFFFF))
-        return NULL;
 
     vm = malloc(sizeof(struct vm));
     if (!vm)
@@ -21,43 +18,44 @@ vm_t *vm_new(unsigned char *code, unsigned int size) {
      */
     vm->code = malloc(0xFFFF);
     if (vm->code == NULL) {
-        free(vm);
         return NULL;
     }
 
     vm->ip = 0;
     vm->current_frame = 0;
     vm->running = true;
-    vm->size = size;
 
-
-    /**
-     * Zero the RAM we've allocated, and then copy the user's program to
-     * the start of it.
-     *
-     * This means there is a full 64k address-space and the user can
-     * have fun writing self-modifying code, & etc.
-     *
-     */
     memset(vm->code, '\0', 0xFFFF);
-    memcpy(vm->code, code, size);
 
-
-    /**
-     * Explicitly zero each register and set to be a number.
-     */
-//    for (i = 0; i < REGISTER_COUNT; i++) {
-//        vm->registers[i].type = INTEGER;
-//        vm->registers[i].content.integer = 0;
-//        vm->registers[i].content.string = NULL;
-//    }
-
-    /**
-     * Setup our default opcode-handlers
-     */
     opcode_init(vm);
 
     return vm;
+}
+
+
+/**
+ * The VM has a single array for code, but it also keeps track
+ * of modules separately.
+ */
+void vm_load_module(vm_t *vm, unsigned char *code, unsigned int size) {
+    unsigned char *module_address = vm->code + vm->code_size;
+
+    if (!code || !size || (vm->code_size + size > 0xFFFF))
+        exit(1);
+
+    memcpy(module_address, code, size);
+
+
+    int name_size = code[0] + 256 * code[1];
+    char *module_name = (char *) malloc(name_size + 1);
+
+    strcpy(module_name, (char*) &code[2]);
+
+    module_t *mod = malloc(sizeof(module_t));
+    mod->name = module_name;
+    mod->code_index = module_address;
+
+    vm->ip = name_size + 3;
 }
 
 /**
@@ -75,13 +73,6 @@ void vm_run(vm_t * cpup) {
      */
     if (!cpup)
         return;
-
-
-    /**
-     * The code will start executing from offset 0.
-     */
-    cpup->ip = 0;
-
 
     /**
      * Run continuously.

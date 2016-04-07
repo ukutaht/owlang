@@ -132,5 +132,4 @@ pub fn generate<'a>(module: &'a ast::Module) -> Module<'a> {
         name: module.name,
         functions: functions
     }
-
 }
