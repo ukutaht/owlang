@@ -1,5 +1,5 @@
 [package]
-name = "iris_compiler"
+name = "owlc"
 version = "0.1.0"
 authors = ["Uku Taht <uku.taht@gmail.com>"]
 

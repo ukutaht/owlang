@@ -1,7 +1,7 @@
-extern crate iris_compiler;
+extern crate owlc;
 
-use iris_compiler::ast::*;
-use iris_compiler::bytecode;
+use owlc::ast::*;
+use owlc::bytecode;
 
 #[test]
 fn generates_simple_addition() {

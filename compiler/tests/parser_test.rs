@@ -1,7 +1,7 @@
-extern crate iris_compiler;
+extern crate owlc;
 
-use iris_compiler::ast::*;
-use iris_compiler::parser;
+use owlc::ast::*;
+use owlc::parser;
 
 #[test]
 fn parses_integer() {

@@ -1,8 +1,8 @@
-extern crate iris_compiler;
+extern crate owlc;
 extern crate getopts;
 extern crate chomp;
 
-use iris_compiler::*;
+use owlc::*;
 use getopts::Options;
 use std::env;
 use std::fs::File;
@@ -25,7 +25,7 @@ fn compile_to_file(inp: &PathBuf, out: &PathBuf) {
     let file  = File::open(inp).ok().expect(&format!("Failed to open file: {}", &inp.to_str().unwrap()));
 
     std::fs::create_dir_all(&out).unwrap();
-    let out_name = out.join(inp.with_extension("irc"));
+    let out_name = out.join(inp.with_extension("owlc"));
     let mut out_buffer = File::create(out_name).unwrap();
 
     parser::parse(file, |module| generate_to_file(module, &mut out_buffer))
