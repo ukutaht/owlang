@@ -11,10 +11,8 @@ impl<'a> Module<'a> {
 
     pub fn name_bytes(&self) -> Vec<u8> {
         let mut result = Vec::new();
-        let length = self.name.len();
 
-        result.push((length % 250) as u8);
-        result.push((length / 250) as u8);
+        result.push(self.name.len() as u8);
         result.append(&mut self.name.to_string().into_bytes());
         result.push(0 as u8);
         result

@@ -46,16 +46,16 @@ void vm_load_module(vm_t *vm, unsigned char *code, unsigned int size) {
     memcpy(module_address, code, size);
 
 
-    int name_size = code[0] + 256 * code[1];
+    unsigned short name_size = (unsigned short) code[0];
     char *module_name = (char *) malloc(name_size + 1);
 
-    strcpy(module_name, (char*) &code[2]);
+    strcpy(module_name, (char*) &code[1]);
 
     module_t *mod = malloc(sizeof(module_t));
     mod->name = module_name;
     mod->code_index = module_address;
 
-    vm->ip = name_size + 3;
+    vm->ip = name_size + 2;
 }
 
 /**
