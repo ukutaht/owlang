@@ -48,7 +48,6 @@ void vm_load_module(vm_t *vm, unsigned char *code, unsigned int size) {
 
     unsigned short name_size = (unsigned short) code[0];
     char *module_name = (char *) malloc(name_size + 1);
-
     strcpy(module_name, (char*) &code[1]);
 
     module_t *mod = malloc(sizeof(module_t));

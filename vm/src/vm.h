@@ -11,11 +11,11 @@
 #ifndef VM_H
 #define VM_H 1
 
-typedef int ir_term;
+typedef int owl_term;
 
 typedef struct frame_t {
-    ir_term registers[REGISTER_COUNT]; // Each frame has their own registers
     unsigned int ret_address;
+    owl_term registers[REGISTER_COUNT]; // Each frame has their own registers
 } frame_t;
 
 typedef struct module_t {
