@@ -28,6 +28,7 @@ enum opcode_values {
     RETURN,
     MOV,
     TAILCALL,
+    JMP,
 };
 
 void opcode_init(vm_t *vm);

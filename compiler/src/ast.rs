@@ -15,6 +15,12 @@ pub struct Apply<'a> {
     pub args: Vec<Expr<'a>>,
 }
 
+impl<'a> Apply<'a> {
+    pub fn arity(&self) -> u8 {
+        self.args.len() as u8
+    }
+}
+
 #[derive(Debug, Eq, PartialEq)]
 pub struct If<'a> {
     pub condition: Box<Expr<'a>>,

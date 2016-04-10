@@ -18,17 +18,11 @@ typedef struct frame_t {
     owl_term registers[REGISTER_COUNT]; // Each frame has their own registers
 } frame_t;
 
-typedef struct module_t {
-    char *name;
-    unsigned char *code_index;
-} module_t;
-
 struct vm;
 typedef void opcode_impl(struct vm *in);
 
 typedef struct vm {
     frame_t frames[STACK_DEPTH];
-    module_t modules[MAX_MODULES];
     unsigned int current_frame;
     unsigned int ip;             // Instruction pointer
     unsigned char *code;         // loaded code

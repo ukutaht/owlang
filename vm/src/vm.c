@@ -38,23 +38,7 @@ vm_t *vm_new() {
  * of modules separately.
  */
 void vm_load_module(vm_t *vm, unsigned char *code, unsigned int size) {
-    unsigned char *module_address = vm->code + vm->code_size;
-
-    if (!code || !size || (vm->code_size + size > 0xFFFF))
-        exit(1);
-
-    memcpy(module_address, code, size);
-
-
-    unsigned short name_size = (unsigned short) code[0];
-    char *module_name = (char *) malloc(name_size + 1);
-    strcpy(module_name, (char*) &code[1]);
-
-    module_t *mod = malloc(sizeof(module_t));
-    mod->name = module_name;
-    mod->code_index = module_address;
-
-    vm->ip = name_size + 2;
+    memcpy(vm->code, code, size);
 }
 
 /**

@@ -101,3 +101,24 @@ fn generates_simple_module() {
     assert_eq!(res.name, "mod");
     assert_eq!(res.functions.len(), 1);
 }
+
+#[test]
+fn generates_function_call_in_same_module() {
+    let wut = mk_function("wut", Vec::new(), vec![
+        mk_apply(None, "print", vec![mk_int("1")])
+    ]);
+
+    let main = mk_function("main", Vec::new(), vec![
+        mk_apply(None, "wut", Vec::new())
+    ]);
+
+    let module = mk_module("mod", vec![wut, main]);
+
+    let res = bytecode::generate(&module);
+
+
+    assert_eq!(res.functions[1].code, vec![
+        bytecode::Instruction::Call(0, 0, Vec::new()),
+        bytecode::Instruction::Mov(0, 1),
+    ])
+}

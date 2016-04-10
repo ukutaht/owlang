@@ -24,5 +24,9 @@ impl<'a> Function<'a> {
             instr.emit_human_readable(out);
         }
     }
+
+    pub fn byte_size(&self) -> u8 {
+        self.code.iter().fold(0, |acc, instr| acc + instr.byte_size())
+    }
 }
 

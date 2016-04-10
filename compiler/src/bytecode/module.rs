@@ -1,25 +1,17 @@
 use std::io::Write;
 use bytecode::function::Function;
+use bytecode::instruction::Instruction;
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct Module<'a> {
     pub name: &'a str,
-    pub functions: Vec<Function<'a>>
+    pub functions: Vec<Function<'a>>,
+    pub main_location: u8,
 }
 
 impl<'a> Module<'a> {
-
-    pub fn name_bytes(&self) -> Vec<u8> {
-        let mut result = Vec::new();
-
-        result.push(self.name.len() as u8);
-        result.append(&mut self.name.to_string().into_bytes());
-        result.push(0 as u8);
-        result
-    }
-
     pub fn emit<T: Write>(&self, out: &'a mut T) {
-        out.write(&self.name_bytes()).unwrap();
+        Instruction::Jmp(self.main_location).emit(out);
 
         for function in self.functions.iter() {
             function.emit(out);
@@ -27,8 +19,7 @@ impl<'a> Module<'a> {
     }
 
     pub fn emit_human_readable<T: Write>(&self, out: &'a mut T) {
-        let header = format!("module {}\n\n", self.name);
-        out.write(&header.as_bytes()).unwrap();
+        Instruction::Jmp(self.main_location).emit_human_readable(out);
 
         for function in self.functions.iter() {
             function.emit_human_readable(out);

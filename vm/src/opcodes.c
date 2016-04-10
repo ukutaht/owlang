@@ -277,6 +277,14 @@ void op_mov(struct vm *vm) {
     vm->ip += 1;
 }
 
+void op_jmp(struct vm *vm) {
+    unsigned int loc = next_byte(vm);
+
+    debug_print("JMP(Loc: %d)\n", loc);
+
+    vm->ip = loc;
+}
+
 void opcode_init(vm_t * vm) {
     // All instructions will default to unknown.
     for (int i = 0; i < 255; i++)
@@ -296,4 +304,5 @@ void opcode_init(vm_t * vm) {
     vm->opcodes[RETURN] = op_return;
     vm->opcodes[MOV] = op_mov;
     vm->opcodes[TAILCALL] = op_tailcall;
+    vm->opcodes[JMP] = op_jmp;
 }

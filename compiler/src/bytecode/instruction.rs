@@ -7,12 +7,15 @@ pub type Bytecode = Vec<Instruction>;
 #[derive(Debug, Eq, PartialEq)]
 pub enum Instruction {
     Exit,
-    Add(Reg, Reg, Reg),
-    Sub(Reg, Reg, Reg),
     Store(Reg, u16),
-    Mov(Reg, Reg),
     Print(Reg),
     TestGt(Reg, Reg, u8),
+    Add(Reg, Reg, Reg),
+    Sub(Reg, Reg, Reg),
+    Call(u8, u8, Vec<Reg>),
+    Return,
+    Mov(Reg, Reg),
+    Jmp(u8),
 }
 
 impl Instruction {
@@ -40,6 +43,19 @@ impl Instruction {
             }
             &Instruction::Exit => {
                 out.write(&[opcodes::EXIT]).unwrap();
+            },
+            &Instruction::Call(loc, arity, ref regs) => {
+                let mut res = vec![opcodes::CALL, loc, arity];
+                let mut copied_regs = regs.clone();
+                res.append(&mut copied_regs);
+
+                out.write(&res).unwrap();
+            }
+            &Instruction::Jmp(loc) => {
+                out.write(&vec![opcodes::JMP, loc]).unwrap();
+            }
+            &Instruction::Return => {
+                out.write(&vec![opcodes::RETURN]).unwrap();
             }
         }
     }
@@ -73,6 +89,25 @@ impl Instruction {
             &Instruction::Exit => {
                 out.write(b"exit\n").unwrap();
             }
+            &Instruction::Call(loc, arity, ref regs) => {
+                let string;
+
+                if regs.len() > 0 {
+                    let args: Vec<_> = regs.iter().map(|int| int.to_string()).collect();
+                    string = format!("call {}, %{}, {}\n", loc, arity, args.join(", "));
+                } else {
+                    string = format!("call {}, {}\n", loc, arity);
+                }
+
+                out.write(&string.as_bytes()).unwrap();
+            }
+            &Instruction::Jmp(loc) => {
+                let string = format!("jmp {}\n", loc);
+                out.write(&string.as_bytes()).unwrap();
+            }
+            &Instruction::Return => {
+                out.write(b"return\n").unwrap();
+            }
         }
     }
 
@@ -85,6 +120,9 @@ impl Instruction {
             &Instruction::Print(_)        => 2,
             &Instruction::TestGt(_, _, _) => 4,
             &Instruction::Exit            => 1,
+            &Instruction::Call(_, _, ref regs) => 2 + regs.len() as u8,
+            &Instruction::Jmp(_)          => 2,
+            &Instruction::Return          => 1,
         }
     }
 }

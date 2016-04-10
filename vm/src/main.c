@@ -5,7 +5,7 @@
 
 #include "vm.h"
 
-int run_file(const char *filename) {
+int load_file(vm_t *vm, const char *filename) {
     struct stat sb;
 
     if (stat(filename, &sb) != 0) {
@@ -33,7 +33,6 @@ int run_file(const char *filename) {
     fread(code, 1, size, fp);
     fclose(fp);
 
-    vm_t *vm = vm_new();
 
     if (!vm) {
         printf("Failed to create virtual machine instance.\n");
@@ -41,7 +40,6 @@ int run_file(const char *filename) {
     }
 
     vm_load_module(vm, code, size);
-    vm_run(vm);
 
 
     free(code);
@@ -54,5 +52,11 @@ int main(int argc, char **argv) {
         return 0;
     }
 
-    return run_file(argv[1]);
+    vm_t *vm = vm_new();
+
+    load_file(vm, argv[1]);
+
+    vm_run(vm);
+
+    return 0;
 }
