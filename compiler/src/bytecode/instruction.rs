@@ -18,6 +18,7 @@ pub enum Instruction {
     Jmp(u8),
     Tuple(Reg, u8, Vec<Reg>),
     TupleNth(Reg, Reg, u8),
+    AssertEq(Reg, Reg),
 }
 
 impl Instruction {
@@ -67,6 +68,9 @@ impl Instruction {
             }
             &Instruction::TupleNth(dest, reg, nth) => {
                 out.write(&[opcodes::TUPLE_NTH, dest, reg, nth]).unwrap();
+            },
+            &Instruction::AssertEq(reg1, reg2) => {
+                out.write(&[opcodes::ASSERT_EQ, reg1, reg2]).unwrap();
             },
         }
     }
@@ -135,6 +139,10 @@ impl Instruction {
                 let string = format!("tuple_nth %{}, %{}, %{}\n", dest, reg, nth);
                 out.write(&string.as_bytes()).unwrap();
             },
+            &Instruction::AssertEq(reg1, reg2) => {
+                let string = format!("assert_eq %{}, %{}\n", reg1, reg2);
+                out.write(&string.as_bytes()).unwrap();
+            },
         }
     }
 
@@ -152,6 +160,7 @@ impl Instruction {
             &Instruction::Tuple(_, _, ref regs)   => 3 + regs.len() as u8,
             &Instruction::TupleNth(_, _, _)  => 4,
             &Instruction::Return          => 1,
+            &Instruction::AssertEq(_, _)  => 3,
         }
     }
 }

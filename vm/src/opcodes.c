@@ -331,6 +331,23 @@ void op_tuple_nth(struct vm *vm) {
   vm->ip += 1;
 }
 
+void op_assert_eq(struct vm *vm) {
+  uint8_t reg1 = next_byte(vm);
+  uint8_t reg2 = next_byte(vm);
+
+  debug_print("ASSERT_EQ(Reg1: %d, Reg2: %d)\n", reg1, reg2);
+
+  owl_term left = get_reg(vm, reg1);
+  owl_term right = get_reg(vm, reg2);
+
+  if (left != right) {
+    printf("Assertion failed!\n");
+    exit(1);
+  }
+
+  vm->ip += 1;
+}
+
 void opcode_init(vm_t * vm) {
   // All instructions will default to unknown.
   for (int i = 0; i < 255; i++)
@@ -353,4 +370,5 @@ void opcode_init(vm_t * vm) {
   vm->opcodes[OP_JMP] = op_jmp;
   vm->opcodes[OP_TUPLE]     = op_tuple;
   vm->opcodes[OP_TUPLE_NTH] = op_tuple_nth;
+  vm->opcodes[OP_ASSERT_EQ] = op_assert_eq;
 }

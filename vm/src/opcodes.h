@@ -31,6 +31,7 @@ enum opcode_values {
     OP_JMP,
     OP_TUPLE,
     OP_TUPLE_NTH,
+    OP_ASSERT_EQ,
 };
 
 void opcode_init(vm_t *vm);

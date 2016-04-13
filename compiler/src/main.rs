@@ -6,7 +6,7 @@ use owlc::*;
 use getopts::Options;
 use std::env;
 use std::fs::File;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 fn generate_to_file(expr: &ast::Module, file: &mut File) {
     let bytecode = bytecode::generate(expr);
@@ -25,7 +25,9 @@ fn compile_to_file(inp: &PathBuf, out: &PathBuf) {
     let file  = File::open(inp).ok().expect(&format!("Failed to open file: {}", &inp.to_str().unwrap()));
 
     std::fs::create_dir_all(&out).unwrap();
-    let out_name = out.join(inp.with_extension("owlc"));
+    let out_filename = inp.with_extension("owlc");
+    let out_name = out.join(Path::new(out_filename.file_name().unwrap()));
+    println!("{:?}", out_name);
     let mut out_buffer = File::create(out_name).unwrap();
 
     parser::parse(file, |module| generate_to_file(module, &mut out_buffer))
@@ -46,7 +48,7 @@ fn main() {
     let args: Vec<String> = env::args().collect();
 
     let mut opts = Options::new();
-    opts.optopt("o", "output", "Output directory(default: target)", "NAME");
+    opts.optopt("o", "output", "Output directory(default: current directory)", "NAME");
     opts.optflag("p", "print", "Only print the bytecode");
     opts.optflag("h", "help", "Show help");
 
