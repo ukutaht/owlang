@@ -4,6 +4,6 @@ module test {
   }
 
   fn main() {
-    print(tuple_nth(wut(), 3))
+    print(tuple_nth(wut(), 1))
   }
 }

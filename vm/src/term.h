@@ -23,7 +23,4 @@ owl_term* owl_extract_ptr(owl_term val);
 owl_term owl_int_from(uint64_t val);
 uint64_t int_from_owl_int(owl_term val);
 
-owl_term owl_tuple_from(uint8_t size, ...);
-owl_term owl_tuple_nth(owl_term tuple, uintptr_t index);
-
 #endif  // TERM_H

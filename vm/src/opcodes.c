@@ -9,13 +9,8 @@
 #include "alloc.h"
 
 // Read and return the next byte from the current instruction-pointer.
-// This function ensures that reading will wrap around the address-space
-// of the virtual CPU.
-unsigned char next_byte(vm_t *vm) {
+uint8_t next_byte(vm_t *vm) {
   vm->ip += 1;
-
-  if (vm->ip >= 0xFFFF)
-    vm->ip = 0;
 
   return (vm->code[vm->ip]);
 }
@@ -23,8 +18,8 @@ unsigned char next_byte(vm_t *vm) {
 // Read and return the next byte from the current instruction-pointer
 // as a register number. This is used when we expect an argument op
 // to describe a register
-unsigned int next_reg(vm_t *vm) {
-  unsigned int reg = next_byte(vm);
+uint8_t next_reg(vm_t *vm) {
+  uint8_t reg = next_byte(vm);
   assert(reg < REGISTER_COUNT);
   return reg;
 }
@@ -74,10 +69,10 @@ void op_exit(vm_t *vm) {
 }
 
 void op_store(vm_t *vm) {
-  unsigned int reg = next_reg(vm);
+  uint8_t reg = next_reg(vm);
   unsigned int value = next_int(vm);
 
-  debug_print("STORE_INT(Reg:%02x) => %d\n", reg, value);
+  debug_print("STORE_INT(Reg:%d) => %d\n", reg, value);
 
   frame_t *curr_frame = &vm->frames[vm->current_frame];
   curr_frame->registers[reg] = value;
@@ -86,11 +81,10 @@ void op_store(vm_t *vm) {
 }
 
 void op_print(struct vm *vm) {
-  unsigned int reg = next_reg(vm);
+  uint8_t reg = next_reg(vm);
 
-  debug_print("INT_PRINT(Reg:%02x)\n", reg);
+  debug_print("INT_PRINT(Reg:%d)\n", reg);
 
-  /* get the register contents. */
   int val = get_int_reg(vm, reg);
 
   printf("%d\n", val);
@@ -102,8 +96,8 @@ void op_print(struct vm *vm) {
 // If they are equal, continue running. If not equal,
 // jumps to the provided label
 void op_test_eq(struct vm *vm) {
-  unsigned int reg1  = next_reg(vm);
-  unsigned int reg2  = next_reg(vm);
+  uint8_t reg1  = next_reg(vm);
+  uint8_t reg2  = next_reg(vm);
   signed char instr  = next_byte(vm);
 
   debug_print("TEST_EQ(Reg1: %02x, Reg2: %02x, IfTrue:%02x)\n", reg1, reg2, instr);
@@ -122,8 +116,8 @@ void op_test_eq(struct vm *vm) {
 // If true, continue running. If not equal,
 // jumps to the provided label
 void op_test_gt(struct vm *vm) {
-  unsigned int reg1  = next_reg(vm);
-  unsigned int reg2  = next_reg(vm);
+  uint8_t reg1  = next_reg(vm);
+  uint8_t reg2  = next_reg(vm);
   unsigned int instr = next_byte(vm);
 
   debug_print("TEST_GT(Reg1: %02x, Reg2: %02x, IfTrue:%d)\n", reg1, reg2, instr);
@@ -182,8 +176,8 @@ void op_test_lt(struct vm *vm) {
 // If true, continue running. If not equal,
 // jumps to the provided label
 void op_test_lte(struct vm *vm) {
-  unsigned int reg1  = next_reg(vm);
-  unsigned int reg2  = next_reg(vm);
+  uint8_t reg1  = next_reg(vm);
+  uint8_t reg2  = next_reg(vm);
   unsigned int instr = next_byte(vm);
 
   debug_print("TEST_LTE(Reg1: %02x, Reg2: %02x, IfTrue:%d)\n", reg1, reg2, instr);
@@ -200,8 +194,8 @@ void op_test_lte(struct vm *vm) {
 
 // Adds regsiters 2 and 3. Stores result in 1
 void op_add(struct vm *vm) {
-  unsigned int reg1  = next_reg(vm);
-  unsigned int reg2  = next_reg(vm);
+  uint8_t reg1  = next_reg(vm);
+  uint8_t reg2  = next_reg(vm);
   unsigned int reg3  = next_reg(vm);
 
   debug_print("ADD(Reg1: %02x, Reg2: %02x, REG3:%02x)\n", reg1, reg2, reg3);
@@ -219,8 +213,8 @@ void op_add(struct vm *vm) {
 
 // Subtracts regsiters 2 and 3. Stores result in 1
 void op_sub(struct vm *vm) {
-  unsigned int reg1  = next_reg(vm);
-  unsigned int reg2  = next_reg(vm);
+  uint8_t reg1  = next_reg(vm);
+  uint8_t reg2  = next_reg(vm);
   unsigned int reg3  = next_reg(vm);
 
   debug_print("SUB(Reg1: %02x, Reg2: %02x, REG3:%02x)\n", reg1, reg2, reg3);
@@ -236,9 +230,9 @@ void op_sub(struct vm *vm) {
 }
 
 void op_call(struct vm *vm) {
-  unsigned int ret_reg = next_byte(vm);
-  unsigned int location = next_byte(vm);
-  unsigned int arity = next_byte(vm);
+  uint8_t ret_reg = next_byte(vm);
+  uint8_t location = next_byte(vm);
+  uint8_t arity = next_byte(vm);
 
   debug_print("CALL(Instr:%d, Arity: %d)\n", location, arity);
 
@@ -259,8 +253,8 @@ void op_call(struct vm *vm) {
 }
 
 void op_tailcall(struct vm *vm) {
-  unsigned int location = next_byte(vm);
-  unsigned int arity = next_byte(vm);
+  uint8_t location = next_byte(vm);
+  uint8_t arity = next_byte(vm);
 
   debug_print("TAILCALL(Instr:%d, Arity: %d)\n", location, arity);
 
@@ -281,8 +275,8 @@ void op_return(struct vm *vm) {
 }
 
 void op_mov(struct vm *vm) {
-  unsigned int reg1 = next_reg(vm);
-  unsigned int reg2 = next_reg(vm);
+  uint8_t reg1 = next_reg(vm);
+  uint8_t reg2 = next_reg(vm);
 
   debug_print("MOV(Reg1: %02x, Reg2: %02x)\n", reg1, reg2);
 
@@ -293,7 +287,7 @@ void op_mov(struct vm *vm) {
 }
 
 void op_jmp(struct vm *vm) {
-  unsigned int loc = next_byte(vm);
+  uint8_t loc = next_byte(vm);
 
   debug_print("JMP(Loc: %d)\n", loc);
 
