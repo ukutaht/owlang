@@ -64,10 +64,10 @@ impl<'a> FnGenerator<'a> {
         for expr in self.function.body.iter() {
             let mut generated = self.generate_expr(expr, gen_ctx);
             code.append(&mut generated);
-            code.push(Instruction::Mov(0, self.var_count));
-            code.push(self.return_op());
         }
 
+        code.push(Instruction::Mov(0, self.var_count));
+        code.push(self.return_op());
         code
     }
 

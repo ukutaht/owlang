@@ -49,8 +49,11 @@ def run_file(file)
 end
 
 def run_all
+  puts "Compiling compiler"
   `cd #{COMPILER_DIR} && cargo build`
+  puts "Compiling virtual machine"
   `cd #{VM_DIR} && make`
+  puts
 
   tests = File.join(ROOT_DIR, "test_cases/**/*_test.owl")
 
