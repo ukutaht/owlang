@@ -222,6 +222,7 @@ void op_sub(struct vm *vm) {
 }
 
 void op_call(struct vm *vm) {
+    unsigned int ret_reg = next_byte(vm);
     unsigned int location = next_byte(vm);
     unsigned int arity = next_byte(vm);
 
@@ -237,9 +238,9 @@ void op_call(struct vm *vm) {
     }
 
     vm->frames[next_frame].ret_address = vm->ip + 1;
+    vm->frames[next_frame].ret_register = ret_reg;
     vm->current_frame += 1;
 
-    // return address
     vm->ip = location;
 }
 
@@ -259,7 +260,7 @@ void op_return(struct vm *vm) {
     frame_t *prev_frame = &vm->frames[vm->current_frame - 1];
     unsigned int ret_address = curr_frame->ret_address;
 
-    prev_frame->registers[0] = curr_frame->registers[0];
+    prev_frame->registers[curr_frame->ret_register] = curr_frame->registers[0];
 
     vm->current_frame -= 1;
     vm->ip = ret_address;

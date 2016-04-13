@@ -12,7 +12,7 @@ pub enum Instruction {
     TestGt(Reg, Reg, u8),
     Add(Reg, Reg, Reg),
     Sub(Reg, Reg, Reg),
-    Call(u8, u8, Vec<Reg>),
+    Call(u8, u8, u8, Vec<Reg>),
     Return,
     Mov(Reg, Reg),
     Jmp(u8),
@@ -44,8 +44,8 @@ impl Instruction {
             &Instruction::Exit => {
                 out.write(&[opcodes::EXIT]).unwrap();
             },
-            &Instruction::Call(loc, arity, ref regs) => {
-                let mut res = vec![opcodes::CALL, loc, arity];
+            &Instruction::Call(ret_loc, loc, arity, ref regs) => {
+                let mut res = vec![opcodes::CALL, ret_loc, loc, arity];
                 let mut copied_regs = regs.clone();
                 res.append(&mut copied_regs);
 
@@ -89,14 +89,14 @@ impl Instruction {
             &Instruction::Exit => {
                 out.write(b"exit\n").unwrap();
             }
-            &Instruction::Call(loc, arity, ref regs) => {
+            &Instruction::Call(ret_loc, loc, arity, ref regs) => {
                 let string;
 
                 if regs.len() > 0 {
                     let args: Vec<_> = regs.iter().map(|int| int.to_string()).collect();
-                    string = format!("call {}, %{}, {}\n", loc, arity, args.join(", "));
+                    string = format!("call %{}, {}, %{}, {}\n", ret_loc, loc, arity, args.join(", "));
                 } else {
-                    string = format!("call {}, {}\n", loc, arity);
+                    string = format!("call %{}, {}, {}\n", ret_loc, loc, arity);
                 }
 
                 out.write(&string.as_bytes()).unwrap();
@@ -120,7 +120,7 @@ impl Instruction {
             &Instruction::Print(_)        => 2,
             &Instruction::TestGt(_, _, _) => 4,
             &Instruction::Exit            => 1,
-            &Instruction::Call(_, _, ref regs) => 2 + regs.len() as u8,
+            &Instruction::Call(_, _, _, ref regs) => 3 + regs.len() as u8,
             &Instruction::Jmp(_)          => 2,
             &Instruction::Return          => 1,
         }

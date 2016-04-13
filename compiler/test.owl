@@ -1,11 +1,11 @@
 module test {
   fn wut() {
-    print(1 + 2 + 4 - 2)
+    1 + 2 + 4 - 2
   }
 
   fn main() {
     if 2 > 1 {
-      wut()
+      print(wut())
     }
   }
 }

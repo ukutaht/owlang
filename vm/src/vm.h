@@ -15,6 +15,7 @@ typedef int owl_term;
 
 typedef struct frame_t {
     unsigned int ret_address;
+    unsigned int ret_register;
     owl_term registers[REGISTER_COUNT]; // Each frame has their own registers
 } frame_t;
 

@@ -136,7 +136,7 @@ impl<'a> FnGenerator<'a> {
             "print" => vec![Instruction::Print(args[0])],
             _   => {
                 match gen_ctx.find_location(&(name.to_string(), arity)) {
-                    Some(loc) => vec![Instruction::Call(*loc, arity, args)],
+                    Some(loc) => vec![Instruction::Call(ret_loc, *loc, arity, args)],
                     _ => panic!("Function not found: {}\\{}", name, arity)
                 }
             }
