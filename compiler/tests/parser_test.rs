@@ -105,3 +105,11 @@ fn parses_simple_module_definition() {
         mk_function("b", Vec::new(), vec![mk_int("1")])
     ])));
 }
+
+#[test]
+fn parses_simple_tuple() {
+    let res = parser::parse_expr(b"(1, 2)");
+    assert_eq!(res, Ok(mk_tuple(vec![
+        mk_int("1"), mk_int("2")
+    ])));
+}

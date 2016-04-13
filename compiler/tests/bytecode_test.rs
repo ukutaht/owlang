@@ -127,3 +127,21 @@ fn generates_function_call_in_same_module() {
         bytecode::Instruction::Exit,
     ])
 }
+
+#[test]
+fn generates_tuple() {
+    let main = mk_function("main", Vec::new(), vec![
+        mk_tuple(vec![mk_int("1"), mk_int("2")])
+    ]);
+
+    let res = bytecode::generate_function(&main);
+
+
+    assert_eq!(res.code, vec![
+        bytecode::Instruction::Store(1, 1),
+        bytecode::Instruction::Store(2, 2),
+        bytecode::Instruction::Tuple(1, 2, vec![1, 2]),
+        bytecode::Instruction::Mov(0, 1),
+        bytecode::Instruction::Exit,
+    ])
+}

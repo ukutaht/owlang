@@ -1,11 +1,9 @@
 module test {
   fn wut() {
-    1 + 2 + 4 - 2
+    (1, 4)
   }
 
   fn main() {
-    if 2 > 1 {
-      print(wut())
-    }
+    print(tuple_nth(wut(), 3))
   }
 }

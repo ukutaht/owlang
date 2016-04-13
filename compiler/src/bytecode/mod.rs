@@ -117,6 +117,20 @@ impl<'a> FnGenerator<'a> {
                 }
                 res
             },
+            &ast::Expr::Tuple(ref t) => {
+                let mut res = Vec::new();
+                for elem in t.elems.iter() {
+                    res.append(&mut self.generate_expr(elem, gen_ctx))
+                }
+
+                let mut elem_locations: Vec<Reg> = t.elems.iter().map(|_| self.pop()).collect();
+                elem_locations.reverse();
+                let reg = self.push();
+
+                let mut me = vec![Instruction::Tuple(reg, t.elems.len() as u8, elem_locations)];
+                res.append(&mut me);
+                res
+            },
             _ => panic!("WAT")
         }
     }
@@ -134,6 +148,7 @@ impl<'a> FnGenerator<'a> {
             "+" => vec![Instruction::Add(ret_loc, args[0], args[1])],
             "-" => vec![Instruction::Sub(ret_loc, args[0], args[1])],
             "print" => vec![Instruction::Print(args[0])],
+            "tuple_nth" => vec![Instruction::TupleNth(ret_loc, args[0], args[1])],
             _   => {
                 match gen_ctx.find_location(&(name.to_string(), arity)) {
                     Some(loc) => vec![Instruction::Call(ret_loc, *loc, arity, args)],

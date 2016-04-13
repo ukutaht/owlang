@@ -14,21 +14,23 @@
  *
  */
 enum opcode_values {
-    EXIT = 0,
-    STORE,
-    PRINT,
-    TEST_EQ,
-    TEST_GT,
-    TEST_GTE,
-    TEST_LT,
-    TEST_LTE,
-    ADD,
-    SUB,
-    CALL,
-    RETURN,
-    MOV,
-    TAILCALL,
-    JMP,
+    OP_EXIT = 0,
+    OP_STORE,
+    OP_PRINT,
+    OP_TEST_EQ,
+    OP_TEST_GT,
+    OP_TEST_GTE,
+    OP_TEST_LT,
+    OP_TEST_LTE,
+    OP_ADD,
+    OP_SUB,
+    OP_CALL,
+    OP_RETURN,
+    OP_MOV,
+    OP_TAILCALL,
+    OP_JMP,
+    OP_TUPLE,
+    OP_TUPLE_NTH,
 };
 
 void opcode_init(vm_t *vm);

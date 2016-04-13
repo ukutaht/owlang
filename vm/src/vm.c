@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <gc/gc.h>
 
 #include "vm.h"
 #include "opcodes.h"
@@ -49,6 +50,7 @@ void vm_load_module(vm_t *vm, unsigned char *code, unsigned int size) {
  *
  */
 void vm_run(vm_t * cpup) {
+    GC_init();
     int iterations = 0;
 
     /**

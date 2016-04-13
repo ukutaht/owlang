@@ -1,9 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <assert.h>
 
 #include "opcodes.h"
 #include "vm.h"
+#include "term.h"
+#include "alloc.h"
 
 // Read and return the next byte from the current instruction-pointer.
 // This function ensures that reading will wrap around the address-space
@@ -44,6 +47,17 @@ int get_int_reg(vm_t *vm, int reg) {
   frame_t curr_frame = vm->frames[vm->current_frame];
 
   return curr_frame.registers[reg];
+}
+
+owl_term get_reg(vm_t *vm, uint8_t reg) {
+  frame_t curr_frame = vm->frames[vm->current_frame];
+
+  return curr_frame.registers[reg];
+}
+
+void set_reg(vm_t *vm, uint8_t reg, owl_term term) {
+  frame_t *curr_frame = &vm->frames[vm->current_frame];
+  curr_frame->registers[reg] = term;
 }
 
 void op_unknown(vm_t * vm) {
@@ -286,24 +300,63 @@ void op_jmp(struct vm *vm) {
     vm->ip = loc;
 }
 
+void op_tuple(struct vm *vm) {
+    uint8_t reg  = next_byte(vm);
+    uint8_t size = next_byte(vm);
+
+    debug_print("TUPLE(Reg: %d, Size: %d)\n", reg, size);
+
+    owl_term *ary = owl_alloc(sizeof(owl_term) * (size + 1));
+    ary[0] = size;
+
+    for(uint8_t i = 1; i <= size; i++) {
+      ary[i] = get_reg(vm, next_byte(vm));
+    }
+
+    owl_term tuple = (owl_term) ary;
+    owl_term tagged_tuple =  (tuple << 3) | TUPLE;
+
+    frame_t *curr_frame = &vm->frames[vm->current_frame];
+    curr_frame->registers[reg] = tagged_tuple;
+
+    vm->ip += 1;
+}
+
+void op_tuple_nth(struct vm *vm) {
+    uint8_t reg = next_byte(vm);
+    uint8_t tuple = next_byte(vm);
+    uint8_t index = next_byte(vm);
+
+    debug_print("TUPLE_NTH(Reg: %d, Tuple: %d, Index: %d)\n", reg, tuple, index);
+
+
+    owl_term *ary = owl_extract_ptr(get_reg(vm, tuple));
+    owl_term elem = ary[get_reg(vm, index) + 1];
+    set_reg(vm, reg, elem);
+
+    vm->ip += 1;
+}
+
 void opcode_init(vm_t * vm) {
     // All instructions will default to unknown.
     for (int i = 0; i < 255; i++)
         vm->opcodes[i] = op_unknown;
 
-    vm->opcodes[EXIT] = op_exit;
-    vm->opcodes[STORE] = op_store;
-    vm->opcodes[PRINT] = op_print;
-    vm->opcodes[TEST_EQ] = op_test_eq;
-    vm->opcodes[TEST_GT] = op_test_gt;
-    vm->opcodes[TEST_GTE] = op_test_gte;
-    vm->opcodes[TEST_LT] = op_test_lt;
-    vm->opcodes[TEST_LTE] = op_test_lte;
-    vm->opcodes[ADD] = op_add;
-    vm->opcodes[SUB] = op_sub;
-    vm->opcodes[CALL] = op_call;
-    vm->opcodes[RETURN] = op_return;
-    vm->opcodes[MOV] = op_mov;
-    vm->opcodes[TAILCALL] = op_tailcall;
-    vm->opcodes[JMP] = op_jmp;
+    vm->opcodes[OP_EXIT] = op_exit;
+    vm->opcodes[OP_STORE] = op_store;
+    vm->opcodes[OP_PRINT] = op_print;
+    vm->opcodes[OP_TEST_EQ] = op_test_eq;
+    vm->opcodes[OP_TEST_GT] = op_test_gt;
+    vm->opcodes[OP_TEST_GTE] = op_test_gte;
+    vm->opcodes[OP_TEST_LT] = op_test_lt;
+    vm->opcodes[OP_TEST_LTE] = op_test_lte;
+    vm->opcodes[OP_ADD] = op_add;
+    vm->opcodes[OP_SUB] = op_sub;
+    vm->opcodes[OP_CALL] = op_call;
+    vm->opcodes[OP_RETURN] = op_return;
+    vm->opcodes[OP_MOV] = op_mov;
+    vm->opcodes[OP_TAILCALL] = op_tailcall;
+    vm->opcodes[OP_JMP] = op_jmp;
+    vm->opcodes[OP_TUPLE]     = op_tuple;
+    vm->opcodes[OP_TUPLE_NTH] = op_tuple_nth;
 }

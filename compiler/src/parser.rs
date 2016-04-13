@@ -38,7 +38,7 @@ pub fn parse_module(input: &[u8]) -> Result<Module, ParseError<u8, Error<u8>>> {
 
 fn expr(i: Input<u8>) -> U8Result<Expr> {
     parse!{i;
-        _if() <|> apply() <|> infix() <|> ident() <|> int()
+        _if() <|> apply() <|> infix() <|> tuple() <|> ident() <|> int()
     }
 }
 
@@ -115,7 +115,7 @@ fn apply(i: Input<u8>) -> U8Result<Expr> {
 fn module_prefix(i: Input<u8>) -> U8Result<Option<&str>> {
     parse!{i;
         let name = identifier();
-        string(b"::");
+        string(b":");
         ret Some(name)
     }
 }
@@ -143,11 +143,17 @@ fn infix(i: Input<u8>) -> U8Result<Expr> {
         skip_whitespace();
         let rhs = expr();
 
-        ret Expr::Apply(Apply {
-            module: None,
-            name: op,
-            args: vec![lhs, rhs]
-        })
+        ret mk_apply(None, op, vec![lhs, rhs])
+    }
+}
+
+fn tuple(i: Input<u8>) -> U8Result<Expr> {
+    parse!{i;
+        token(b'(');
+        let elems: Vec<_> = sep_by(expr, comma);
+        token(b')');
+
+        ret mk_tuple(elems)
     }
 }
 

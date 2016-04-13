@@ -16,6 +16,8 @@ pub enum Instruction {
     Return,
     Mov(Reg, Reg),
     Jmp(u8),
+    Tuple(Reg, u8, Vec<Reg>),
+    TupleNth(Reg, Reg, u8),
 }
 
 impl Instruction {
@@ -57,6 +59,15 @@ impl Instruction {
             &Instruction::Return => {
                 out.write(&vec![opcodes::RETURN]).unwrap();
             }
+            &Instruction::Tuple(reg, size, ref elems) => {
+                let mut res = vec![opcodes::TUPLE, reg, size];
+                res.append(&mut elems.clone());
+
+                out.write(&res).unwrap();
+            }
+            &Instruction::TupleNth(dest, reg, nth) => {
+                out.write(&[opcodes::TUPLE_NTH, dest, reg, nth]).unwrap();
+            },
         }
     }
 
@@ -93,7 +104,7 @@ impl Instruction {
                 let string;
 
                 if regs.len() > 0 {
-                    let args: Vec<_> = regs.iter().map(|int| int.to_string()).collect();
+                    let args: Vec<_> = regs.iter().map(|int| format!("%{}", int)).collect();
                     string = format!("call %{}, {}, %{}, {}\n", ret_loc, loc, arity, args.join(", "));
                 } else {
                     string = format!("call %{}, {}, {}\n", ret_loc, loc, arity);
@@ -108,6 +119,22 @@ impl Instruction {
             &Instruction::Return => {
                 out.write(b"return\n").unwrap();
             }
+            &Instruction::Tuple(reg, size, ref regs) => {
+                let string;
+
+                if regs.len() > 0 {
+                    let elems: Vec<_> = regs.iter().map(|int| format!("%{}", int)).collect();
+                    string = format!("tuple %{}, {}, {}\n", reg, size, elems.join(", "));
+                } else {
+                    string = format!("tuple %{}, {}\n", reg, size);
+                }
+
+                out.write(&string.as_bytes()).unwrap();
+            }
+            &Instruction::TupleNth(dest, reg, nth) => {
+                let string = format!("tuple_nth %{}, %{}, %{}\n", dest, reg, nth);
+                out.write(&string.as_bytes()).unwrap();
+            },
         }
     }
 
@@ -120,8 +147,10 @@ impl Instruction {
             &Instruction::Print(_)        => 2,
             &Instruction::TestGt(_, _, _) => 4,
             &Instruction::Exit            => 1,
-            &Instruction::Call(_, _, _, ref regs) => 3 + regs.len() as u8,
+            &Instruction::Call(_, _, _, ref regs) => 4 + regs.len() as u8,
             &Instruction::Jmp(_)          => 2,
+            &Instruction::Tuple(_, _, ref regs)   => 3 + regs.len() as u8,
+            &Instruction::TupleNth(_, _, _)  => 4,
             &Instruction::Return          => 1,
         }
     }
