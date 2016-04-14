@@ -27,7 +27,6 @@ fn compile_to_file(inp: &PathBuf, out: &PathBuf) {
     std::fs::create_dir_all(&out).unwrap();
     let out_filename = inp.with_extension("owlc");
     let out_name = out.join(Path::new(out_filename.file_name().unwrap()));
-    println!("{:?}", out_name);
     let mut out_buffer = File::create(out_name).unwrap();
 
     parser::parse(file, |module| generate_to_file(module, &mut out_buffer))

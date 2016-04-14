@@ -1,0 +1,9 @@
+module test {
+  fn gimme_five() {
+    2 + 3
+  }
+
+  fn main() {
+    assert_eq(gimme_five(), 5)
+  }
+}

@@ -10,7 +10,9 @@ class Formatter
 
     def format_failure(filename, output)
       puts(red("× " + filename))
-      print("    " + red(output))
+      output.lines.each do |line|
+        print("    " + red(line))
+      end
     end
 
     private
@@ -34,7 +36,12 @@ COMPILER = File.join(COMPILER_DIR, "target/debug/owlc")
 VM       = File.join(VM_DIR, "target/vm")
 
 def run_file(file)
-  `#{COMPILER} #{file} -o #{TEST_TARGET}`
+
+  compile_output = `#{COMPILER} #{file} -o #{TEST_TARGET} 2>&1`
+  if $?.exitstatus != 0
+    Formatter.format_failure(File.basename(file), compile_output)
+    return
+  end
 
   built_filename = Pathname.new(file).basename.sub_ext(".owlc")
   built = File.join(TEST_TARGET, built_filename)

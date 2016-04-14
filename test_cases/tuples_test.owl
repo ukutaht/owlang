@@ -1,0 +1,10 @@
+module test {
+  fn two_and_four() {
+    (2, 4)
+  }
+
+  fn main() {
+    assert_eq(tuple_nth(two_and_four(), 0), 2)
+    assert_eq(tuple_nth(two_and_four(), 1), 4)
+  }
+}
