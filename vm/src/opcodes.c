@@ -37,13 +37,6 @@ unsigned int next_int(vm_t *vm) {
   return val1 + (256 * val2);
 }
 
-// Helper to return the integer-content of a register.
-int get_int_reg(vm_t *vm, int reg) {
-  frame_t curr_frame = vm->frames[vm->current_frame];
-
-  return curr_frame.registers[reg];
-}
-
 owl_term get_reg(vm_t *vm, uint8_t reg) {
   frame_t curr_frame = vm->frames[vm->current_frame];
 
@@ -85,7 +78,7 @@ void op_print(struct vm *vm) {
 
   debug_print("INT_PRINT(Reg:%d)\n", reg);
 
-  int val = get_int_reg(vm, reg);
+  int val = get_reg(vm, reg);
 
   printf("%d\n", val);
 
@@ -102,8 +95,8 @@ void op_test_eq(struct vm *vm) {
 
   debug_print("TEST_EQ(Reg1: %02x, Reg2: %02x, IfTrue:%02x)\n", reg1, reg2, instr);
 
-  int val1 = get_int_reg(vm, reg1);
-  int val2 = get_int_reg(vm, reg2);
+  int val1 = get_reg(vm, reg1);
+  int val2 = get_reg(vm, reg2);
 
   if (val1 == val2) {
     vm->ip += instr;
@@ -122,8 +115,8 @@ void op_test_gt(struct vm *vm) {
 
   debug_print("TEST_GT(Reg1: %02x, Reg2: %02x, IfTrue:%d)\n", reg1, reg2, instr);
 
-  int val1 = get_int_reg(vm, reg1);
-  int val2 = get_int_reg(vm, reg2);
+  int val1 = get_reg(vm, reg1);
+  int val2 = get_reg(vm, reg2);
 
   if (val1 > val2) {
     vm->ip += instr;
@@ -142,8 +135,8 @@ void op_test_gte(struct vm *vm) {
 
   debug_print("TEST_GTE(Reg1: %02x, Reg2: %02x, IfTrue:%d)\n", reg1, reg2, instr);
 
-  int val1 = get_int_reg(vm, reg1);
-  int val2 = get_int_reg(vm, reg2);
+  int val1 = get_reg(vm, reg1);
+  int val2 = get_reg(vm, reg2);
 
   if (val1 >= val2) {
     vm->ip += instr;
@@ -162,8 +155,8 @@ void op_test_lt(struct vm *vm) {
 
   debug_print("TEST_LT(Reg1: %02x, Reg2: %02x, IfTrue:%d)\n", reg1, reg2, instr);
 
-  int val1 = get_int_reg(vm, reg1);
-  int val2 = get_int_reg(vm, reg2);
+  int val1 = get_reg(vm, reg1);
+  int val2 = get_reg(vm, reg2);
 
   if (val1 < val2) {
     vm->ip += instr;
@@ -182,8 +175,8 @@ void op_test_lte(struct vm *vm) {
 
   debug_print("TEST_LTE(Reg1: %02x, Reg2: %02x, IfTrue:%d)\n", reg1, reg2, instr);
 
-  int val1 = get_int_reg(vm, reg1);
-  int val2 = get_int_reg(vm, reg2);
+  int val1 = get_reg(vm, reg1);
+  int val2 = get_reg(vm, reg2);
 
   if (val1 <= val2) {
     vm->ip += instr;
@@ -200,8 +193,8 @@ void op_add(struct vm *vm) {
 
   debug_print("ADD(Reg1: %02x, Reg2: %02x, REG3:%02x)\n", reg1, reg2, reg3);
 
-  int val1 = get_int_reg(vm, reg2);
-  int val2 = get_int_reg(vm, reg3);
+  int val1 = get_reg(vm, reg2);
+  int val2 = get_reg(vm, reg3);
   int result = val1 + val2;
 
   frame_t *curr_frame = &vm->frames[vm->current_frame];
@@ -219,8 +212,8 @@ void op_sub(struct vm *vm) {
 
   debug_print("SUB(Reg1: %02x, Reg2: %02x, REG3:%02x)\n", reg1, reg2, reg3);
 
-  int val1 = get_int_reg(vm, reg2);
-  int val2 = get_int_reg(vm, reg3);
+  int val1 = get_reg(vm, reg2);
+  int val2 = get_reg(vm, reg3);
   int result = val1 - val2;
 
   frame_t *curr_frame = &vm->frames[vm->current_frame];
@@ -241,7 +234,7 @@ void op_call(struct vm *vm) {
   unsigned int next_frame = vm->current_frame + 1;
 
   for(unsigned int i = 0; i < arity; i++) {
-    unsigned int arg = get_int_reg(vm, next_reg(vm));
+    unsigned int arg = get_reg(vm, next_reg(vm));
     vm->frames[next_frame].registers[i + 1] = arg;
   }
 
