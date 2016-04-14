@@ -87,9 +87,6 @@ void op_print(struct vm *vm) {
   vm->ip += 1;
 }
 
-// Tests if two registers are equal
-// If they are equal, continue running. If not equal,
-// jumps to the provided label
 void op_test_eq(struct vm *vm) {
   uint8_t reg1  = next_reg(vm);
   uint8_t reg2  = next_reg(vm);
@@ -107,9 +104,6 @@ void op_test_eq(struct vm *vm) {
   }
 }
 
-// Tests if the first register is greater than other
-// If true, continue running. If not equal,
-// jumps to the provided label
 void op_test_gt(struct vm *vm) {
   uint8_t reg1  = next_reg(vm);
   uint8_t reg2  = next_reg(vm);
@@ -127,9 +121,6 @@ void op_test_gt(struct vm *vm) {
   }
 }
 
-// Tests if the first register is greater than or equal to other
-// If true, continue running. If not equal,
-// jumps to the provided label
 void op_test_gte(struct vm *vm) {
   unsigned int reg1  = next_reg(vm);
   unsigned int reg2  = next_reg(vm);
@@ -147,9 +138,6 @@ void op_test_gte(struct vm *vm) {
   }
 }
 
-// Tests if the first register is less than other
-// If true, continue running. If not equal,
-// jumps to the provided label
 void op_test_lt(struct vm *vm) {
   unsigned int reg1  = next_reg(vm);
   unsigned int reg2  = next_reg(vm);
@@ -167,9 +155,6 @@ void op_test_lt(struct vm *vm) {
   }
 }
 
-// Tests if the first register is less than or equal to other
-// If true, continue running. If not equal,
-// jumps to the provided label
 void op_test_lte(struct vm *vm) {
   uint8_t reg1  = next_reg(vm);
   uint8_t reg2  = next_reg(vm);
@@ -187,7 +172,6 @@ void op_test_lte(struct vm *vm) {
   }
 }
 
-// Adds regsiters 2 and 3. Stores result in 1
 void op_add(struct vm *vm) {
   uint8_t reg1  = next_reg(vm);
   uint8_t reg2  = next_reg(vm);
@@ -203,7 +187,6 @@ void op_add(struct vm *vm) {
   vm->ip += 1;
 }
 
-// Subtracts regsiters 2 and 3. Stores result in 1
 void op_sub(struct vm *vm) {
   uint8_t reg1  = next_reg(vm);
   uint8_t reg2  = next_reg(vm);
@@ -270,8 +253,7 @@ void op_mov(struct vm *vm) {
 
   debug_print("MOV(Reg1: %02x, Reg2: %02x)\n", reg1, reg2);
 
-  frame_t *curr_frame = &vm->frames[vm->current_frame];
-  curr_frame->registers[reg1] = curr_frame->registers[reg2];
+  set_reg(vm, reg1, get_reg(vm, reg2));
 
   vm->ip += 1;
 }
@@ -300,8 +282,7 @@ void op_tuple(struct vm *vm) {
   owl_term tuple = (owl_term) ary;
   owl_term tagged_tuple =  (tuple << 3) | TUPLE;
 
-  frame_t *curr_frame = &vm->frames[vm->current_frame];
-  curr_frame->registers[reg] = tagged_tuple;
+  set_reg(vm, reg, tagged_tuple);
 
   vm->ip += 1;
 }
