@@ -204,13 +204,6 @@ void op_call(struct vm *vm) {
   vm->ip = location;
 }
 
-void op_tailcall(struct vm *vm) {
-  uint8_t location = next_byte(vm);
-  uint8_t arity = next_byte(vm);
-
-  vm->ip = location;
-}
-
 void op_return(struct vm *vm) {
   frame_t *curr_frame = &vm->frames[vm->current_frame];
   frame_t *prev_frame = &vm->frames[vm->current_frame - 1];
@@ -302,7 +295,6 @@ void opcode_init(vm_t * vm) {
   vm->opcodes[OP_CALL] = op_call;
   vm->opcodes[OP_RETURN] = op_return;
   vm->opcodes[OP_MOV] = op_mov;
-  vm->opcodes[OP_TAILCALL] = op_tailcall;
   vm->opcodes[OP_JMP] = op_jmp;
   vm->opcodes[OP_TUPLE]     = op_tuple;
   vm->opcodes[OP_TUPLE_NTH] = op_tuple_nth;

@@ -27,7 +27,6 @@ enum opcode_values {
     OP_CALL,
     OP_RETURN,
     OP_MOV,
-    OP_TAILCALL,
     OP_JMP,
     OP_TUPLE,
     OP_TUPLE_NTH,

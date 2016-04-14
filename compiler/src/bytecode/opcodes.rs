@@ -15,9 +15,7 @@ pub const SUB: u8 = 0x09;
 pub const CALL: u8 = 0x0a;
 pub const RETURN: u8 = 0x0b;
 pub const MOV: u8 = 0x0c;
-#[allow(dead_code)]
-pub const TAILCALL: u8 = 0x0d;
-pub const JMP: u8 = 0x0e;
-pub const TUPLE: u8 = 0x0f;
-pub const TUPLE_NTH: u8 = 0x10;
-pub const ASSERT_EQ: u8 = 0x11;
+pub const JMP: u8 = 0x0d;
+pub const TUPLE: u8 = 0x0e;
+pub const TUPLE_NTH: u8 = 0xf;
+pub const ASSERT_EQ: u8 = 0x10;
