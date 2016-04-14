@@ -254,9 +254,8 @@ void op_tuple_nth(struct vm *vm) {
   uint8_t tuple = next_byte(vm);
   uint8_t index_reg = next_byte(vm);
 
-  owl_term *ary = owl_extract_ptr(get_reg(vm, tuple));
   uint64_t index = int_from_owl_int(get_reg(vm, index_reg));
-  owl_term elem = ary[index + 1];
+  owl_term elem = owl_tuple_nth(get_reg(vm, tuple), index);
   set_reg(vm, reg, elem);
 
   vm->ip += 1;
@@ -266,10 +265,7 @@ void op_assert_eq(struct vm *vm) {
   uint8_t reg1 = next_byte(vm);
   uint8_t reg2 = next_byte(vm);
 
-  owl_term left  = get_reg(vm, reg1);
-  owl_term right = get_reg(vm, reg2);
-
-  if (left != right) {
+  if (!owl_terms_eq(get_reg(vm, reg1), get_reg(vm, reg2))) {
     printf("Assertion failed!\n");
     exit(1);
   }

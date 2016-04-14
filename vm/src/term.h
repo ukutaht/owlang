@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <stdbool.h>
 
 #ifndef TERM_H
 #define TERM_H 1
@@ -22,5 +23,8 @@ owl_term* owl_extract_ptr(owl_term val);
 
 owl_term owl_int_from(uint64_t val);
 uint64_t int_from_owl_int(owl_term val);
+
+owl_term owl_tuple_nth(owl_term tuple, uint8_t index);
+bool owl_terms_eq(owl_term left, owl_term right);
 
 #endif  // TERM_H
