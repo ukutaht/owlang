@@ -30,11 +30,13 @@ uint8_t next_reg(vm_t *vm) {
 // 8      => 8,   0
 // 356    => 100, 1
 // 65,792 => 256, 256
-unsigned int next_int(vm_t *vm) {
-  unsigned int val1 = next_byte(vm);
-  unsigned int val2 = next_byte(vm);
+owl_term next_int(vm_t *vm) {
+  uint8_t val1 = next_byte(vm);
+  uint8_t val2 = next_byte(vm);
 
-  return val1 + (256 * val2);
+  uint16_t actual_val = val1 + (256 * val2);
+
+  return owl_int_from(actual_val);
 }
 
 owl_term get_reg(vm_t *vm, uint8_t reg) {
@@ -63,9 +65,9 @@ void op_exit(vm_t *vm) {
 
 void op_store(vm_t *vm) {
   uint8_t reg = next_reg(vm);
-  unsigned int value = next_int(vm);
+  owl_term value = next_int(vm);
 
-  debug_print("STORE_INT(Reg:%d) => %d\n", reg, value);
+  debug_print("STORE_INT(Reg:%d) => %llu\n", reg, int_from_owl_int(value));
 
   frame_t *curr_frame = &vm->frames[vm->current_frame];
   curr_frame->registers[reg] = value;
@@ -78,9 +80,9 @@ void op_print(struct vm *vm) {
 
   debug_print("INT_PRINT(Reg:%d)\n", reg);
 
-  int val = get_reg(vm, reg);
+  owl_term val = get_reg(vm, reg);
 
-  printf("%d\n", val);
+  printf("%llu\n", int_from_owl_int(val));
 
   vm->ip += 1;
 }
@@ -95,10 +97,10 @@ void op_test_eq(struct vm *vm) {
 
   debug_print("TEST_EQ(Reg1: %02x, Reg2: %02x, IfTrue:%02x)\n", reg1, reg2, instr);
 
-  int val1 = get_reg(vm, reg1);
-  int val2 = get_reg(vm, reg2);
+  owl_term val1 = get_reg(vm, reg1);
+  owl_term val2 = get_reg(vm, reg2);
 
-  if (val1 == val2) {
+  if (int_from_owl_int(val1) == int_from_owl_int(val2)) {
     vm->ip += instr;
   } else {
     vm->ip += 1;
@@ -115,10 +117,10 @@ void op_test_gt(struct vm *vm) {
 
   debug_print("TEST_GT(Reg1: %02x, Reg2: %02x, IfTrue:%d)\n", reg1, reg2, instr);
 
-  int val1 = get_reg(vm, reg1);
-  int val2 = get_reg(vm, reg2);
+  owl_term val1 = get_reg(vm, reg1);
+  owl_term val2 = get_reg(vm, reg2);
 
-  if (val1 > val2) {
+  if (int_from_owl_int(val1) > int_from_owl_int(val2)) {
     vm->ip += instr;
   } else {
     vm->ip += 1;
@@ -135,10 +137,10 @@ void op_test_gte(struct vm *vm) {
 
   debug_print("TEST_GTE(Reg1: %02x, Reg2: %02x, IfTrue:%d)\n", reg1, reg2, instr);
 
-  int val1 = get_reg(vm, reg1);
-  int val2 = get_reg(vm, reg2);
+  owl_term val1 = get_reg(vm, reg1);
+  owl_term val2 = get_reg(vm, reg2);
 
-  if (val1 >= val2) {
+  if (int_from_owl_int(val1) >= int_from_owl_int(val2)) {
     vm->ip += instr;
   } else {
     vm->ip += 1;
@@ -155,10 +157,10 @@ void op_test_lt(struct vm *vm) {
 
   debug_print("TEST_LT(Reg1: %02x, Reg2: %02x, IfTrue:%d)\n", reg1, reg2, instr);
 
-  int val1 = get_reg(vm, reg1);
-  int val2 = get_reg(vm, reg2);
+  owl_term val1 = get_reg(vm, reg1);
+  owl_term val2 = get_reg(vm, reg2);
 
-  if (val1 < val2) {
+  if (int_from_owl_int(val1) < int_from_owl_int(val2)) {
     vm->ip += instr;
   } else {
     vm->ip += 1;
@@ -175,10 +177,10 @@ void op_test_lte(struct vm *vm) {
 
   debug_print("TEST_LTE(Reg1: %02x, Reg2: %02x, IfTrue:%d)\n", reg1, reg2, instr);
 
-  int val1 = get_reg(vm, reg1);
-  int val2 = get_reg(vm, reg2);
+  owl_term val1 = get_reg(vm, reg1);
+  owl_term val2 = get_reg(vm, reg2);
 
-  if (val1 <= val2) {
+  if (int_from_owl_int(val1) <= int_from_owl_int(val2)) {
     vm->ip += instr;
   } else {
     vm->ip += 1;
@@ -189,18 +191,15 @@ void op_test_lte(struct vm *vm) {
 void op_add(struct vm *vm) {
   uint8_t reg1  = next_reg(vm);
   uint8_t reg2  = next_reg(vm);
-  unsigned int reg3  = next_reg(vm);
+  uint8_t reg3  = next_reg(vm);
 
   debug_print("ADD(Reg1: %02x, Reg2: %02x, REG3:%02x)\n", reg1, reg2, reg3);
 
-  int val1 = get_reg(vm, reg2);
-  int val2 = get_reg(vm, reg3);
-  int result = val1 + val2;
+  owl_term val1 = get_reg(vm, reg2);
+  owl_term val2 = get_reg(vm, reg3);
+  owl_term result = owl_int_from(int_from_owl_int(val1) + int_from_owl_int(val2));
 
-  frame_t *curr_frame = &vm->frames[vm->current_frame];
-
-  curr_frame->registers[reg1] = result;
-
+  set_reg(vm, reg1, result);
   vm->ip += 1;
 }
 
@@ -208,17 +207,15 @@ void op_add(struct vm *vm) {
 void op_sub(struct vm *vm) {
   uint8_t reg1  = next_reg(vm);
   uint8_t reg2  = next_reg(vm);
-  unsigned int reg3  = next_reg(vm);
+  uint8_t reg3  = next_reg(vm);
 
   debug_print("SUB(Reg1: %02x, Reg2: %02x, REG3:%02x)\n", reg1, reg2, reg3);
 
-  int val1 = get_reg(vm, reg2);
-  int val2 = get_reg(vm, reg3);
-  int result = val1 - val2;
+  owl_term val1 = get_reg(vm, reg2);
+  owl_term val2 = get_reg(vm, reg3);
+  owl_term result = owl_int_from(int_from_owl_int(val1) - int_from_owl_int(val2));
 
-  frame_t *curr_frame = &vm->frames[vm->current_frame];
-  curr_frame->registers[reg1] = result;
-
+  set_reg(vm, reg1, result);
   vm->ip += 1;
 }
 
@@ -233,8 +230,8 @@ void op_call(struct vm *vm) {
 
   unsigned int next_frame = vm->current_frame + 1;
 
-  for(unsigned int i = 0; i < arity; i++) {
-    unsigned int arg = get_reg(vm, next_reg(vm));
+  for(uint8_t i = 0; i < arity; i++) {
+    owl_term arg = get_reg(vm, next_reg(vm));
     vm->frames[next_frame].registers[i + 1] = arg;
   }
 
@@ -312,13 +309,13 @@ void op_tuple(struct vm *vm) {
 void op_tuple_nth(struct vm *vm) {
   uint8_t reg = next_byte(vm);
   uint8_t tuple = next_byte(vm);
-  uint8_t index = next_byte(vm);
+  uint8_t index_reg = next_byte(vm);
 
-  debug_print("TUPLE_NTH(Reg: %d, Tuple: %d, Index: %d)\n", reg, tuple, index);
-
+  debug_print("TUPLE_NTH(Reg: %d, Tuple: %d, Index Reg: %d)\n", reg, tuple, index_reg);
 
   owl_term *ary = owl_extract_ptr(get_reg(vm, tuple));
-  owl_term elem = ary[get_reg(vm, index) + 1];
+  uint64_t index = int_from_owl_int(get_reg(vm, index_reg));
+  owl_term elem = ary[index + 1];
   set_reg(vm, reg, elem);
 
   vm->ip += 1;
@@ -330,7 +327,7 @@ void op_assert_eq(struct vm *vm) {
 
   debug_print("ASSERT_EQ(Reg1: %d, Reg2: %d)\n", reg1, reg2);
 
-  owl_term left = get_reg(vm, reg1);
+  owl_term left  = get_reg(vm, reg1);
   owl_term right = get_reg(vm, reg2);
 
   if (left != right) {

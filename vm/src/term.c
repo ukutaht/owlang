@@ -3,7 +3,6 @@
 
 #include "term.h"
 
-
 owl_tag owl_tag_of(owl_term term) {
   return term & 0xf;
 }
