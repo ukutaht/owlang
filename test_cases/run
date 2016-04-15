@@ -33,7 +33,7 @@ VM_DIR       = File.join(ROOT_DIR, "vm")
 TEST_TARGET  = File.join(ROOT_DIR, "test_cases/.build")
 
 COMPILER = File.join(COMPILER_DIR, "target/debug/owlc")
-VM       = File.join(VM_DIR, "target/vm")
+VM       = File.join(VM_DIR, "target/debug/vm")
 
 def run_file(file)
 
@@ -59,7 +59,7 @@ def run_all
   puts "Compiling compiler"
   `cd #{COMPILER_DIR} && cargo build`
   puts "Compiling virtual machine"
-  `cd #{VM_DIR} && make`
+  `cd #{VM_DIR} && bin/build debug`
   puts
 
   tests = File.join(ROOT_DIR, "test_cases/**/*_test.owl")

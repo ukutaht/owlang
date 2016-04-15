@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+set -e
+
+bin/build debug
+target/debug/vm "$@"
