@@ -131,6 +131,20 @@ impl<'a> FnGenerator<'a> {
                 res.append(&mut me);
                 res
             },
+            &ast::Expr::Vector(ref v) => {
+                let mut res = Vec::new();
+                for elem in v.elems.iter() {
+                    res.append(&mut self.generate_expr(elem, gen_ctx))
+                }
+
+                let mut elem_locations: Vec<Reg> = v.elems.iter().map(|_| self.pop()).collect();
+                elem_locations.reverse();
+                let reg = self.push();
+
+                let mut me = vec![Instruction::Vector(reg, v.elems.len() as u8, elem_locations)];
+                res.append(&mut me);
+                res
+            },
             _ => panic!("WAT")
         }
     }

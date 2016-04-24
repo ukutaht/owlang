@@ -113,3 +113,11 @@ fn parses_simple_tuple() {
         mk_int("1"), mk_int("2")
     ])));
 }
+
+#[test]
+fn parses_simple_vector() {
+    let res = parser::parse_expr(b"[1, 2]");
+    assert_eq!(res, Ok(mk_vector(vec![
+        mk_int("1"), mk_int("2")
+    ])));
+}

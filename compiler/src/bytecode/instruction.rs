@@ -19,6 +19,7 @@ pub enum Instruction {
     Tuple(Reg, u8, Vec<Reg>),
     TupleNth(Reg, Reg, u8),
     AssertEq(Reg, Reg),
+    Vector(Reg, u8, Vec<Reg>),
 }
 
 impl Instruction {
@@ -72,6 +73,12 @@ impl Instruction {
             &Instruction::AssertEq(reg1, reg2) => {
                 out.write(&[opcodes::ASSERT_EQ, reg1, reg2]).unwrap();
             },
+            &Instruction::Vector(reg, size, ref elems) => {
+                let mut res = vec![opcodes::VECTOR, reg, size];
+                res.append(&mut elems.clone());
+
+                out.write(&res).unwrap();
+            }
         }
     }
 
@@ -143,6 +150,18 @@ impl Instruction {
                 let string = format!("assert_eq %{}, %{}\n", reg1, reg2);
                 out.write(&string.as_bytes()).unwrap();
             },
+            &Instruction::Vector(reg, size, ref regs) => {
+                let string;
+
+                if regs.len() > 0 {
+                    let elems: Vec<_> = regs.iter().map(|int| format!("%{}", int)).collect();
+                    string = format!("vector %{}, {}, {}\n", reg, size, elems.join(", "));
+                } else {
+                    string = format!("vector %{}, {}\n", reg, size);
+                }
+
+                out.write(&string.as_bytes()).unwrap();
+            }
         }
     }
 
@@ -161,6 +180,7 @@ impl Instruction {
             &Instruction::TupleNth(_, _, _)  => 4,
             &Instruction::Return          => 1,
             &Instruction::AssertEq(_, _)  => 3,
+            &Instruction::Vector(_, _, ref regs)   => 3 + regs.len() as u8,
         }
     }
 }

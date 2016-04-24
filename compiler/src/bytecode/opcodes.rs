@@ -19,3 +19,4 @@ pub const JMP: u8 = 0x0d;
 pub const TUPLE: u8 = 0x0e;
 pub const TUPLE_NTH: u8 = 0xf;
 pub const ASSERT_EQ: u8 = 0x10;
+pub const VECTOR: u8 = 0x11;

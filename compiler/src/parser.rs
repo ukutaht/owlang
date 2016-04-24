@@ -38,7 +38,7 @@ pub fn parse_module(input: &[u8]) -> Result<Module, ParseError<u8, Error<u8>>> {
 
 fn expr(i: Input<u8>) -> U8Result<Expr> {
     parse!{i;
-        _if() <|> apply() <|> infix() <|> tuple() <|> ident() <|> int()
+        _if() <|> apply() <|> infix() <|> tuple() <|> vector() <|> ident() <|> int()
     }
 }
 
@@ -154,6 +154,16 @@ fn tuple(i: Input<u8>) -> U8Result<Expr> {
         token(b')');
 
         ret mk_tuple(elems)
+    }
+}
+
+fn vector(i: Input<u8>) -> U8Result<Expr> {
+    parse!{i;
+        token(b'[');
+        let elems: Vec<_> = sep_by(expr, comma);
+        token(b']');
+
+        ret mk_vector(elems)
     }
 }
 

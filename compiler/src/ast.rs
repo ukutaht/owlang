@@ -51,12 +51,18 @@ pub struct Tuple<'a> {
 }
 
 #[derive(Debug, Eq, PartialEq)]
+pub struct Vector<'a> {
+    pub elems: Vec<Expr<'a>>,
+}
+
+#[derive(Debug, Eq, PartialEq)]
 pub enum Expr<'a> {
     Int(Int<'a>),
     Ident(Ident<'a>),
     Apply(Apply<'a>),
     If(If<'a>),
     Tuple(Tuple<'a>),
+    Vector(Vector<'a>),
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -93,6 +99,10 @@ pub fn mk_if<'a>(condition: Expr<'a>, body: Vec<Expr<'a>>) -> Expr<'a> {
 
 pub fn mk_tuple<'a>(elems: Vec<Expr<'a>>) -> Expr<'a> {
     Expr::Tuple(Tuple{elems: elems})
+}
+
+pub fn mk_vector<'a>(elems: Vec<Expr<'a>>) -> Expr<'a> {
+    Expr::Vector(Vector{elems: elems})
 }
 
 pub fn mk_module<'a>(name: &'a str, fns: Vec<Function<'a>>) -> Module<'a> {
