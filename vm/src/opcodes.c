@@ -54,7 +54,7 @@ void op_unknown(vm_t * vm) {
   int instruction = vm->code[vm->ip];
   printf("%04X - op_unknown(%02X)\n", vm->ip, instruction);
 
-  vm->ip += 1;
+  exit(1);
 }
 
 void op_exit(vm_t *vm) {
