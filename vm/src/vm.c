@@ -42,22 +42,9 @@ void vm_load_module(vm_t *vm, unsigned char *code, unsigned int size) {
     memcpy(vm->code, code, size);
 }
 
-/**
- *  Main virtual machine execution loop
- *
- *  This function will walk through the code passed to the constructor
- * and attempt to execute each bytecode instruction.
- *
- */
-void vm_run(vm_t * cpup) {
+void vm_run(vm_t * vm) {
     GC_init();
     int iterations = 0;
-
-    /**
-     * If we're called without a valid CPU then we should abort.
-     */
-    if (!cpup)
-        return;
 
     /**
      * Run continuously.
@@ -65,39 +52,18 @@ void vm_run(vm_t * cpup) {
      * In practice this means until an EXIT instruction is encountered,
      * which will set the "running"-flag to be false.
      *
-     * However the system can cope with IP wrap-around.
      */
-    while (cpup->running == true) {
-        /**
-         * Wrap IP on the 64k boundary, if required.
-         */
-        if (cpup->ip >= 0xFFFF)
-            cpup->ip = 0;
-
-
+    while (vm->running == true) {
         /**
          * Lookup the instruction at the instruction-pointer.
          */
-        int opcode = cpup->code[cpup->ip];
+        int opcode = vm->code[vm->ip];
         /**
          * Call the opcode implementation, if defined.
          */
-        if (cpup->opcodes[opcode] != NULL)
-            cpup->opcodes[opcode] (cpup);
+        if (vm->opcodes[opcode] != NULL)
+            vm->opcodes[opcode] (vm);
 
-        /**
-         * NOTE: At this point you might be looking for
-         *       a line of the form : cpup->ip += 1;
-         *
-         *       However this is NOT REQUIRED as each opcode
-         *       will have already updated the (global) instruction
-         *       pointer.
-         *
-         *       This is neater because each opcode knows how long it is,
-         *       and will probably have bumped the IP to read the register
-         *       number, or other arguments.
-         *
-         */
         iterations++;
     }
 
