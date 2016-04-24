@@ -4,8 +4,11 @@ require 'pathname'
 
 class Formatter
   class << self
-    def format_success(filename)
+    def format_success(filename, output)
       puts(green("· " + filename))
+      output.lines.each do |line|
+        print("    " + line)
+      end
     end
 
     def format_failure(filename, output)
@@ -49,7 +52,7 @@ def run_file(file)
   output = `#{VM} #{built}`
 
   if $?.exitstatus == 0
-    Formatter.format_success(File.basename(file))
+    Formatter.format_success(File.basename(file), output)
   else
     Formatter.format_failure(File.basename(file), output)
   end
