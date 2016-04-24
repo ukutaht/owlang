@@ -38,6 +38,5 @@ vm_t *vm_new();
 
 void vm_load_module(vm_t *vm, unsigned char *code, unsigned int size);
 void vm_run(vm_t *vm);
-void vm_free(vm_t *vm);
 
 #endif // VM_H
