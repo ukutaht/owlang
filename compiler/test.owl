@@ -1,9 +1,0 @@
-module test {
-  fn wut() {
-    (1, 4)
-  }
-
-  fn main() {
-    assert_eq(3, 3)
-  }
-}
