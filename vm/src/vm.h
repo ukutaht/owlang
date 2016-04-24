@@ -5,7 +5,6 @@
 
 #define REGISTER_COUNT 100
 #define STACK_DEPTH 100
-#define MAX_MODULES 100
 
 #define DEBUG false
 #define debug_print(fmt, ...) \
