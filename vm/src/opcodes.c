@@ -7,6 +7,7 @@
 #include "vm.h"
 #include "term.h"
 #include "alloc.h"
+#include "vector.h"
 
 // Read and return the next byte from the current instruction-pointer.
 uint8_t next_byte(vm_t *vm) {
@@ -249,6 +250,21 @@ void op_tuple(struct vm *vm) {
   vm->ip += 1;
 }
 
+void op_vector(struct vm *vm) {
+  uint8_t reg  = next_byte(vm);
+  uint8_t size = next_byte(vm);
+
+  owl_term vector = vector_init();
+
+  for(uint8_t i = 0; i < size; i++) {
+    vector = vector_push(vector, get_reg(vm, next_byte(vm)));
+  }
+
+  set_reg(vm, reg, vector);
+
+  vm->ip += 1;
+}
+
 void op_tuple_nth(struct vm *vm) {
   uint8_t reg = next_byte(vm);
   uint8_t tuple = next_byte(vm);
@@ -295,4 +311,5 @@ void opcode_init(vm_t * vm) {
   vm->opcodes[OP_TUPLE]     = op_tuple;
   vm->opcodes[OP_TUPLE_NTH] = op_tuple_nth;
   vm->opcodes[OP_ASSERT_EQ] = op_assert_eq;
+  vm->opcodes[OP_VECTOR] = op_vector;
 }

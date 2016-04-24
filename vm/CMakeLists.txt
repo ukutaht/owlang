@@ -7,5 +7,5 @@ INCLUDE (CheckIncludeFiles)
 check_include_files (gc.h HAVE_GC)
 
 include_directories ("${PROJECT_SOURCE_DIR}/src")
-add_executable(vm src/main.c src/vm.c src/opcodes.c src/term.c src/alloc.c)
+add_executable(vm src/main.c src/vm.c src/opcodes.c src/term.c src/alloc.c src/vector.c)
 target_link_libraries(vm gc rrb)

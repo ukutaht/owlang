@@ -1,6 +1,7 @@
 #include <stdint.h>
 
 #include "term.h"
+#include "vector.h"
 
 owl_tag owl_tag_of(owl_term term) {
   return term & 0x7;
@@ -53,6 +54,8 @@ bool owl_terms_eq(owl_term left, owl_term right) {
       }
       return true;
     }
+    case VECTOR:
+      return vector_eq(left, right);
     default:
       return false;
   }
