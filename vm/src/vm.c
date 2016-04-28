@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <sys/stat.h>
 #include <gc/gc.h>
 
 #include "vm.h"
@@ -14,6 +15,7 @@ vm_t *vm_new() {
     return NULL;
   memset(vm, '\0', sizeof(struct vm));
 
+  // Allocate 64k for code
   vm->code = malloc(0xFFFF);
   if (vm->code == NULL) {
     return NULL;
@@ -30,9 +32,61 @@ vm_t *vm_new() {
   return vm;
 }
 
+void vm_load_module_from_file(vm_t *vm, const char *filename) {
+  char ch;
 
-void vm_load_module(vm_t *vm, unsigned char *code, unsigned int size) {
-  memcpy(vm->code, code, size);
+  FILE *fp = fopen(filename, "rb");
+
+  if (!fp) {
+      printf("Failed to open program-file %s\n", filename);
+      exit(1);
+  }
+
+  unsigned char *code_ptr = vm->code;
+  while ((ch = fgetc(fp)) != EOF ) {
+    switch(ch) {
+      case OP_EXIT:
+      case OP_RETURN:
+        *code_ptr++ = ch;
+        break;
+      case OP_PRINT:
+      case OP_JMP:
+        *code_ptr++ = ch;
+        *code_ptr++ = fgetc(fp);
+        break;
+      case OP_MOV:
+      case OP_STORE:
+      case OP_ASSERT_EQ:
+        *code_ptr++ = ch;
+        *code_ptr++ = fgetc(fp);
+        *code_ptr++ = fgetc(fp);
+        break;
+      case OP_TEST_EQ:
+      case OP_TEST_GT:
+      case OP_TEST_GTE:
+      case OP_TEST_LT:
+      case OP_TEST_LTE:
+      case OP_ADD:
+      case OP_SUB:
+      case OP_CALL:
+      case OP_TUPLE_NTH:
+        *code_ptr++ = ch;
+        *code_ptr++ = fgetc(fp);
+        *code_ptr++ = fgetc(fp);
+        *code_ptr++ = fgetc(fp);
+        break;
+      case OP_TUPLE:
+      case OP_VECTOR:
+        *code_ptr++ = ch;
+        *code_ptr++ = fgetc(fp);
+        uint8_t size = fgetc(fp);
+        *code_ptr++ = size;
+        for (int i = 0; i < size; i++) {
+          *code_ptr++ = fgetc(fp);
+        }
+        break;
+    }
+  }
 }
 
 void vm_run(vm_t * vm) {

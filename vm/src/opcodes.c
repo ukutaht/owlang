@@ -53,17 +53,19 @@ void set_reg(vm_t *vm, uint8_t reg, owl_term term) {
 
 void op_unknown(vm_t * vm) {
   int instruction = vm->code[vm->ip];
-  printf("%04X - op_unknown(%02X)\n", vm->ip, instruction);
+  printf("%04X op_unknown(%d)\n", vm->ip, instruction);
 
   exit(1);
 }
 
 void op_exit(vm_t *vm) {
+  debug_print("%04x OP_EXIT\n", vm->ip);
   vm->running = false;
   vm->ip += 1;
 }
 
 void op_store(vm_t *vm) {
+  debug_print("%04x OP_STORE\n", vm->ip);
   uint8_t reg = next_reg(vm);
   owl_term value = next_int(vm);
 
@@ -74,6 +76,7 @@ void op_store(vm_t *vm) {
 }
 
 void op_print(struct vm *vm) {
+  debug_print("%04x OP_PRINT\n", vm->ip);
   uint8_t reg = next_reg(vm);
 
   owl_term val = get_reg(vm, reg);
@@ -84,6 +87,7 @@ void op_print(struct vm *vm) {
 }
 
 void op_test_eq(struct vm *vm) {
+  debug_print("%04x OP_TEST_EQ\n", vm->ip);
   uint8_t reg1  = next_reg(vm);
   uint8_t reg2  = next_reg(vm);
   signed char instr  = next_byte(vm);
@@ -99,6 +103,7 @@ void op_test_eq(struct vm *vm) {
 }
 
 void op_test_gt(struct vm *vm) {
+  debug_print("%04x OP_TEST_GT\n", vm->ip);
   uint8_t reg1  = next_reg(vm);
   uint8_t reg2  = next_reg(vm);
   unsigned int instr = next_byte(vm);
@@ -114,6 +119,7 @@ void op_test_gt(struct vm *vm) {
 }
 
 void op_test_gte(struct vm *vm) {
+  debug_print("%04x OP_TEST_GTE\n", vm->ip);
   unsigned int reg1  = next_reg(vm);
   unsigned int reg2  = next_reg(vm);
   unsigned int instr = next_byte(vm);
@@ -129,6 +135,7 @@ void op_test_gte(struct vm *vm) {
 }
 
 void op_test_lt(struct vm *vm) {
+  debug_print("%04x OP_TEST_LT\n", vm->ip);
   unsigned int reg1  = next_reg(vm);
   unsigned int reg2  = next_reg(vm);
   unsigned int instr = next_byte(vm);
@@ -144,6 +151,7 @@ void op_test_lt(struct vm *vm) {
 }
 
 void op_test_lte(struct vm *vm) {
+  debug_print("%04x OP_TEST_LTE\n", vm->ip);
   uint8_t reg1  = next_reg(vm);
   uint8_t reg2  = next_reg(vm);
   unsigned int instr = next_byte(vm);
@@ -159,6 +167,7 @@ void op_test_lte(struct vm *vm) {
 }
 
 void op_add(struct vm *vm) {
+  debug_print("%04x OP_ADD\n", vm->ip);
   uint8_t reg1  = next_reg(vm);
   uint8_t reg2  = next_reg(vm);
   uint8_t reg3  = next_reg(vm);
@@ -172,6 +181,7 @@ void op_add(struct vm *vm) {
 }
 
 void op_sub(struct vm *vm) {
+  debug_print("%04x OP_SUB\n", vm->ip);
   uint8_t reg1  = next_reg(vm);
   uint8_t reg2  = next_reg(vm);
   uint8_t reg3  = next_reg(vm);
@@ -185,6 +195,7 @@ void op_sub(struct vm *vm) {
 }
 
 void op_call(struct vm *vm) {
+  debug_print("%04x OP_CALL\n", vm->ip);
   uint8_t ret_reg = next_byte(vm);
   uint8_t location = next_byte(vm);
   uint8_t arity = next_byte(vm);
@@ -206,6 +217,7 @@ void op_call(struct vm *vm) {
 }
 
 void op_return(struct vm *vm) {
+  debug_print("%04x OP_RETURN\n", vm->ip);
   frame_t *curr_frame = &vm->frames[vm->current_frame];
   frame_t *prev_frame = &vm->frames[vm->current_frame - 1];
   unsigned int ret_address = curr_frame->ret_address;
@@ -217,6 +229,7 @@ void op_return(struct vm *vm) {
 }
 
 void op_mov(struct vm *vm) {
+  debug_print("%04x OP_MOV\n", vm->ip);
   uint8_t reg1 = next_reg(vm);
   uint8_t reg2 = next_reg(vm);
 
@@ -226,12 +239,14 @@ void op_mov(struct vm *vm) {
 }
 
 void op_jmp(struct vm *vm) {
+  debug_print("%04x OP_JMP\n", vm->ip);
   uint8_t loc = next_byte(vm);
 
   vm->ip = loc;
 }
 
 void op_tuple(struct vm *vm) {
+  debug_print("%04x OP_TUPLE\n", vm->ip);
   uint8_t reg  = next_byte(vm);
   uint8_t size = next_byte(vm);
 
@@ -251,6 +266,7 @@ void op_tuple(struct vm *vm) {
 }
 
 void op_vector(struct vm *vm) {
+  debug_print("%04x OP_VECTOR\n", vm->ip);
   uint8_t reg  = next_byte(vm);
   uint8_t size = next_byte(vm);
 
@@ -266,6 +282,7 @@ void op_vector(struct vm *vm) {
 }
 
 void op_tuple_nth(struct vm *vm) {
+  debug_print("%04x OP_TUPLE_NTH\n", vm->ip);
   uint8_t reg = next_byte(vm);
   uint8_t tuple = next_byte(vm);
   uint8_t index_reg = next_byte(vm);
@@ -278,6 +295,7 @@ void op_tuple_nth(struct vm *vm) {
 }
 
 void op_assert_eq(struct vm *vm) {
+  debug_print("%04x OP_ASSERT_EQ\n", vm->ip);
   uint8_t reg1 = next_byte(vm);
   uint8_t reg2 = next_byte(vm);
 

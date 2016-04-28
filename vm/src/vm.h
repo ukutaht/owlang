@@ -12,7 +12,6 @@
 #define DEBUG false
 #define debug_print(fmt, ...) \
             do { if (DEBUG) fprintf(stderr, fmt, __VA_ARGS__); } while (0)
-
 typedef struct frame_t {
     unsigned int ret_address;
     unsigned int ret_register;
@@ -35,7 +34,7 @@ typedef struct vm {
 
 vm_t *vm_new();
 
-void vm_load_module(vm_t *vm, unsigned char *code, unsigned int size);
+void vm_load_module_from_file(vm_t *vm, const char *filename);
 void vm_run(vm_t *vm);
 
 #endif // VM_H
