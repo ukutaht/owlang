@@ -122,7 +122,7 @@ fn generates_function_call_in_same_module() {
 
 
     assert_eq!(res.functions[1].code, vec![
-        bytecode::Instruction::Call(1, 2, 0, Vec::new()),
+        bytecode::Instruction::Call(1, "wut".to_string(), 0, Vec::new()),
         bytecode::Instruction::Mov(0, 1),
         bytecode::Instruction::Exit,
     ])

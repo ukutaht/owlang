@@ -196,8 +196,10 @@ void op_sub(struct vm *vm) {
 
 void op_call(struct vm *vm) {
   debug_print("%04x OP_CALL\n", vm->ip);
+
   uint8_t ret_reg = next_byte(vm);
-  uint8_t location = next_byte(vm);
+  uint8_t function_id = next_byte(vm);
+  uint64_t location = vm->functions[function_id];
   uint8_t arity = next_byte(vm);
 
   assert(vm->current_frame + 1 <= STACK_DEPTH);

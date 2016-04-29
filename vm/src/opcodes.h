@@ -32,6 +32,7 @@ enum opcode_values {
     OP_TUPLE_NTH,
     OP_ASSERT_EQ,
     OP_VECTOR,
+    OP_PUB_FN,
 };
 
 void opcode_init(vm_t *vm);

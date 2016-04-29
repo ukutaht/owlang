@@ -164,12 +164,7 @@ impl<'a> FnGenerator<'a> {
             "print" => vec![Instruction::Print(args[0])],
             "tuple_nth" => vec![Instruction::TupleNth(ret_loc, args[0], args[1])],
             "assert_eq" => vec![Instruction::AssertEq(args[0], args[1])],
-            _   => {
-                match gen_ctx.find_location(&(name.to_string(), arity)) {
-                    Some(loc) => vec![Instruction::Call(ret_loc, *loc, arity, args)],
-                    _ => panic!("Function not found: {}\\{}", name, arity)
-                }
-            }
+            _   => vec![Instruction::Call(ret_loc, name.to_string(), arity, args)]
         }
     }
 

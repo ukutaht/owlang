@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include <stdio.h>
+#include <intern/strings.h>
 
 #include "term.h"
 
@@ -8,6 +9,7 @@
 
 #define REGISTER_COUNT 100
 #define STACK_DEPTH 100
+#define MAX_FUNCTIONS 255
 
 #define DEBUG false
 #define debug_print(fmt, ...) \
@@ -25,9 +27,10 @@ typedef struct vm {
     frame_t frames[STACK_DEPTH];
     unsigned int current_frame;
     unsigned int ip;             // Instruction pointer
-    unsigned char *code;         // loaded code
-    unsigned int code_size;
-    opcode_impl *opcodes[255];   // opcode lookup table
+    unsigned char *code;         // Loaded code
+    opcode_impl *opcodes[255];   // Opcode lookup table
+    struct strings *function_names;      // Interned function names
+    uint64_t functions[MAX_FUNCTIONS];   // Function lookup table
     bool running;
 } vm_t;
 

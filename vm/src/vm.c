@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <sys/stat.h>
 #include <gc/gc.h>
 
 #include "vm.h"
@@ -21,6 +20,7 @@ vm_t *vm_new() {
     return NULL;
   }
 
+  vm->function_names = strings_new();
   vm->ip = 0;
   vm->current_frame = 0;
   vm->running = true;
@@ -43,6 +43,7 @@ void vm_load_module_from_file(vm_t *vm, const char *filename) {
   }
 
   unsigned char *code_ptr = vm->code;
+
   while ((ch = fgetc(fp)) != EOF ) {
     switch(ch) {
       case OP_EXIT:
@@ -68,7 +69,6 @@ void vm_load_module_from_file(vm_t *vm, const char *filename) {
       case OP_TEST_LTE:
       case OP_ADD:
       case OP_SUB:
-      case OP_CALL:
       case OP_TUPLE_NTH:
         *code_ptr++ = ch;
         *code_ptr++ = fgetc(fp);
@@ -83,6 +83,33 @@ void vm_load_module_from_file(vm_t *vm, const char *filename) {
         *code_ptr++ = size;
         for (int i = 0; i < size; i++) {
           *code_ptr++ = fgetc(fp);
+        }
+        break;
+      case OP_PUB_FN: {
+        uint8_t name_size = fgetc(fp);
+        char name[name_size];
+        fread(&name, name_size, 1, fp);
+        uint64_t id = strings_intern(vm->function_names, name);
+        uint64_t instruction = (uint64_t) (code_ptr - vm->code);
+
+        vm->functions[id] = instruction;
+        break;
+        }
+      case OP_CALL:
+        *code_ptr++ = OP_CALL;
+        *code_ptr++ = fgetc(fp); // ret loc
+
+        uint8_t name_size = fgetc(fp);
+        char name[name_size];
+        fread(&name, name_size, 1, fp);
+        uint64_t id = strings_intern(vm->function_names, name);
+        *code_ptr++ = (uint8_t) id; // function_id (needs to be bigger than 8 bit int)
+
+        uint8_t arity = fgetc(fp);
+        *code_ptr++ = arity;
+
+        for (int i = 0; i < arity; i++) {
+          *code_ptr++ = fgetc(fp); // arguments
         }
         break;
     }

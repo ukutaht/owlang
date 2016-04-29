@@ -1,5 +1,6 @@
 use std::io::Write;
 use bytecode::instruction::Bytecode;
+use bytecode::opcodes;
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct Function<'a> {
@@ -10,6 +11,12 @@ pub struct Function<'a> {
 
 impl<'a> Function<'a> {
     pub fn emit<T: Write>(&self, out: &'a mut T) {
+        let full_name = format!("{}/{}", self.name, self.arity);
+        let name_size = full_name.len() as u8;
+        out.write(&[opcodes::PUB_FN, name_size + 1]).unwrap(); // +1 accounts for null termination
+        out.write(&full_name.as_bytes()).unwrap();
+        out.write(&[0]).unwrap(); // Null terminate the string
+
         for instr in self.code.iter() {
             instr.emit(out);
         }

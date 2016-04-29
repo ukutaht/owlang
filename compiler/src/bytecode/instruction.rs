@@ -12,7 +12,7 @@ pub enum Instruction {
     TestGt(Reg, Reg, u8),
     Add(Reg, Reg, Reg),
     Sub(Reg, Reg, Reg),
-    Call(u8, u8, u8, Vec<Reg>),
+    Call(u8, String, u8, Vec<Reg>),
     Return,
     Mov(Reg, Reg),
     Jmp(u8),
@@ -48,12 +48,16 @@ impl Instruction {
             &Instruction::Exit => {
                 out.write(&[opcodes::EXIT]).unwrap();
             },
-            &Instruction::Call(ret_loc, loc, arity, ref regs) => {
-                let mut res = vec![opcodes::CALL, ret_loc, loc, arity];
-                let mut copied_regs = regs.clone();
-                res.append(&mut copied_regs);
+            &Instruction::Call(ret_loc, ref name, arity, ref regs) => {
+                let full_name = format!("{}/{}", name, arity);
+                let name_size = full_name.len() as u8;
+                out.write(&[opcodes::CALL, ret_loc, name_size + 1]).unwrap(); // +1 accounts for null termination
+                out.write(&full_name.as_bytes()).unwrap();
+                out.write(&[0]).unwrap(); // Null terminate the string
+                out.write(&[arity]).unwrap();
 
-                out.write(&res).unwrap();
+                let copied_regs = regs.clone();
+                out.write(&copied_regs).unwrap();
             }
             &Instruction::Jmp(loc) => {
                 out.write(&vec![opcodes::JMP, loc]).unwrap();
@@ -111,14 +115,14 @@ impl Instruction {
             &Instruction::Exit => {
                 out.write(b"exit\n").unwrap();
             }
-            &Instruction::Call(ret_loc, loc, arity, ref regs) => {
+            &Instruction::Call(ret_loc, ref name, arity, ref regs) => {
                 let string;
 
                 if regs.len() > 0 {
                     let args: Vec<_> = regs.iter().map(|int| format!("%{}", int)).collect();
-                    string = format!("call %{}, {}, %{}, {}\n", ret_loc, loc, arity, args.join(", "));
+                    string = format!("call %{}, {}, %{}, {}\n", ret_loc, name, arity, args.join(", "));
                 } else {
-                    string = format!("call %{}, {}, {}\n", ret_loc, loc, arity);
+                    string = format!("call %{}, {}, {}\n", ret_loc, name, arity);
                 }
 
                 out.write(&string.as_bytes()).unwrap();
@@ -174,7 +178,7 @@ impl Instruction {
             &Instruction::Print(_)        => 2,
             &Instruction::TestGt(_, _, _) => 4,
             &Instruction::Exit            => 1,
-            &Instruction::Call(_, _, _, ref regs) => 4 + regs.len() as u8,
+            &Instruction::Call(_, ref name, _, ref regs) => 5 + (name.len() as u8) + (regs.len() as u8),
             &Instruction::Jmp(_)          => 2,
             &Instruction::Tuple(_, _, ref regs)   => 3 + regs.len() as u8,
             &Instruction::TupleNth(_, _, _)  => 4,
