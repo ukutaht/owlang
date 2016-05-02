@@ -9,31 +9,8 @@ pub use self::instruction::{Bytecode, Instruction, Reg};
 pub use self::function::Function;
 pub use self::module::Module;
 
-use std::collections::HashMap;
-
 type Signature = (String, u8);
 type Location = u8;
-
-pub struct GenContext {
-    function_defs: HashMap<Signature, Location>,
-}
-
-impl GenContext {
-    fn new() -> GenContext {
-        GenContext {
-            function_defs: HashMap::new(),
-        }
-    }
-
-    fn add_def(&mut self, def: Signature, location: u8) {
-        self.function_defs.insert(def, location);
-    }
-
-    fn find_location(&self, def: &Signature) -> Option<&u8> {
-        self.function_defs.get(def)
-    }
-}
-
 
 struct FnGenerator<'a> {
     var_count: u8,
@@ -48,8 +25,8 @@ impl<'a> FnGenerator<'a> {
         }
     }
 
-    fn generate(&mut self, gen_ctx: &mut GenContext) -> Function<'a> {
-        let code = self.generate_code(gen_ctx);
+    fn generate(&mut self) -> Function<'a> {
+        let code = self.generate_code();
 
         Function {
             name: self.function.name,
@@ -58,11 +35,11 @@ impl<'a> FnGenerator<'a> {
         }
     }
 
-    fn generate_code(&mut self, gen_ctx: &mut GenContext) -> Bytecode {
+    fn generate_code(&mut self) -> Bytecode {
         let mut code = Vec::new();
 
         for expr in self.function.body.iter() {
-            let mut generated = self.generate_expr(expr, gen_ctx);
+            let mut generated = self.generate_expr(expr);
             code.append(&mut generated);
         }
 
@@ -71,18 +48,18 @@ impl<'a> FnGenerator<'a> {
         code
     }
 
-    fn generate_expr(&mut self, expr: &'a ast::Expr, gen_ctx: &mut GenContext) -> Bytecode {
+    fn generate_expr(&mut self, expr: &'a ast::Expr) -> Bytecode {
         match expr {
             &ast::Expr::Apply(ref a) => {
                 let mut res = Vec::new();
                 for arg in a.args.iter() {
-                    res.append(&mut self.generate_expr(arg, gen_ctx))
+                    res.append(&mut self.generate_expr(arg))
                 }
                 let mut arg_locations: Vec<Reg> = a.args.iter().map(|_| self.pop()).collect();
                 arg_locations.reverse();
                 let ret_loc  = self.push();
 
-                let mut me = self.apply_op(a.name, a.arity(), ret_loc, arg_locations, gen_ctx);
+                let mut me = self.apply_op(a.name, a.arity(), ret_loc, arg_locations);
                 res.append(&mut me);
                 res
             },
@@ -98,8 +75,8 @@ impl<'a> FnGenerator<'a> {
                     ast::Expr::Apply(ref a) => {
                         match a.name {
                             ">" => {
-                                res.append(&mut self.generate_expr(&a.args[0], gen_ctx));
-                                res.append(&mut self.generate_expr(&a.args[1], gen_ctx));
+                                res.append(&mut self.generate_expr(&a.args[0]));
+                                res.append(&mut self.generate_expr(&a.args[1]));
                                 let arg2 = self.pop();
                                 let arg1 = self.pop();
                                 let jump = instruction::byte_size_of(&else_branch);
@@ -113,14 +90,14 @@ impl<'a> FnGenerator<'a> {
 
                 res.append(&mut else_branch);
                 for expr in i.body.iter() {
-                    res.append(&mut self.generate_expr(expr, gen_ctx))
+                    res.append(&mut self.generate_expr(expr))
                 }
                 res
             },
             &ast::Expr::Tuple(ref t) => {
                 let mut res = Vec::new();
                 for elem in t.elems.iter() {
-                    res.append(&mut self.generate_expr(elem, gen_ctx))
+                    res.append(&mut self.generate_expr(elem))
                 }
 
                 let mut elem_locations: Vec<Reg> = t.elems.iter().map(|_| self.pop()).collect();
@@ -134,7 +111,7 @@ impl<'a> FnGenerator<'a> {
             &ast::Expr::Vector(ref v) => {
                 let mut res = Vec::new();
                 for elem in v.elems.iter() {
-                    res.append(&mut self.generate_expr(elem, gen_ctx))
+                    res.append(&mut self.generate_expr(elem))
                 }
 
                 let mut elem_locations: Vec<Reg> = v.elems.iter().map(|_| self.pop()).collect();
@@ -157,7 +134,7 @@ impl<'a> FnGenerator<'a> {
         }
     }
 
-    fn apply_op(&self, name: &'a str, arity: u8, ret_loc: Reg, args: Vec<Reg>, gen_ctx: &mut GenContext) -> Bytecode {
+    fn apply_op(&self, name: &'a str, arity: u8, ret_loc: Reg, args: Vec<Reg>) -> Bytecode {
         match name {
             "+" => vec![Instruction::Add(ret_loc, args[0], args[1])],
             "-" => vec![Instruction::Sub(ret_loc, args[0], args[1])],
@@ -181,18 +158,16 @@ impl<'a> FnGenerator<'a> {
 }
 
 pub fn generate_function<'a>(f: &'a ast::Function) -> Function<'a> {
-    FnGenerator::new(f).generate(&mut GenContext::new())
+    FnGenerator::new(f).generate()
 }
 
 pub fn generate<'a>(module: &'a ast::Module) -> Module<'a> {
     let mut functions = Vec::new();
-    let mut gen_ctx   = GenContext::new();
     let mut location  = 2;
     let mut main_loc  = None;
 
     for f in module.functions.iter() {
-        gen_ctx.add_def((f.name.to_string(), f.arity()), location);
-        let generated = FnGenerator::new(f).generate(&mut gen_ctx);
+        let generated = FnGenerator::new(f).generate();
 
         if f.name == "main" {
             main_loc = Some(location);
