@@ -20,7 +20,7 @@ impl Module {
 
     pub fn emit_human_readable<T: Write>(&self, out: &mut T) {
         let main = format!("{}:{}", self.name, "main");
-        Instruction::Call(0, main, 0, Vec::new()).emit(out);
+        Instruction::Call(0, main, 0, Vec::new()).emit_human_readable(out);
 
         for function in self.functions.iter() {
             function.emit_human_readable(out);

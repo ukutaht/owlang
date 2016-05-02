@@ -120,9 +120,9 @@ impl Instruction {
 
                 if regs.len() > 0 {
                     let args: Vec<_> = regs.iter().map(|int| format!("%{}", int)).collect();
-                    string = format!("call %{}, {}, %{}, {}\n", ret_loc, name, arity, args.join(", "));
+                    string = format!("call %{}, {}/{}, {}\n", ret_loc, name, arity, args.join(", "));
                 } else {
-                    string = format!("call %{}, {}, {}\n", ret_loc, name, arity);
+                    string = format!("call %{}, {}/{}\n", ret_loc, name, arity);
                 }
 
                 out.write(&string.as_bytes()).unwrap();
