@@ -15,21 +15,24 @@ type Location = u8;
 struct FnGenerator<'a> {
     var_count: u8,
     function: &'a ast::Function<'a>,
+    module_name: &'a str
 }
 
 impl<'a> FnGenerator<'a> {
-    fn new<'b>(f: &'b ast::Function) -> FnGenerator<'b> {
+    fn new<'b>(module_name: &'b str, f: &'b ast::Function) -> FnGenerator<'b> {
         FnGenerator {
             function: f,
-            var_count: f.arity()
+            var_count: f.arity(),
+            module_name: module_name
         }
     }
 
-    fn generate(&mut self) -> Function<'a> {
+    fn generate(&mut self) -> Function {
         let code = self.generate_code();
+        let name = format!("{}:{}", self.module_name, self.function.name);
 
         Function {
-            name: self.function.name,
+            name: name,
             arity: self.function.arity(),
             code: code
         }
@@ -141,7 +144,7 @@ impl<'a> FnGenerator<'a> {
             "print" => vec![Instruction::Print(args[0])],
             "tuple_nth" => vec![Instruction::TupleNth(ret_loc, args[0], args[1])],
             "assert_eq" => vec![Instruction::AssertEq(args[0], args[1])],
-            _   => vec![Instruction::Call(ret_loc, name.to_string(), arity, args)]
+            _   => vec![Instruction::Call(ret_loc, format!("{}:{}", self.module_name, name), arity, args)]
         }
     }
 
@@ -157,29 +160,21 @@ impl<'a> FnGenerator<'a> {
     }
 }
 
-pub fn generate_function<'a>(f: &'a ast::Function) -> Function<'a> {
-    FnGenerator::new(f).generate()
+pub fn generate_function(f: &ast::Function) -> Function {
+    FnGenerator::new("unknown", f).generate()
 }
 
-pub fn generate<'a>(module: &'a ast::Module) -> Module<'a> {
+pub fn generate(module: &ast::Module) -> Module {
     let mut functions = Vec::new();
-    let mut location  = 2;
-    let mut main_loc  = None;
 
     for f in module.functions.iter() {
-        let generated = FnGenerator::new(f).generate();
+        let generated = FnGenerator::new(module.name, f).generate();
 
-        if f.name == "main" {
-            main_loc = Some(location);
-        }
-
-        location += generated.byte_size();
         functions.push(generated);
     }
 
     Module {
-        name: module.name,
+        name: module.name.to_string(),
         functions: functions,
-        main_location: main_loc.expect("No main module defined")
     }
 }

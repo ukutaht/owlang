@@ -12,7 +12,7 @@ fn generates_simple_addition() {
     let res = bytecode::generate_function(&ast);
 
     assert_eq!(res, bytecode::Function {
-        name: "main",
+        name: "unknown:main".to_string(),
         arity: 0,
         code: vec![
             bytecode::Instruction::Store(1, 1),
@@ -39,7 +39,7 @@ fn generates_nested_arithmetic() {
     let res = bytecode::generate_function(&ast);
 
     assert_eq!(res, bytecode::Function {
-        name: "main",
+        name: "unknown:main".to_string(),
         arity: 0,
         code: vec![
             bytecode::Instruction::Store(1, 1),

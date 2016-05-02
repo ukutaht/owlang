@@ -202,6 +202,7 @@ void op_call(struct vm *vm) {
   uint64_t location = vm->functions[function_id];
   uint8_t arity = next_byte(vm);
 
+  assert(location != 0);
   assert(vm->current_frame + 1 <= STACK_DEPTH);
 
   unsigned int next_frame = vm->current_frame + 1;
