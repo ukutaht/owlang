@@ -29,6 +29,12 @@ fn parses_simple_function_application() {
 }
 
 #[test]
+fn parses_simple_function_application_with_module() {
+    let res = parser::parse_expr(b"module:function()");
+    assert_eq!(res, Ok(mk_apply(Some("module"), "function", Vec::new())));
+}
+
+#[test]
 fn parses_function_with_one_arg() {
     let res = parser::parse_expr(b"function(1)");
     assert_eq!(res, Ok(mk_apply(None, "function", vec![mk_int("1")])));
