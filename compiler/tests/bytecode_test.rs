@@ -19,7 +19,7 @@ fn generates_simple_addition() {
             bytecode::Instruction::Store(2, 2),
             bytecode::Instruction::Add(1, 1, 2),
             bytecode::Instruction::Mov(0, 1),
-            bytecode::Instruction::Exit
+            bytecode::Instruction::Return
         ]
     })
 }
@@ -48,7 +48,7 @@ fn generates_nested_arithmetic() {
             bytecode::Instruction::Sub(2, 2, 3),
             bytecode::Instruction::Add(1, 1, 2),
             bytecode::Instruction::Mov(0, 1),
-            bytecode::Instruction::Exit,
+            bytecode::Instruction::Return,
         ]
     })
 }
@@ -65,7 +65,7 @@ fn generates_print_op() {
             bytecode::Instruction::Store(1, 1),
             bytecode::Instruction::Print(1),
             bytecode::Instruction::Mov(0, 1),
-            bytecode::Instruction::Exit,
+            bytecode::Instruction::Return,
         ]
     )
 }
@@ -85,11 +85,11 @@ fn generates_simple_if_statement() {
             bytecode::Instruction::Store(1, 1),
             bytecode::Instruction::Store(2, 2),
             bytecode::Instruction::TestGt(1, 2, 2),
-            bytecode::Instruction::Exit,
+            bytecode::Instruction::Return,
             bytecode::Instruction::Store(1, 1),
             bytecode::Instruction::Print(1),
             bytecode::Instruction::Mov(0, 1),
-            bytecode::Instruction::Exit
+            bytecode::Instruction::Return
         ]
     )
 }
@@ -122,9 +122,9 @@ fn generates_function_call_in_same_module() {
 
 
     assert_eq!(res.functions[1].code, vec![
-        bytecode::Instruction::Call(1, "wut".to_string(), 0, Vec::new()),
+        bytecode::Instruction::Call(1, "mod:wut".to_string(), 0, Vec::new()),
         bytecode::Instruction::Mov(0, 1),
-        bytecode::Instruction::Exit,
+        bytecode::Instruction::Return,
     ])
 }
 
@@ -141,7 +141,7 @@ fn generates_tuple() {
         bytecode::Instruction::Store(2, 2),
         bytecode::Instruction::Tuple(1, 2, vec![1, 2]),
         bytecode::Instruction::Mov(0, 1),
-        bytecode::Instruction::Exit,
+        bytecode::Instruction::Return,
     ])
 }
 
@@ -158,6 +158,6 @@ fn generates_vector() {
         bytecode::Instruction::Store(2, 2),
         bytecode::Instruction::Vector(1, 2, vec![1, 2]),
         bytecode::Instruction::Mov(0, 1),
-        bytecode::Instruction::Exit,
+        bytecode::Instruction::Return,
     ])
 }
