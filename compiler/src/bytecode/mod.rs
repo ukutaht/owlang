@@ -47,7 +47,7 @@ impl<'a> FnGenerator<'a> {
         }
 
         code.push(Instruction::Mov(0, self.var_count));
-        code.push(self.return_op());
+        code.push(Instruction::Return);
         code
     }
 
@@ -72,7 +72,7 @@ impl<'a> FnGenerator<'a> {
             },
             &ast::Expr::If(ref i) => {
                 let mut res = Vec::new();
-                let mut else_branch = vec![self.return_op()];
+                let mut else_branch = vec![Instruction::Return];
 
                 match *i.condition {
                     ast::Expr::Apply(ref a) => {
@@ -126,14 +126,6 @@ impl<'a> FnGenerator<'a> {
                 res
             },
             _ => panic!("WAT")
-        }
-    }
-
-    fn return_op(&self) -> Instruction {
-        if self.function.name == "main" {
-            Instruction::Exit
-        } else {
-            Instruction::Return
         }
     }
 
