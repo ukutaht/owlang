@@ -116,7 +116,7 @@ void vm_load_module_from_file(vm_t *vm, const char *filename) {
   }
 }
 
-void vm_run(vm_t * vm) {
+void vm_run(vm_t *vm) {
   GC_init();
   int iterations = 0;
 

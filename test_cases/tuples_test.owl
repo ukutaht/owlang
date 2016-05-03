@@ -1,4 +1,4 @@
-module test {
+module tuples_test {
   fn two_and_four() {
     (2, 4)
   }

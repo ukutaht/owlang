@@ -39,7 +39,6 @@ COMPILER = File.join(COMPILER_DIR, "target/debug/owlc")
 VM       = File.join(VM_DIR, "target/debug/vm")
 
 def run_file(file)
-
   compile_output = `#{COMPILER} #{file} -o #{TEST_TARGET} 2>&1`
   if $?.exitstatus != 0
     Formatter.format_failure(File.basename(file), compile_output)

@@ -1,9 +1,16 @@
-module test {
+module functions {
+  fn gimme_six() {
+    6
+  }
+}
+
+module functions_test {
   fn gimme_five() {
     2 + 3
   }
 
   fn main() {
     assert_eq(gimme_five(), 5)
+    assert_eq(functions:gimme_six(), 6)
   }
 }
