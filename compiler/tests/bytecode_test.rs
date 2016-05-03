@@ -108,21 +108,33 @@ fn generates_simple_module() {
 
 #[test]
 fn generates_function_call_in_same_module() {
-    let wut = mk_function("wut", Vec::new(), vec![
-        mk_apply(None, "print", vec![mk_int("1")])
-    ]);
-
     let main = mk_function("main", Vec::new(), vec![
         mk_apply(None, "wut", Vec::new())
     ]);
 
-    let module = mk_module("mod", vec![wut, main]);
+    let module = mk_module("mod", vec![main]);
 
     let res = bytecode::generate(&module);
 
-
-    assert_eq!(res.functions[1].code, vec![
+    assert_eq!(res.functions[0].code, vec![
         bytecode::Instruction::Call(1, "mod:wut".to_string(), 0, Vec::new()),
+        bytecode::Instruction::Mov(0, 1),
+        bytecode::Instruction::Return,
+    ])
+}
+
+#[test]
+fn generates_function_call_in_different_module() {
+    let main = mk_function("main", Vec::new(), vec![
+        mk_apply(Some("other_module"), "wut", Vec::new())
+    ]);
+
+    let module = mk_module("mod", vec![main]);
+
+    let res = bytecode::generate(&module);
+
+    assert_eq!(res.functions[0].code, vec![
+        bytecode::Instruction::Call(1, "other_module:wut".to_string(), 0, Vec::new()),
         bytecode::Instruction::Mov(0, 1),
         bytecode::Instruction::Return,
     ])

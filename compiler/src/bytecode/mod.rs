@@ -62,7 +62,7 @@ impl<'a> FnGenerator<'a> {
                 arg_locations.reverse();
                 let ret_loc  = self.push();
 
-                let mut me = self.apply_op(a.name, a.arity(), ret_loc, arg_locations);
+                let mut me = self.apply_op(a, ret_loc, arg_locations);
                 res.append(&mut me);
                 res
             },
@@ -129,14 +129,18 @@ impl<'a> FnGenerator<'a> {
         }
     }
 
-    fn apply_op(&self, name: &'a str, arity: u8, ret_loc: Reg, args: Vec<Reg>) -> Bytecode {
-        match name {
+    fn apply_op(&self, ap: &ast::Apply, ret_loc: Reg, args: Vec<Reg>) -> Bytecode {
+        match ap.name {
             "+" => vec![Instruction::Add(ret_loc, args[0], args[1])],
             "-" => vec![Instruction::Sub(ret_loc, args[0], args[1])],
             "print" => vec![Instruction::Print(args[0])],
             "tuple_nth" => vec![Instruction::TupleNth(ret_loc, args[0], args[1])],
             "assert_eq" => vec![Instruction::AssertEq(args[0], args[1])],
-            _   => vec![Instruction::Call(ret_loc, format!("{}:{}", self.module_name, name), arity, args)]
+            _   => {
+                let module = ap.module.unwrap_or(self.module_name);
+                let name = format!("{}:{}", module, ap.name);
+                vec![Instruction::Call(ret_loc, name, ap.arity(), args)]
+            }
         }
     }
 
