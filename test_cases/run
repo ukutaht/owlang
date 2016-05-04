@@ -58,6 +58,7 @@ def run_file(file)
 end
 
 def run_all
+  ENV["OWL_LOAD_PATH"] = TEST_TARGET
   puts "Compiling compiler"
   `cd #{COMPILER_DIR} && cargo build`
   puts "Compiling virtual machine"
