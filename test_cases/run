@@ -59,11 +59,12 @@ end
 
 def run_all
   ENV["OWL_LOAD_PATH"] = TEST_TARGET
-  puts "Compiling compiler"
-  `cd #{COMPILER_DIR} && cargo build`
-  puts "Compiling virtual machine"
-  `cd #{VM_DIR} && bin/build debug`
-  puts
+  puts "Running make"
+  make_out = `make`
+
+  if $?.exitstatus != 0
+    return
+  end
 
   tests = File.join(ROOT_DIR, "test_cases/**/*_test.owl")
 

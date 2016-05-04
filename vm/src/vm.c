@@ -126,15 +126,10 @@ void vm_load_module_from_file(vm_t *vm, const char *filename) {
   }
 }
 
-bool find_file_for_module(char *buffer, const char *module_name) {
-  char *load_path = getenv("OWL_LOAD_PATH");
-
-  if (load_path == NULL) return false;
-
-  // Let's search the load path for the module that we want
+bool find_module_from_dir(char *buffer, char *dirname, const char *module_name) {
   DIR           *d;
   struct dirent *dir;
-  d = opendir(load_path);
+  d = opendir(dirname);
   if (d) {
     while ((dir = readdir(d)) != NULL) {
       if (dir->d_type == DT_REG) {
@@ -145,7 +140,7 @@ bool find_file_for_module(char *buffer, const char *module_name) {
         // Remove the file extension by nulling out the . in filename
         *rindex(filename, '.') = '\0';
         if (strcmp(filename, module_name) == 0) {
-          sprintf(buffer, "%s/%s", load_path, dir->d_name);
+          sprintf(buffer, "%s/%s", dirname, dir->d_name);
           return true;
         }
       }
@@ -155,12 +150,33 @@ bool find_file_for_module(char *buffer, const char *module_name) {
   }
 
   return false;
+
+}
+
+bool find_file_for_module(char *buffer, const char *module_name) {
+
+  char *env_load_path = getenv("OWL_LOAD_PATH");
+  char load_path[strlen(env_load_path)];
+  strcpy(load_path, env_load_path);
+
+  char *load_dir = strtok(load_path, ":");
+  while (load_dir != NULL) {
+    if(find_module_from_dir(buffer, load_dir, module_name)) {
+      return true;
+    }
+    load_dir = strtok(NULL, ":");
+  }
+
+  return false;
 }
 
 void vm_load_module(vm_t *vm, const char *module_name) {
   char module_file[500];
   if (find_file_for_module(module_file, module_name)) {
+    debug_print("Found file for module: %s\n", module_file);
     vm_load_module_from_file(vm, module_file);
+  } else {
+    debug_print("No file found for module: %s\n", module_name);
   }
 }
 

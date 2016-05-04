@@ -1,0 +1,5 @@
+module tuple {
+  fn nth(tuple, index) {
+    tuple_nth(tuple, index)
+  }
+}
