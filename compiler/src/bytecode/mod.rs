@@ -1,5 +1,7 @@
 use ast;
 
+use std::collections::HashMap;
+
 mod opcodes;
 mod function;
 mod module;
@@ -10,20 +12,29 @@ pub use self::function::Function;
 pub use self::module::Module;
 
 type Signature = (String, u8);
-type Location = u8;
 
 struct FnGenerator<'a> {
     var_count: u8,
     function: &'a ast::Function<'a>,
-    module_name: &'a str
+    module_name: &'a str,
+    env: HashMap<String, Reg>,
 }
 
 impl<'a> FnGenerator<'a> {
     fn new<'b>(module_name: &'b str, f: &'b ast::Function) -> FnGenerator<'b> {
+        let mut env = HashMap::new();
+        let mut var_count: u8 = 0;
+
+        for arg in f.args.iter() {
+            var_count += 1;
+            env.insert(arg.name.to_string(), var_count);
+        }
+
         FnGenerator {
             function: f,
-            var_count: f.arity(),
-            module_name: module_name
+            var_count: var_count,
+            module_name: module_name,
+            env: env
         }
     }
 
@@ -125,7 +136,9 @@ impl<'a> FnGenerator<'a> {
                 res.append(&mut me);
                 res
             },
-            _ => panic!("WAT")
+            &ast::Expr::Ident(ref i) => {
+                vec![Instruction::Mov(self.push(), *self.env.get(i.name).unwrap())]
+            }
         }
     }
 

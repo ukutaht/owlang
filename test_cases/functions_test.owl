@@ -9,8 +9,18 @@ module functions_test {
     2 + 3
   }
 
+  fn add_five(num) {
+    num + 5
+  }
+
+  fn add_together(a, b) {
+    a + b
+  }
+
   fn main() {
     assert_eq(gimme_five(), 5)
+    assert_eq(add_five(5), 10)
+    assert_eq(add_together(7, 11), 18)
     assert_eq(functions:gimme_six(), 6)
   }
 }
