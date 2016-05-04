@@ -8,10 +8,13 @@ use std::env;
 use std::fs::File;
 use std::path::{Path, PathBuf};
 
-fn generate_to_file(expr: &ast::Module, file: &mut File) {
+fn generate_to_file(expr: &ast::Module, out: &PathBuf) {
+    let out_filename = PathBuf::from(expr.name).with_extension("owlc");
+    let out_name = out.join(Path::new(out_filename.file_name().unwrap()));
+    let mut out_buffer = File::create(out_name).unwrap();
     let bytecode = bytecode::generate(expr);
 
-    bytecode.emit(file);
+    bytecode.emit(&mut out_buffer);
 }
 
 fn generate_to_stdout(expr: &ast::Module) {
@@ -25,11 +28,7 @@ fn compile_to_file(inp: &PathBuf, out: &PathBuf) {
     let file  = File::open(inp).ok().expect(&format!("Failed to open file: {}", &inp.to_str().unwrap()));
 
     std::fs::create_dir_all(&out).unwrap();
-    let out_filename = inp.with_extension("owlc");
-    let out_name = out.join(Path::new(out_filename.file_name().unwrap()));
-    let mut out_buffer = File::create(out_name).unwrap();
-
-    parser::parse(file, |module| generate_to_file(module, &mut out_buffer))
+    parser::parse(file, |module| generate_to_file(module, out))
 }
 
 fn compile_to_stdout(inp: &PathBuf) {

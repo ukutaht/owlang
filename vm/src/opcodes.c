@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <assert.h>
+#include <string.h>
 
 #include "opcodes.h"
 #include "vm.h"
@@ -201,6 +202,16 @@ void op_call(struct vm *vm) {
   uint8_t function_id = next_byte(vm);
   uint64_t location = vm->functions[function_id];
   uint8_t arity = next_byte(vm);
+
+  if (location == 0) {
+    char fname_buf[255];
+    char *fname_copy = fname_buf;
+    strcpy(fname_copy, strings_lookup_id(vm->function_names, function_id));
+    char *module_name = strsep(&fname_copy, ":");
+    debug_print("Attempting to load module: %s\n", module_name);
+    vm_load_module(vm, module_name);
+    location = vm->functions[function_id];
+  }
 
   assert(location != 0);
   assert(vm->current_frame + 1 <= STACK_DEPTH);

@@ -28,6 +28,7 @@ typedef struct vm {
     unsigned int current_frame;
     unsigned int ip;             // Instruction pointer
     unsigned char *code;         // Loaded code
+    uint64_t code_size;         // Loaded code size
     opcode_impl *opcodes[255];   // Opcode lookup table
     struct strings *function_names;      // Interned function names
     uint64_t functions[MAX_FUNCTIONS];   // Function lookup table
@@ -38,6 +39,7 @@ typedef struct vm {
 vm_t *vm_new();
 
 void vm_load_module_from_file(vm_t *vm, const char *filename);
+void vm_load_module(vm_t *vm, const char *module_name);
 void vm_run(vm_t *vm);
 
 #endif // VM_H

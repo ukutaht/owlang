@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <dirent.h>
 #include <gc/gc.h>
 
 #include "vm.h"
@@ -19,13 +20,14 @@ vm_t *vm_new() {
   if (vm->code == NULL) {
     return NULL;
   }
+  memset(vm->code, '\0', 0xFFFF);
+  vm->code_size = 0;
 
   vm->function_names = strings_new();
   vm->ip = 0;
   vm->current_frame = 0;
   vm->running = true;
 
-  memset(vm->code, '\0', 0xFFFF);
 
   opcode_init(vm);
 
@@ -42,18 +44,20 @@ void vm_load_module_from_file(vm_t *vm, const char *filename) {
       exit(1);
   }
 
-  unsigned char *code_ptr = vm->code;
+  unsigned char *code_ptr = vm->code + vm->code_size;
 
   while ((ch = fgetc(fp)) != EOF ) {
     switch(ch) {
       case OP_EXIT:
       case OP_RETURN:
         *code_ptr++ = ch;
+        vm->code_size += 1;
         break;
       case OP_PRINT:
       case OP_JMP:
         *code_ptr++ = ch;
         *code_ptr++ = fgetc(fp);
+        vm->code_size += 2;
         break;
       case OP_MOV:
       case OP_STORE:
@@ -61,6 +65,7 @@ void vm_load_module_from_file(vm_t *vm, const char *filename) {
         *code_ptr++ = ch;
         *code_ptr++ = fgetc(fp);
         *code_ptr++ = fgetc(fp);
+        vm->code_size += 3;
         break;
       case OP_TEST_EQ:
       case OP_TEST_GT:
@@ -74,6 +79,7 @@ void vm_load_module_from_file(vm_t *vm, const char *filename) {
         *code_ptr++ = fgetc(fp);
         *code_ptr++ = fgetc(fp);
         *code_ptr++ = fgetc(fp);
+        vm->code_size += 4;
         break;
       case OP_TUPLE:
       case OP_VECTOR:
@@ -81,8 +87,10 @@ void vm_load_module_from_file(vm_t *vm, const char *filename) {
         *code_ptr++ = fgetc(fp);
         uint8_t size = fgetc(fp);
         *code_ptr++ = size;
+        vm->code_size += 3;
         for (int i = 0; i < size; i++) {
           *code_ptr++ = fgetc(fp);
+          vm->code_size += 1;
         }
         break;
       case OP_PUB_FN: {
@@ -107,12 +115,52 @@ void vm_load_module_from_file(vm_t *vm, const char *filename) {
 
         uint8_t arity = fgetc(fp);
         *code_ptr++ = arity;
+        vm->code_size += 4;
 
         for (int i = 0; i < arity; i++) {
           *code_ptr++ = fgetc(fp); // arguments
+          vm->code_size += 1;
         }
         break;
     }
+  }
+}
+
+bool find_file_for_module(char *buffer, const char *module_name) {
+  char *load_path = getenv("OWL_LOAD_PATH");
+
+  if (load_path == NULL) return false;
+
+  // Let's search the load path for the module that we want
+  DIR           *d;
+  struct dirent *dir;
+  d = opendir(load_path);
+  if (d) {
+    while ((dir = readdir(d)) != NULL) {
+      if (dir->d_type == DT_REG) {
+        char buf[dir->d_namlen];
+        char *filename = buf;
+        strcpy(filename, dir->d_name);
+
+        // Remove the file extension by nulling out the . in filename
+        *rindex(filename, '.') = '\0';
+        if (strcmp(filename, module_name) == 0) {
+          sprintf(buffer, "%s/%s", load_path, dir->d_name);
+          return true;
+        }
+      }
+    }
+
+    closedir(d);
+  }
+
+  return false;
+}
+
+void vm_load_module(vm_t *vm, const char *module_name) {
+  char module_file[500];
+  if (find_file_for_module(module_file, module_name)) {
+    vm_load_module_from_file(vm, module_file);
   }
 }
 
