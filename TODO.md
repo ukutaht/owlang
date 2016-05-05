@@ -31,4 +31,5 @@
 * Closures (oh boy)
 * Pattern matching
 * Direct threaded VM
+* Linear-Scan register allocation in compiler
 * Custom garbage collection
