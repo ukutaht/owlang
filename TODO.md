@@ -11,6 +11,7 @@
 * stdlib testing framework
 * Tuple stdlib (bounds check for `nth`)
 * Vector stdlib
+* IO stdlib
 * Generalise `if` to `cond`
 * Dynamically grow the stack
 * Dynamically grow the code array
@@ -28,5 +29,6 @@
 * Check that functions exist at compile time
 * Higher-order functions
 * Closures (oh boy)
+* Pattern matching
 * Direct threaded VM
 * Custom garbage collection
