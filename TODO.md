@@ -1,7 +1,8 @@
 ### Big list of TODO items
 
 * Allow compiling multiple files at once
-* VM should invoke main function instead of compiler
+* Merge alloc.c and alloc.h
+* `if location == 0` test in call is not enough. Functions can be defined in location 0;
 * Boolean type
 * Add `nil`
 * Ensure `nil` is returned when no else branch in if

@@ -6,6 +6,7 @@
 
 #include "vm.h"
 #include "opcodes.h"
+#include "util/file.h"
 
 vm_t *vm_new() {
   vm_t *vm;
@@ -133,15 +134,13 @@ bool find_module_from_dir(char *buffer, char *dirname, const char *module_name) 
   if (d) {
     while ((dir = readdir(d)) != NULL) {
       if (dir->d_type == DT_REG) {
-        char buf[dir->d_namlen];
-        char *filename = buf;
-        strcpy(filename, dir->d_name);
-
-        // Remove the file extension by nulling out the . in filename
-        *rindex(filename, '.') = '\0';
-        if (strcmp(filename, module_name) == 0) {
+        char *found = module_name_from_filename(dir->d_name);
+        if (strcmp(found, module_name) == 0) {
           sprintf(buffer, "%s/%s", dirname, dir->d_name);
+          free(found);
           return true;
+        } else {
+          free(found);
         }
       }
     }
@@ -154,7 +153,6 @@ bool find_module_from_dir(char *buffer, char *dirname, const char *module_name) 
 }
 
 bool find_file_for_module(char *buffer, const char *module_name) {
-
   char *env_load_path = getenv("OWL_LOAD_PATH");
   char load_path[strlen(env_load_path)];
   strcpy(load_path, env_load_path);
@@ -180,9 +178,27 @@ void vm_load_module(vm_t *vm, const char *module_name) {
   }
 }
 
+void vm_run_function(vm_t *vm, const char *function_name) {
+  uint8_t function_id = strings_lookup(vm->function_names, function_name);
+
+  if (function_id != 0) {
+    uint8_t call_code[5] = {
+      OP_CALL, 0, function_id, 0,
+      OP_EXIT
+    };
+
+    memcpy(&vm->code[vm->code_size], &call_code, 5);
+    vm->ip = vm->code_size;
+    vm->code_size += 5;
+    vm_run(vm);
+  } else {
+    printf("Function %s not found\n", function_name);
+    exit(1);
+  }
+}
+
 void vm_run(vm_t *vm) {
   GC_init();
-  int iterations = 0;
 
   while (vm->running == true) {
     int opcode = vm->code[vm->ip];
@@ -190,8 +206,5 @@ void vm_run(vm_t *vm) {
     if (vm->opcodes[opcode] != NULL)
       vm->opcodes[opcode] (vm);
 
-    iterations++;
   }
-
-  debug_print("Executed %u instructions\n", iterations);
 }
