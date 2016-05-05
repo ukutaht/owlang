@@ -41,6 +41,5 @@ vm_t *vm_new();
 void vm_load_module_from_file(vm_t *vm, const char *filename);
 void vm_load_module(vm_t *vm, const char *module_name);
 void vm_run_function(vm_t *vm, const char *function_name);
-void vm_run(vm_t *vm);
 
 #endif // VM_H

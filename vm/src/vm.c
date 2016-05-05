@@ -178,6 +178,18 @@ void vm_load_module(vm_t *vm, const char *module_name) {
   }
 }
 
+void vm_run(vm_t *vm) {
+  GC_init();
+
+  while (vm->running == true) {
+    int opcode = vm->code[vm->ip];
+
+    if (vm->opcodes[opcode] != NULL)
+      vm->opcodes[opcode] (vm);
+
+  }
+}
+
 void vm_run_function(vm_t *vm, const char *function_name) {
   uint8_t function_id = strings_lookup(vm->function_names, function_name);
 
@@ -194,17 +206,5 @@ void vm_run_function(vm_t *vm, const char *function_name) {
   } else {
     printf("Function %s not found\n", function_name);
     exit(1);
-  }
-}
-
-void vm_run(vm_t *vm) {
-  GC_init();
-
-  while (vm->running == true) {
-    int opcode = vm->code[vm->ip];
-
-    if (vm->opcodes[opcode] != NULL)
-      vm->opcodes[opcode] (vm);
-
   }
 }
