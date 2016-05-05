@@ -23,6 +23,7 @@
 * BigInts
 * Module imports
 * Alias module
+* Exceptions (?)
 * Benchmarks
 * Check that functions exist at compile time
 * Higher-order functions
