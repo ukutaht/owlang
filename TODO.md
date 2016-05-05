@@ -32,5 +32,6 @@
 * Pattern matching
 * Direct threaded VM
 * Register windowing
+* Dynamically grow register array
 * Linear-Scan register allocation in compiler
 * Custom garbage collection
