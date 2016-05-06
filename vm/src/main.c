@@ -10,7 +10,7 @@
 void init_load_path() {
   char *load_path = getenv("OWL_LOAD_PATH");
   char *this_dir = dirname(__FILE__);
-  char *relative_stdlib = "../../stdlib/.build";
+  char *relative_stdlib = "../../.build/stdlib";
 
   char absolute_stdlib[strlen(this_dir) + strlen(relative_stdlib) + 1];
   sprintf(absolute_stdlib, "%s/%s", this_dir, relative_stdlib);
