@@ -11,6 +11,7 @@
 * Tuple stdlib (bounds check for `nth`)
 * Vector stdlib
 * IO stdlib
+* Public/Private distinction
 * Generalise `if` to `cond`
 * Dynamically grow the stack
 * Dynamically grow the code array
@@ -26,6 +27,7 @@
 * Exceptions (Is it possible to avoid them?)
 * Benchmarks
 * Check that functions exist at compile time
+* Dead code analysis
 * Higher-order functions
 * Closures (oh boy)
 * Pattern matching
@@ -34,3 +36,5 @@
 * Dynamically grow register array
 * Linear-Scan register allocation in compiler
 * Custom garbage collection
+* FFI (at least C)
+* Lightweight concurrency (CSP? Actors?)
