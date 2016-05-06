@@ -8,8 +8,11 @@ use std::env;
 use std::fs::File;
 use std::path::{Path, PathBuf};
 
+static SOURCE_EXTENSION: &'static str = "owl";
+static TARGET_EXTENSION: &'static str = "owlc";
+
 fn generate_to_file(expr: &ast::Module, out: &PathBuf) {
-    let out_filename = PathBuf::from(expr.name).with_extension("owlc");
+    let out_filename = PathBuf::from(expr.name).with_extension(TARGET_EXTENSION);
     let out_name = out.join(Path::new(out_filename.file_name().unwrap()));
     let mut out_buffer = File::create(out_name).unwrap();
     let bytecode = bytecode::generate(expr);
@@ -25,10 +28,20 @@ fn generate_to_stdout(expr: &ast::Module) {
 }
 
 fn compile_to_file(inp: &PathBuf, out: &PathBuf) {
-    let file  = File::open(inp).ok().expect(&format!("Failed to open file: {}", &inp.to_str().unwrap()));
-
     std::fs::create_dir_all(&out).unwrap();
-    parser::parse(file, |module| generate_to_file(module, out))
+
+    if inp.is_file() {
+        if inp.ends_with(SOURCE_EXTENSION) {
+            let file = File::open(inp).ok().expect(&format!("Failed to open file: {}", &inp.to_str().unwrap()));
+            parser::parse(file, |module| generate_to_file(module, out))
+        }
+    } else if inp.is_dir() {
+        for file in inp.read_dir().unwrap() {
+            compile_to_file(&file.unwrap().path(), out);
+        }
+    } else {
+        panic!("Cannot read {:?}. Expected a file or a directory", inp);
+    }
 }
 
 fn compile_to_stdout(inp: &PathBuf) {
@@ -38,7 +51,7 @@ fn compile_to_stdout(inp: &PathBuf) {
 }
 
 fn print_usage(program: &str, opts: Options) {
-    let brief = format!("Usage: {} FILE [options]", program);
+    let brief = format!("Usage: {} FILE/DIR [options]", program);
     print!("{}", opts.usage(&brief));
 }
 

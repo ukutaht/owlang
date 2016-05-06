@@ -9,4 +9,4 @@ vm:
 	cd vm && bin/build debug
 
 stdlib:
-	compiler/target/debug/owlc stdlib/tuple.owl -o stdlib/.build
+	compiler/target/debug/owlc stdlib -o stdlib/.build
