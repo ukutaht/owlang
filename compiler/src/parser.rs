@@ -38,7 +38,21 @@ pub fn parse_module(input: &[u8]) -> Result<Module, ParseError<u8, Error<u8>>> {
 
 fn expr(i: Input<u8>) -> U8Result<Expr> {
     parse!{i;
-        _if() <|> apply() <|> infix() <|> tuple() <|> vector() <|> ident() <|> int()
+        _if() <|> apply() <|> infix() <|> tuple() <|> vector() <|> bool_true() <|> bool_false() <|> ident() <|> int()
+    }
+}
+
+fn bool_true(i: Input<u8>) -> U8Result<Expr> {
+    parse!{i;
+        string(b"true");
+        ret mk_true()
+    }
+}
+
+fn bool_false(i: Input<u8>) -> U8Result<Expr> {
+    parse!{i;
+        string(b"false");
+        ret mk_false()
     }
 }
 

@@ -139,6 +139,12 @@ impl<'a> FnGenerator<'a> {
             &ast::Expr::Ident(ref i) => {
                 vec![Instruction::Mov(self.push(), *self.env.get(i.name).unwrap())]
             }
+            &ast::Expr::True => {
+                vec![Instruction::StoreTrue(self.push())]
+            }
+            &ast::Expr::False => {
+                panic!("False");
+            }
         }
     }
 

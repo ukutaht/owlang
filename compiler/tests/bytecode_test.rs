@@ -173,3 +173,18 @@ fn generates_vector() {
         bytecode::Instruction::Return,
     ])
 }
+
+#[test]
+fn generates_true() {
+    let main = mk_function("main", Vec::new(), vec![
+        mk_true()
+    ]);
+
+    let res = bytecode::generate_function(&main);
+
+    assert_eq!(res.code, vec![
+        bytecode::Instruction::StoreTrue(1),
+        bytecode::Instruction::Mov(0, 1),
+        bytecode::Instruction::Return,
+    ])
+}

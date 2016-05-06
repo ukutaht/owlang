@@ -20,6 +20,7 @@ pub enum Instruction {
     TupleNth(Reg, Reg, u8),
     AssertEq(Reg, Reg),
     Vector(Reg, u8, Vec<Reg>),
+    StoreTrue(Reg)
 }
 
 impl Instruction {
@@ -82,6 +83,9 @@ impl Instruction {
                 res.append(&mut elems.clone());
 
                 out.write(&res).unwrap();
+            }
+            &Instruction::StoreTrue(reg) => {
+                out.write(&[opcodes::STORE_TRUE, reg]).unwrap();
             }
         }
     }
@@ -166,6 +170,10 @@ impl Instruction {
 
                 out.write(&string.as_bytes()).unwrap();
             }
+            &Instruction::StoreTrue(reg) => {
+                let string = format!("store_true %{}\n", reg);
+                out.write(&string.as_bytes()).unwrap();
+            }
         }
     }
 
@@ -185,6 +193,7 @@ impl Instruction {
             &Instruction::Return          => 1,
             &Instruction::AssertEq(_, _)  => 3,
             &Instruction::Vector(_, _, ref regs)   => 3 + regs.len() as u8,
+            &Instruction::StoreTrue(_)    => 2,
         }
     }
 }

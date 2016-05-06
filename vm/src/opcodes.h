@@ -33,6 +33,7 @@ enum opcode_values {
     OP_ASSERT_EQ,
     OP_VECTOR,
     OP_PUB_FN,
+    OP_STORE_TRUE,
 };
 
 void opcode_init(vm_t *vm);

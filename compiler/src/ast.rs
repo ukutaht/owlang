@@ -58,6 +58,8 @@ pub struct Vector<'a> {
 #[derive(Debug, Eq, PartialEq)]
 pub enum Expr<'a> {
     Int(Int<'a>),
+    True,
+    False,
     Ident(Ident<'a>),
     Apply(Apply<'a>),
     If(If<'a>),
@@ -75,6 +77,14 @@ pub struct Module<'a> {
 
 pub fn mk_int(val: &str) -> Expr {
     Expr::Int(Int {value: val})
+}
+
+pub fn mk_true<'a>() -> Expr<'a> {
+    Expr::True
+}
+
+pub fn mk_false<'a>() -> Expr<'a> {
+    Expr::False
 }
 
 pub fn mk_ident(name: &str) -> Expr {

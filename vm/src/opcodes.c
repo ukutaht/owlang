@@ -321,8 +321,15 @@ void op_assert_eq(struct vm *vm) {
   vm->ip += 1;
 }
 
+void op_store_true(struct vm *vm) {
+  debug_print("%04x OP_STORE_TRUE\n", vm->ip);
+  uint8_t reg = next_byte(vm);
+
+  set_reg(vm, reg, OWL_TRUE);
+  vm->ip += 1;
+}
+
 void opcode_init(vm_t * vm) {
-  // All instructions will default to unknown.
   for (int i = 0; i < 255; i++)
     vm->opcodes[i] = op_unknown;
 
@@ -344,4 +351,5 @@ void opcode_init(vm_t * vm) {
   vm->opcodes[OP_TUPLE_NTH] = op_tuple_nth;
   vm->opcodes[OP_ASSERT_EQ] = op_assert_eq;
   vm->opcodes[OP_VECTOR] = op_vector;
+  vm->opcodes[OP_STORE_TRUE] = op_store_true;
 }

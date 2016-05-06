@@ -55,6 +55,7 @@ void vm_load_module_from_file(vm_t *vm, const char *filename) {
         vm->code_size += 1;
         break;
       case OP_PRINT:
+      case OP_STORE_TRUE:
       case OP_JMP:
         *code_ptr++ = ch;
         *code_ptr++ = fgetc(fp);

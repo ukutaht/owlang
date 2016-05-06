@@ -13,6 +13,8 @@ owl_term owl_tuple_nth(owl_term tuple, uint8_t index) {
 }
 
 bool owl_terms_eq(owl_term left, owl_term right) {
+  if (left == right) return true;
+
   owl_tag left_tag  = owl_tag_of(left);
   owl_tag right_tag = owl_tag_of(right);
 
@@ -20,6 +22,7 @@ bool owl_terms_eq(owl_term left, owl_term right) {
     return false;
   }
 
+  // Booleans need not to be handled here because they are caught by strict equality earlier
   switch(left_tag) {
     case INT:
       return left == right;
