@@ -27,14 +27,23 @@ fn generate_to_stdout(expr: &ast::Module) {
     bytecode.emit_human_readable(&mut writer);
 }
 
+fn has_source_extension(path: &PathBuf) -> bool {
+    let extension = path.extension()
+        .map(|os_string| os_string.to_str())
+        .unwrap_or(None)
+        .unwrap_or("");
+
+    path.is_file() && extension == SOURCE_EXTENSION
+}
+
 fn compile_to_file(inp: &PathBuf, out: &PathBuf) {
     std::fs::create_dir_all(&out).unwrap();
 
     if inp.is_file() {
-        if inp.ends_with(SOURCE_EXTENSION) {
-            let file = File::open(inp).ok().expect(&format!("Failed to open file: {}", &inp.to_str().unwrap()));
-            parser::parse(file, |module| generate_to_file(module, out))
-        }
+        if !has_source_extension(inp) { return };
+
+        let file = File::open(inp).ok().expect(&format!("Failed to open file: {}", &inp.to_str().unwrap()));
+        parser::parse(file, |module| generate_to_file(module, out))
     } else if inp.is_dir() {
         for file in inp.read_dir().unwrap() {
             compile_to_file(&file.unwrap().path(), out);

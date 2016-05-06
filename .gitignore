@@ -1,3 +1,4 @@
 /vm/target
 /compiler/target
-/test_cases/.build
+.build/test_cases
+.build/stdlib

@@ -33,7 +33,7 @@ end
 ROOT_DIR     = File.join(File.expand_path(File.dirname(__FILE__)), "..")
 COMPILER_DIR = File.join(ROOT_DIR, "COMPILER")
 VM_DIR       = File.join(ROOT_DIR, "vm")
-TEST_TARGET  = File.join(ROOT_DIR, "test_cases/.build")
+TEST_TARGET  = File.join(ROOT_DIR, ".build/test_cases")
 
 COMPILER = File.join(COMPILER_DIR, "target/debug/owlc")
 VM       = File.join(VM_DIR, "target/debug/vm")
