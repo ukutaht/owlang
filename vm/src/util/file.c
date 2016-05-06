@@ -6,6 +6,8 @@
 // Get module name from filename. Examples:
 // _build/arithmetic_test.owlc -> arithmetic_test
 // arithmetic_test.owlc -> arithmetic_test
+//
+// Allocates memory and transfers ownership to caller.
 char* module_name_from_filename(char *filename) {
   char *module_name = rindex(filename, '/');
 
