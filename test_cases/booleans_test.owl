@@ -1,5 +1,6 @@
 module booleans_test {
   fn main() {
     assert_eq(true, true)
+    assert_eq(false, false)
   }
 }

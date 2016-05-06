@@ -34,6 +34,7 @@ enum opcode_values {
     OP_VECTOR,
     OP_PUB_FN,
     OP_STORE_TRUE,
+    OP_STORE_FALSE,
 };
 
 void opcode_init(vm_t *vm);

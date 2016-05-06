@@ -8,7 +8,8 @@
 #define int_from_owl_int(term) (term >> 3)
 #define owl_tag_of(term) ((owl_tag) (term & 0x7))
 
-#define OWL_TRUE 1
+#define OWL_FALSE 1
+#define OWL_TRUE  2
 
 typedef uint64_t owl_term;
 

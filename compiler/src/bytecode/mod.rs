@@ -143,7 +143,7 @@ impl<'a> FnGenerator<'a> {
                 vec![Instruction::StoreTrue(self.push())]
             }
             &ast::Expr::False => {
-                panic!("False");
+                vec![Instruction::StoreFalse(self.push())]
             }
         }
     }

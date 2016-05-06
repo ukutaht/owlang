@@ -20,7 +20,8 @@ pub enum Instruction {
     TupleNth(Reg, Reg, u8),
     AssertEq(Reg, Reg),
     Vector(Reg, u8, Vec<Reg>),
-    StoreTrue(Reg)
+    StoreTrue(Reg),
+    StoreFalse(Reg)
 }
 
 impl Instruction {
@@ -86,6 +87,9 @@ impl Instruction {
             }
             &Instruction::StoreTrue(reg) => {
                 out.write(&[opcodes::STORE_TRUE, reg]).unwrap();
+            }
+            &Instruction::StoreFalse(reg) => {
+                out.write(&[opcodes::STORE_FALSE, reg]).unwrap();
             }
         }
     }
@@ -169,9 +173,13 @@ impl Instruction {
                 }
 
                 out.write(&string.as_bytes()).unwrap();
-            }
+            },
             &Instruction::StoreTrue(reg) => {
                 let string = format!("store_true %{}\n", reg);
+                out.write(&string.as_bytes()).unwrap();
+            },
+            &Instruction::StoreFalse(reg) => {
+                let string = format!("store_false %{}\n", reg);
                 out.write(&string.as_bytes()).unwrap();
             }
         }
@@ -190,10 +198,11 @@ impl Instruction {
             &Instruction::Jmp(_)          => 2,
             &Instruction::Tuple(_, _, ref regs)   => 3 + regs.len() as u8,
             &Instruction::TupleNth(_, _, _)  => 4,
-            &Instruction::Return          => 1,
-            &Instruction::AssertEq(_, _)  => 3,
+            &Instruction::Return           => 1,
+            &Instruction::AssertEq(_, _)   => 3,
             &Instruction::Vector(_, _, ref regs)   => 3 + regs.len() as u8,
-            &Instruction::StoreTrue(_)    => 2,
+            &Instruction::StoreTrue(_)     => 2,
+            &Instruction::StoreFalse(_)    => 2,
         }
     }
 }
