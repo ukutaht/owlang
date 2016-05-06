@@ -12,6 +12,7 @@
 * Vector stdlib
 * IO stdlib
 * Public/Private distinction
+* Module constants
 * Generalise `if` to `cond`
 * Dynamically grow the stack
 * Dynamically grow the code array
