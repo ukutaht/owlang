@@ -1,7 +1,5 @@
 module equalities_test {
   fn main() {
-    if 1 != 2 {
-      print(1)
-    }
+    owl_unit:assert(1 == 1)
   }
 }
