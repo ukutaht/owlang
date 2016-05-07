@@ -1,6 +1,7 @@
 ### Big list of TODO items
 
 * `if location == 0` test in call is not enough. Functions can be defined in location 0;
+* Rename `store` to `store_int`
 * Add short-circuit && and ||
 * Add `nil`
 * Use static libraries for deps
