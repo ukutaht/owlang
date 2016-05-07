@@ -68,7 +68,6 @@ void vm_load_module_from_file(vm_t *vm, const char *filename) {
       case OP_MOV:
       case OP_STORE:
       case OP_TEST:
-      case OP_ASSERT_EQ:
         *code_ptr++ = ch;
         *code_ptr++ = fgetc(fp);
         *code_ptr++ = fgetc(fp);

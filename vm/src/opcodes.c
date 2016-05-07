@@ -321,19 +321,6 @@ void op_tuple_nth(struct vm *vm) {
   vm->ip += 1;
 }
 
-void op_assert_eq(struct vm *vm) {
-  debug_print("%04x OP_ASSERT_EQ\n", vm->ip);
-  uint8_t reg1 = next_byte(vm);
-  uint8_t reg2 = next_byte(vm);
-
-  if (!owl_terms_eq(get_reg(vm, reg1), get_reg(vm, reg2))) {
-    printf("Assertion failed!\n");
-    exit(1);
-  }
-
-  vm->ip += 1;
-}
-
 void op_eq(struct vm *vm) {
   debug_print("%04x OP_EQ\n", vm->ip);
   uint8_t result_reg = next_reg(vm);
@@ -398,7 +385,6 @@ void opcode_init(vm_t * vm) {
   vm->opcodes[OP_JMP] = op_jmp;
   vm->opcodes[OP_TUPLE]     = op_tuple;
   vm->opcodes[OP_TUPLE_NTH] = op_tuple_nth;
-  vm->opcodes[OP_ASSERT_EQ] = op_assert_eq;
   vm->opcodes[OP_VECTOR] = op_vector;
   vm->opcodes[OP_STORE_TRUE] = op_store_true;
   vm->opcodes[OP_STORE_FALSE] = op_store_false;
