@@ -18,9 +18,9 @@ module functions_test {
   }
 
   fn main() {
-    assert_eq(gimme_five(), 5)
-    assert_eq(add_five(5), 10)
-    assert_eq(add_together(7, 11), 18)
-    assert_eq(functions:gimme_six(), 6)
+    owl_unit:assert_eq(gimme_five(), 5)
+    owl_unit:assert_eq(add_five(5), 10)
+    owl_unit:assert_eq(add_together(7, 11), 18)
+    owl_unit:assert_eq(functions:gimme_six(), 6)
   }
 }
