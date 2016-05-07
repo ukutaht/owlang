@@ -10,3 +10,6 @@ vm:
 
 stdlib:
 	compiler/target/debug/owlc stdlib -o .build/stdlib
+
+clean:
+	rm -rf compiler/target && rm -rf vm/target && rm -rf .build
