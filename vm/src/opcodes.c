@@ -100,86 +100,6 @@ void op_test(struct vm *vm) {
   }
 }
 
-void op_test_eq(struct vm *vm) {
-  debug_print("%04x OP_TEST_EQ\n", vm->ip);
-  uint8_t reg1  = next_reg(vm);
-  uint8_t reg2  = next_reg(vm);
-  signed char instr  = next_byte(vm);
-
-  owl_term val1 = get_reg(vm, reg1);
-  owl_term val2 = get_reg(vm, reg2);
-
-  if (int_from_owl_int(val1) == int_from_owl_int(val2)) {
-    vm->ip += instr;
-  } else {
-    vm->ip += 1;
-  }
-}
-
-void op_test_gt(struct vm *vm) {
-  debug_print("%04x OP_TEST_GT\n", vm->ip);
-  uint8_t reg1  = next_reg(vm);
-  uint8_t reg2  = next_reg(vm);
-  unsigned int instr = next_byte(vm);
-
-  owl_term val1 = get_reg(vm, reg1);
-  owl_term val2 = get_reg(vm, reg2);
-
-  if (int_from_owl_int(val1) > int_from_owl_int(val2)) {
-    vm->ip += instr;
-  } else {
-    vm->ip += 1;
-  }
-}
-
-void op_test_gte(struct vm *vm) {
-  debug_print("%04x OP_TEST_GTE\n", vm->ip);
-  unsigned int reg1  = next_reg(vm);
-  unsigned int reg2  = next_reg(vm);
-  unsigned int instr = next_byte(vm);
-
-  owl_term val1 = get_reg(vm, reg1);
-  owl_term val2 = get_reg(vm, reg2);
-
-  if (int_from_owl_int(val1) >= int_from_owl_int(val2)) {
-    vm->ip += instr;
-  } else {
-    vm->ip += 1;
-  }
-}
-
-void op_test_lt(struct vm *vm) {
-  debug_print("%04x OP_TEST_LT\n", vm->ip);
-  unsigned int reg1  = next_reg(vm);
-  unsigned int reg2  = next_reg(vm);
-  unsigned int instr = next_byte(vm);
-
-  owl_term val1 = get_reg(vm, reg1);
-  owl_term val2 = get_reg(vm, reg2);
-
-  if (int_from_owl_int(val1) < int_from_owl_int(val2)) {
-    vm->ip += instr;
-  } else {
-    vm->ip += 1;
-  }
-}
-
-void op_test_lte(struct vm *vm) {
-  debug_print("%04x OP_TEST_LTE\n", vm->ip);
-  uint8_t reg1  = next_reg(vm);
-  uint8_t reg2  = next_reg(vm);
-  unsigned int instr = next_byte(vm);
-
-  owl_term val1 = get_reg(vm, reg1);
-  owl_term val2 = get_reg(vm, reg2);
-
-  if (int_from_owl_int(val1) <= int_from_owl_int(val2)) {
-    vm->ip += instr;
-  } else {
-    vm->ip += 1;
-  }
-}
-
 void op_add(struct vm *vm) {
   debug_print("%04x OP_ADD\n", vm->ip);
   uint8_t reg1  = next_reg(vm);
@@ -383,11 +303,6 @@ void opcode_init(vm_t * vm) {
   vm->opcodes[OP_EXIT] = op_exit;
   vm->opcodes[OP_STORE] = op_store;
   vm->opcodes[OP_PRINT] = op_print;
-  vm->opcodes[OP_TEST_EQ] = op_test_eq;
-  vm->opcodes[OP_TEST_GT] = op_test_gt;
-  vm->opcodes[OP_TEST_GTE] = op_test_gte;
-  vm->opcodes[OP_TEST_LT] = op_test_lt;
-  vm->opcodes[OP_TEST_LTE] = op_test_lte;
   vm->opcodes[OP_ADD] = op_add;
   vm->opcodes[OP_SUB] = op_sub;
   vm->opcodes[OP_CALL] = op_call;
