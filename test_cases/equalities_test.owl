@@ -1,5 +1,9 @@
 module equalities_test {
   fn main() {
     owl_unit:assert(1 == 1)
+    owl_unit:refute(1 == 2)
+
+    owl_unit:assert(1 != 2)
+    owl_unit:refute(1 != 1)
   }
 }

@@ -5,6 +5,12 @@ module owl_unit {
     }
   }
 
+  fn refute(value) {
+    if value {
+      exit(1)
+    }
+  }
+
   fn assert_eq(left, right) {
     if left != right {
       exit(1)
