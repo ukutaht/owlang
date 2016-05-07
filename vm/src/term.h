@@ -30,6 +30,7 @@ owl_term owl_int_from(uint64_t val);
 
 owl_term owl_tuple_nth(owl_term tuple, uint8_t index);
 owl_term owl_bool(bool value);
+owl_term owl_negate(owl_term value);
 bool owl_terms_eq(owl_term left, owl_term right);
 
 #endif  // TERM_H

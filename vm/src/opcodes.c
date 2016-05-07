@@ -349,6 +349,17 @@ void op_not_eq(struct vm *vm) {
   vm->ip += 1;
 }
 
+void op_not(struct vm *vm) {
+  debug_print("%04x OP_EQ\n", vm->ip);
+  uint8_t result_reg = next_reg(vm);
+  uint8_t reg = next_reg(vm);
+
+  owl_term value = get_reg(vm, reg);
+
+  set_reg(vm, result_reg, owl_negate(value));
+  vm->ip += 1;
+}
+
 void op_store_true(struct vm *vm) {
   debug_print("%04x OP_STORE_TRUE\n", vm->ip);
   uint8_t reg = next_byte(vm);
@@ -391,4 +402,5 @@ void opcode_init(vm_t * vm) {
   vm->opcodes[OP_TEST] = op_test;
   vm->opcodes[OP_EQ] = op_eq;
   vm->opcodes[OP_NOT_EQ] = op_not_eq;
+  vm->opcodes[OP_NOT] = op_not;
 }

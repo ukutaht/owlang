@@ -35,6 +35,12 @@ fn parses_false() {
 }
 
 #[test]
+fn parses_unary_not() {
+    let res = parser::parse_expr(b"!false");
+    assert_eq!(res, Ok(mk_apply(None, "!", vec![mk_false()])));
+}
+
+#[test]
 fn parses_simple_function_application() {
     let res = parser::parse_expr(b"function()");
     assert_eq!(res, Ok(mk_apply(None, "function", Vec::new())));

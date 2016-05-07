@@ -22,7 +22,8 @@ pub enum Instruction {
     StoreTrue(Reg),
     StoreFalse(Reg),
     Eq(Reg, Reg, Reg),
-    NotEq(Reg, Reg, Reg)
+    NotEq(Reg, Reg, Reg),
+    Not(Reg, Reg),
 }
 
 impl Instruction {
@@ -94,6 +95,9 @@ impl Instruction {
             }
             &Instruction::NotEq(to, reg1, reg2) => {
                 out.write(&[opcodes::NOT_EQ, to, reg1, reg2]).unwrap();
+            }
+            &Instruction::Not(to, reg) => {
+                out.write(&[opcodes::NOT, to, reg]).unwrap();
             }
         }
     }
@@ -191,6 +195,10 @@ impl Instruction {
                 let string = format!("not_eq %{}, %{}, %{}\n", to, reg1, reg2);
                 out.write(&string.as_bytes()).unwrap();
             }
+            &Instruction::Not(to, reg) => {
+                let string = format!("not %{}, %{}\n", to, reg);
+                out.write(&string.as_bytes()).unwrap();
+            }
         }
     }
 
@@ -213,6 +221,7 @@ impl Instruction {
             &Instruction::StoreFalse(_)    => 2,
             &Instruction::Eq(_, _, _)      => 4,
             &Instruction::NotEq(_, _, _)   => 4,
+            &Instruction::Not(_, _)        => 3,
         }
     }
 }

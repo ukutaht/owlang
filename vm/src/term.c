@@ -21,6 +21,14 @@ owl_term owl_tuple_nth(owl_term tuple, uint8_t index) {
   return ary[index + 1];
 }
 
+owl_term owl_negate(owl_term value) {
+  if (value == OWL_FALSE) {
+    return OWL_TRUE;
+  } else {
+    return OWL_FALSE;
+  }
+}
+
 bool owl_terms_eq(owl_term left, owl_term right) {
   if (left == right) return true;
 

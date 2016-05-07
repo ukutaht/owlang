@@ -38,7 +38,15 @@ pub fn parse_module(input: &[u8]) -> Result<Module, ParseError<u8, Error<u8>>> {
 
 fn expr(i: Input<u8>) -> U8Result<Expr> {
     parse!{i;
-        _if() <|> apply() <|> infix() <|> tuple() <|> vector() <|> bool_true() <|> bool_false() <|> ident() <|> int()
+        _if() <|> apply() <|> infix() <|> unary() <|> tuple() <|> vector() <|> bool_true() <|> bool_false() <|> ident() <|> int()
+    }
+}
+
+fn unary(i: Input<u8>) -> U8Result<Expr> {
+    parse!{i;
+        string(b"!");
+        let arg = expr();
+        ret mk_apply(None, "!", vec![arg])
     }
 }
 

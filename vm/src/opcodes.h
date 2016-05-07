@@ -37,6 +37,7 @@ enum opcode_values {
     OP_TEST,
     OP_EQ,
     OP_NOT_EQ,
+    OP_NOT,
 };
 
 void opcode_init(vm_t *vm);
