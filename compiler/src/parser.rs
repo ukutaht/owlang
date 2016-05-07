@@ -183,7 +183,7 @@ fn vector(i: Input<u8>) -> U8Result<Expr> {
 
 fn infix_op(i: Input<u8>) -> U8Result<&str> {
     parse!{i;
-        let op = string(b"+") <|> string(b"-") <|> string(b">=") <|> string(b">")  <|> string(b"<=") <|> string(b"<");
+        let op = string(b"+") <|> string(b"-") <|> string(b"==")<|> string(b">=") <|> string(b">")  <|> string(b"<=") <|> string(b"<") ;
         ret unsafe { str::from_utf8_unchecked(op) }
     }
 }

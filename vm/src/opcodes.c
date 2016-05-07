@@ -333,6 +333,20 @@ void op_assert_eq(struct vm *vm) {
   vm->ip += 1;
 }
 
+void op_eq(struct vm *vm) {
+  debug_print("%04x OP_EQ\n", vm->ip);
+  uint8_t result_reg = next_reg(vm);
+  uint8_t reg1 = next_reg(vm);
+  uint8_t reg2 = next_reg(vm);
+
+  owl_term left = get_reg(vm, reg1);
+  owl_term right = get_reg(vm, reg2);
+
+  owl_term result = owl_bool(owl_terms_eq(left, right));
+  set_reg(vm, result_reg, result);
+  vm->ip += 1;
+}
+
 void op_store_true(struct vm *vm) {
   debug_print("%04x OP_STORE_TRUE\n", vm->ip);
   uint8_t reg = next_byte(vm);
@@ -374,4 +388,5 @@ void opcode_init(vm_t * vm) {
   vm->opcodes[OP_STORE_TRUE] = op_store_true;
   vm->opcodes[OP_STORE_FALSE] = op_store_false;
   vm->opcodes[OP_TEST] = op_test;
+  vm->opcodes[OP_EQ] = op_eq;
 }

@@ -1,0 +1,7 @@
+module equalities_test {
+  fn main() {
+    if 1 == 1 {
+      print(1)
+    }
+  }
+}

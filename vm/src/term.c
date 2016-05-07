@@ -3,8 +3,17 @@
 #include "term.h"
 #include "vector.h"
 
+
 owl_term owl_int_from(uint64_t val) {
   return (val << 3) | INT;
+}
+
+owl_term owl_bool(bool val) {
+  if (val) {
+    return OWL_TRUE;
+  } else {
+    return OWL_FALSE;
+  }
 }
 
 owl_term owl_tuple_nth(owl_term tuple, uint8_t index) {

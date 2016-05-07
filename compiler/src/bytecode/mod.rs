@@ -137,6 +137,7 @@ impl<'a> FnGenerator<'a> {
         match ap.name {
             "+" => vec![Instruction::Add(ret_loc, args[0], args[1])],
             "-" => vec![Instruction::Sub(ret_loc, args[0], args[1])],
+            "==" => vec![Instruction::Eq(ret_loc, args[0], args[1])],
             "print" => vec![Instruction::Print(args[0])],
             "tuple_nth" => vec![Instruction::TupleNth(ret_loc, args[0], args[1])],
             "assert_eq" => vec![Instruction::AssertEq(args[0], args[1])],

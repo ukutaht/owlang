@@ -25,6 +25,24 @@ fn generates_simple_addition() {
 }
 
 #[test]
+fn generates_equality_test() {
+    let ast = mk_function("main", Vec::new(), vec![
+        mk_apply(None, "==", vec![mk_int("1"), mk_int("2")])
+    ]);
+
+    let res = bytecode::generate_function(&ast);
+
+    assert_eq!(res.code, vec![
+            bytecode::Instruction::Store(1, 1),
+            bytecode::Instruction::Store(2, 2),
+            bytecode::Instruction::Eq(1, 1, 2),
+            bytecode::Instruction::Mov(0, 1),
+            bytecode::Instruction::Return
+        ]
+    )
+}
+
+#[test]
 fn generates_nested_arithmetic() {
     let ast = mk_function("main", Vec::new(), vec![
         mk_apply(None, "+", vec![
