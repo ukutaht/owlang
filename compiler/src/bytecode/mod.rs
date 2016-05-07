@@ -11,8 +11,6 @@ pub use self::instruction::{Bytecode, Instruction, Reg};
 pub use self::function::Function;
 pub use self::module::Module;
 
-type Signature = (String, u8);
-
 struct FnGenerator<'a> {
     var_count: u8,
     function: &'a ast::Function<'a>,
