@@ -61,8 +61,9 @@ void op_unknown(vm_t * vm) {
 
 void op_exit(vm_t *vm) {
   debug_print("%04x OP_EXIT\n", vm->ip);
-  vm->running = false;
-  vm->ip += 1;
+  uint8_t exit_code = next_byte(vm);
+
+  exit(exit_code);
 }
 
 void op_store(vm_t *vm) {

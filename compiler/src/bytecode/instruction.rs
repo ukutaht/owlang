@@ -6,7 +6,7 @@ pub type Bytecode = Vec<Instruction>;
 
 #[derive(Debug, Eq, PartialEq)]
 pub enum Instruction {
-    Exit,
+    Exit(Reg),
     Store(Reg, u16),
     Print(Reg),
     Test(Reg, u8),
@@ -48,8 +48,8 @@ impl Instruction {
             &Instruction::Test(reg, jump) => {
                 out.write(&[opcodes::TEST, reg, jump]).unwrap();
             }
-            &Instruction::Exit => {
-                out.write(&[opcodes::EXIT]).unwrap();
+            &Instruction::Exit(reg) => {
+                out.write(&[opcodes::EXIT, reg]).unwrap();
             },
             &Instruction::Call(ret_loc, ref name, arity, ref regs) => {
                 let full_name = format!("{}/{}", name, arity);
@@ -124,8 +124,9 @@ impl Instruction {
                 let string = format!("test %{}, {}\n", reg, jump);
                 out.write(&string.as_bytes()).unwrap();
             }
-            &Instruction::Exit => {
-                out.write(b"exit\n").unwrap();
+            &Instruction::Exit(reg) => {
+                let string = format!("exit %{}\n", reg);
+                out.write(string.as_bytes()).unwrap();
             }
             &Instruction::Call(ret_loc, ref name, arity, ref regs) => {
                 let string;
@@ -201,7 +202,7 @@ impl Instruction {
             &Instruction::Mov(_, _)       => 3,
             &Instruction::Print(_)        => 2,
             &Instruction::Test(_, _)      => 3,
-            &Instruction::Exit            => 1,
+            &Instruction::Exit(_)         => 2,
             &Instruction::Call(_, ref name, _, ref regs) => 5 + (name.len() as u8) + (regs.len() as u8),
             &Instruction::Jmp(_)          => 2,
             &Instruction::Tuple(_, _, ref regs)   => 3 + regs.len() as u8,

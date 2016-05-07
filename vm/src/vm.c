@@ -201,14 +201,14 @@ void vm_run_function(vm_t *vm, const char *function_name) {
   uint8_t function_id = strings_lookup(vm->function_names, function_name);
 
   if (function_id != 0) {
-    uint8_t call_code[5] = {
+    uint8_t call_code[6] = {
       OP_CALL, 0, function_id, 0,
-      OP_EXIT
+      OP_EXIT, 0
     };
 
-    memcpy(&vm->code[vm->code_size], &call_code, 5);
+    memcpy(&vm->code[vm->code_size], &call_code, 6);
     vm->ip = vm->code_size;
-    vm->code_size += 5;
+    vm->code_size += 6;
     vm_run(vm);
   } else {
     printf("Function %s not found\n", function_name);
