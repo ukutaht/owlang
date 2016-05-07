@@ -6,7 +6,19 @@ SET (CMAKE_C_FLAGS "-Wall -Wextra -pedantic -std=c99")
 INCLUDE (CheckIncludeFiles)
 check_include_files (gc.h HAVE_GC)
 check_include_files (intern/strings.h HAVE_STRING_INTERNS)
-check_include_files (rrb.h HAVE_STRING_INTERNS)
+check_include_files (rrb.h HAVE_RRB)
+
+if (NOT HAVE_GC)
+  message(FATAL_ERROR "gc.h not found")
+endif()
+
+if (NOT HAVE_STRING_INTERNS)
+  message(FATAL_ERROR "intern/strings.h not found")
+endif()
+
+if (NOT HAVE_RRB)
+  message(FATAL_ERROR "rrb.h not found")
+endif()
 
 include_directories ("${PROJECT_SOURCE_DIR}/src")
 add_executable(vm src/main.c src/vm.c src/opcodes.c src/term.c src/alloc.c src/vector.c src/util/file.c)
