@@ -1,7 +1,8 @@
 ### Big list of TODO items
 
 * `if location == 0` test in call is not enough. Functions can be defined in location 0;
-* Boolean type
+* Add `!` (not) operator
+* Add short-circuit && and ||
 * Add `nil`
 * Ensure `nil` is returned when no else branch in if
 * A graceful way to fatally quit the VM with a message (for example, when function is not found)
