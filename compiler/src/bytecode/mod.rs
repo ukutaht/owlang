@@ -138,6 +138,7 @@ impl<'a> FnGenerator<'a> {
             "+" => vec![Instruction::Add(ret_loc, args[0], args[1])],
             "-" => vec![Instruction::Sub(ret_loc, args[0], args[1])],
             "==" => vec![Instruction::Eq(ret_loc, args[0], args[1])],
+            "!=" => vec![Instruction::NotEq(ret_loc, args[0], args[1])],
             "exit" => vec![Instruction::Exit(args[0])],
             "print" => vec![Instruction::Print(args[0])],
             "tuple_nth" => vec![Instruction::TupleNth(ret_loc, args[0], args[1])],

@@ -77,6 +77,12 @@ fn parses_infix_equals() {
 }
 
 #[test]
+fn parses_infix_not_equals() {
+    let res = parser::parse_expr(b"a != b");
+    assert_eq!(res, Ok(mk_apply(None, "!=", vec![mk_ident("a"), mk_ident("b")])));
+}
+
+#[test]
 fn parses_simple_function_definition() {
     let res = parser::parse_fn(b"fn hello() { 1 }");
     assert_eq!(res, Ok(mk_function("hello", Vec::new(), vec![

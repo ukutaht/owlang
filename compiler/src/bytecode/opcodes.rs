@@ -26,3 +26,4 @@ pub const STORE_TRUE: u8  = 0x13;
 pub const STORE_FALSE: u8 = 0x14;
 pub const TEST: u8        = 0x15;
 pub const EQ: u8          = 0x16;
+pub const NOT_EQ: u8      = 0x17;
