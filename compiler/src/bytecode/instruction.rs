@@ -9,7 +9,7 @@ pub enum Instruction {
     Exit,
     Store(Reg, u16),
     Print(Reg),
-    TestGt(Reg, Reg, u8),
+    Test(Reg, u8),
     Add(Reg, Reg, Reg),
     Sub(Reg, Reg, Reg),
     Call(u8, String, u8, Vec<Reg>),
@@ -44,8 +44,8 @@ impl Instruction {
             &Instruction::Print(reg) => {
                 out.write(&[opcodes::PRINT, reg]).unwrap();
             },
-            &Instruction::TestGt(reg1, reg2, jump) => {
-                out.write(&[opcodes::TEST_GT, reg1, reg2, jump]).unwrap();
+            &Instruction::Test(reg, jump) => {
+                out.write(&[opcodes::TEST, reg, jump]).unwrap();
             }
             &Instruction::Exit => {
                 out.write(&[opcodes::EXIT]).unwrap();
@@ -116,8 +116,8 @@ impl Instruction {
                 let string = format!("print %{}\n", reg);
                 out.write(&string.as_bytes()).unwrap();
             }
-            &Instruction::TestGt(reg1, reg2, jump) => {
-                let string = format!("test_gt %{}, %{}, {}\n", reg1, reg2, jump);
+            &Instruction::Test(reg, jump) => {
+                let string = format!("test %{}, {}\n", reg, jump);
                 out.write(&string.as_bytes()).unwrap();
             }
             &Instruction::Exit => {
@@ -192,7 +192,7 @@ impl Instruction {
             &Instruction::Store(_, _)     => 4,
             &Instruction::Mov(_, _)       => 3,
             &Instruction::Print(_)        => 2,
-            &Instruction::TestGt(_, _, _) => 4,
+            &Instruction::Test(_, _)      => 3,
             &Instruction::Exit            => 1,
             &Instruction::Call(_, ref name, _, ref regs) => 5 + (name.len() as u8) + (regs.len() as u8),
             &Instruction::Jmp(_)          => 2,
@@ -208,5 +208,5 @@ impl Instruction {
 }
 
 pub fn byte_size_of(instructions: &Vec<Instruction>) -> u8 {
-    instructions.iter().fold(1, |acc, x| acc + x.byte_size())
+    instructions.iter().fold(0, |acc, x| acc + x.byte_size())
 }

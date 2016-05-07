@@ -7,6 +7,7 @@
 #define owl_extract_ptr(term) ((void*) (term >> 3))
 #define int_from_owl_int(term) (term >> 3)
 #define owl_tag_of(term) ((owl_tag) (term & 0x7))
+#define owl_term_truthy(term) (term != OWL_FALSE)
 
 #define OWL_FALSE 1
 #define OWL_TRUE  2

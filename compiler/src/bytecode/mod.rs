@@ -84,23 +84,10 @@ impl<'a> FnGenerator<'a> {
             &ast::Expr::If(ref i) => {
                 let mut res = Vec::new();
                 let mut else_branch = vec![Instruction::Return];
+                let else_size = instruction::byte_size_of(&else_branch);
 
-                match *i.condition {
-                    ast::Expr::Apply(ref a) => {
-                        match a.name {
-                            ">" => {
-                                res.append(&mut self.generate_expr(&a.args[0]));
-                                res.append(&mut self.generate_expr(&a.args[1]));
-                                let arg2 = self.pop();
-                                let arg1 = self.pop();
-                                let jump = instruction::byte_size_of(&else_branch);
-                                res.push(Instruction::TestGt(arg1, arg2, jump));
-                            },
-                            _ => panic!("Cannot generate if statement")
-                        }
-                    }
-                    _ => panic!("Cannot generate if statement")
-                }
+                res.append(&mut self.generate_expr(&(*i.condition)));
+                res.push(Instruction::Test(self.pop(), else_size + 1));
 
                 res.append(&mut else_branch);
                 for expr in i.body.iter() {

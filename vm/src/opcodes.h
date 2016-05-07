@@ -35,6 +35,7 @@ enum opcode_values {
     OP_PUB_FN,
     OP_STORE_TRUE,
     OP_STORE_FALSE,
+    OP_TEST,
 };
 
 void opcode_init(vm_t *vm);

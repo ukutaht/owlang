@@ -3,6 +3,7 @@ pub const STORE: u8       = 0x01;
 pub const PRINT: u8       = 0x02;
 #[allow(dead_code)]
 pub const TEST_EQ: u8     = 0x03;
+#[allow(dead_code)]
 pub const TEST_GT: u8     = 0x04;
 #[allow(dead_code)]
 pub const TEST_GTE: u8    = 0x05;
@@ -23,3 +24,4 @@ pub const VECTOR: u8      = 0x11;
 pub const PUB_FN: u8      = 0x12;
 pub const STORE_TRUE: u8  = 0x13;
 pub const STORE_FALSE: u8 = 0x14;
+pub const TEST: u8        = 0x15;

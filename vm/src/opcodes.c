@@ -87,6 +87,18 @@ void op_print(struct vm *vm) {
   vm->ip += 1;
 }
 
+void op_test(struct vm *vm) {
+  debug_print("%04x OP_TEST\n", vm->ip);
+  uint8_t reg = next_reg(vm);
+  uint8_t instr = next_byte(vm);
+
+  if (owl_term_truthy(get_reg(vm, reg))) {
+    vm->ip += instr;
+  } else {
+    vm->ip += 1;
+  }
+}
+
 void op_test_eq(struct vm *vm) {
   debug_print("%04x OP_TEST_EQ\n", vm->ip);
   uint8_t reg1  = next_reg(vm);
@@ -361,4 +373,5 @@ void opcode_init(vm_t * vm) {
   vm->opcodes[OP_VECTOR] = op_vector;
   vm->opcodes[OP_STORE_TRUE] = op_store_true;
   vm->opcodes[OP_STORE_FALSE] = op_store_false;
+  vm->opcodes[OP_TEST] = op_test;
 }

@@ -1,0 +1,11 @@
+module control_flow_test {
+  fn gimme_one() {
+    if true {
+      1
+    }
+  }
+
+  fn main() {
+    assert_eq(gimme_one(), 1)
+  }
+}

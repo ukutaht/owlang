@@ -74,7 +74,7 @@ fn generates_print_op() {
 fn generates_simple_if_statement() {
     let ast = mk_function("main", Vec::new(), vec![
         mk_if(
-            mk_apply(None, ">", vec![mk_int("1"), mk_int("2")]),
+            mk_true(),
             vec![mk_apply(None, "print", vec![mk_int("1")])]
             )
     ]);
@@ -82,9 +82,8 @@ fn generates_simple_if_statement() {
     let res = bytecode::generate_function(&ast);
 
     assert_eq!(res.code, vec![
-            bytecode::Instruction::Store(1, 1),
-            bytecode::Instruction::Store(2, 2),
-            bytecode::Instruction::TestGt(1, 2, 2),
+            bytecode::Instruction::StoreTrue(1),
+            bytecode::Instruction::Test(1, 2),
             bytecode::Instruction::Return,
             bytecode::Instruction::Store(1, 1),
             bytecode::Instruction::Print(1),
