@@ -1,8 +1,6 @@
 ### Big list of TODO items
 
-* Implement `assert` and `assert_eq` in stdlib
 * `if location == 0` test in call is not enough. Functions can be defined in location 0;
-* Add `!` (not) operator
 * Add short-circuit && and ||
 * Add `nil`
 * Use static libraries for deps
