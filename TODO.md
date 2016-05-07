@@ -6,6 +6,7 @@
 * Add `!` (not) operator
 * Add short-circuit && and ||
 * Add `nil`
+* Use static libraries for deps
 * Ensure `nil` is returned when no else branch in if
 * A graceful way to fatally quit the VM with a message (for example, when function is not found)
 * Make `if` work with booleans (no special casing for >, <, == and friends)
