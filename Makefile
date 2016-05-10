@@ -13,3 +13,11 @@ stdlib:
 
 clean:
 	rm -rf compiler/target && rm -rf vm/target && rm -rf .build
+
+check: check-compiler check-test-cases
+
+check-compiler:
+	cd compiler && cargo test
+
+check-test-cases:
+	test_cases/run
