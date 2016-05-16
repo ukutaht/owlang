@@ -27,6 +27,7 @@ vm_t *vm_new() {
   vm->function_names = strings_new();
   vm->ip = 0;
   vm->current_frame = 0;
+  memset(vm->functions, NO_FUNCTION, MAX_FUNCTIONS);
 
   opcode_init(vm);
 

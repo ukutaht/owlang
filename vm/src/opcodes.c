@@ -136,7 +136,7 @@ void op_call(struct vm *vm) {
   uint64_t location = vm->functions[function_id];
   uint8_t arity = next_byte(vm);
 
-  if (location == 0) {
+  if (location == NO_FUNCTION) {
     char fname_buf[255];
     char *fname_copy = fname_buf;
     strcpy(fname_copy, strings_lookup_id(vm->function_names, function_id));
@@ -146,7 +146,7 @@ void op_call(struct vm *vm) {
     location = vm->functions[function_id];
   }
 
-  assert(location != 0);
+  assert(location != NO_FUNCTION);
   assert(vm->current_frame + 1 <= STACK_DEPTH);
 
   unsigned int next_frame = vm->current_frame + 1;

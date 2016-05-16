@@ -10,6 +10,7 @@
 #define REGISTER_COUNT 100
 #define STACK_DEPTH 100
 #define MAX_FUNCTIONS 255
+#define NO_FUNCTION UINT64_MAX
 
 #define DEBUG false
 #define debug_print(fmt, ...) \
