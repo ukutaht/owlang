@@ -66,8 +66,8 @@ void op_exit(vm_t *vm) {
   exit(exit_code);
 }
 
-void op_store(vm_t *vm) {
-  debug_print("%04x OP_STORE\n", vm->ip);
+void op_store_int(vm_t *vm) {
+  debug_print("%04x OP_STORE_INT\n", vm->ip);
   uint8_t reg = next_reg(vm);
   owl_term value = next_int(vm);
 
@@ -301,7 +301,7 @@ void opcode_init(vm_t * vm) {
     vm->opcodes[i] = op_unknown;
 
   vm->opcodes[OP_EXIT] = op_exit;
-  vm->opcodes[OP_STORE] = op_store;
+  vm->opcodes[OP_STORE_INT] = op_store_int;
   vm->opcodes[OP_PRINT] = op_print;
   vm->opcodes[OP_ADD] = op_add;
   vm->opcodes[OP_SUB] = op_sub;

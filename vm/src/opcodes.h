@@ -15,7 +15,7 @@
  */
 enum opcode_values {
     OP_EXIT = 0,
-    OP_STORE,
+    OP_STORE_INT,
     OP_PRINT,
     OP_ADD,
     OP_SUB,

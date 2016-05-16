@@ -75,7 +75,7 @@ impl<'a> FnGenerator<'a> {
             },
             &ast::Expr::Int(ref i) => {
                 let val = i.value.parse::<u16>().unwrap();
-                vec![Instruction::Store(out, val)]
+                vec![Instruction::StoreInt(out, val)]
             },
             &ast::Expr::If(ref i) => {
                 let mut res = Vec::new();
@@ -87,7 +87,7 @@ impl<'a> FnGenerator<'a> {
                         then_branch.append(&mut self.generate_expr(out, expr))
                     }
                 } else {
-                    then_branch.push(Instruction::Store(out, 0));
+                    then_branch.push(Instruction::StoreInt(out, 0));
                 }
 
                 if i.else_body.len() > 0 {
@@ -95,7 +95,7 @@ impl<'a> FnGenerator<'a> {
                         else_branch.append(&mut self.generate_expr(out, expr))
                     }
                 } else {
-                    else_branch.push(Instruction::Store(out, 0));
+                    else_branch.push(Instruction::StoreInt(out, 0));
                 }
 
                 let then_size = instruction::byte_size_of(&then_branch);

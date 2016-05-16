@@ -1,5 +1,5 @@
 pub const EXIT: u8        = 0x00;
-pub const STORE: u8       = 0x01;
+pub const STORE_INT: u8   = 0x01;
 pub const PRINT: u8       = 0x02;
 pub const ADD: u8         = 0x03;
 pub const SUB: u8         = 0x04;

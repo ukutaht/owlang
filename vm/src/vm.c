@@ -72,7 +72,7 @@ void vm_load_module_from_file(vm_t *vm, const char *filename) {
         *code_ptr++ = fgetc(fp);
         vm->code_size += 3;
         break;
-      case OP_STORE:
+      case OP_STORE_INT:
       case OP_ADD:
       case OP_SUB:
       case OP_EQ:

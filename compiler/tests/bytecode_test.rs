@@ -15,8 +15,8 @@ fn generates_simple_addition() {
         name: "unknown:main".to_string(),
         arity: 0,
         code: vec![
-            bytecode::Instruction::Store(1, 1),
-            bytecode::Instruction::Store(2, 2),
+            bytecode::Instruction::StoreInt(1, 1),
+            bytecode::Instruction::StoreInt(2, 2),
             bytecode::Instruction::Add(0, 1, 2),
             bytecode::Instruction::Return
         ]
@@ -32,8 +32,8 @@ fn generates_equality_test() {
     let res = bytecode::generate_function(&ast);
 
     assert_eq!(res.code, vec![
-            bytecode::Instruction::Store(1, 1),
-            bytecode::Instruction::Store(2, 2),
+            bytecode::Instruction::StoreInt(1, 1),
+            bytecode::Instruction::StoreInt(2, 2),
             bytecode::Instruction::Eq(0, 1, 2),
             bytecode::Instruction::Return
         ]
@@ -49,8 +49,8 @@ fn generates_non_equality_test() {
     let res = bytecode::generate_function(&ast);
 
     assert_eq!(res.code, vec![
-            bytecode::Instruction::Store(1, 1),
-            bytecode::Instruction::Store(2, 2),
+            bytecode::Instruction::StoreInt(1, 1),
+            bytecode::Instruction::StoreInt(2, 2),
             bytecode::Instruction::NotEq(0, 1, 2),
             bytecode::Instruction::Return
         ]
@@ -82,7 +82,7 @@ fn generates_system_exit_with_value() {
     let res = bytecode::generate_function(&ast);
 
     assert_eq!(res.code, vec![
-            bytecode::Instruction::Store(1, 1),
+            bytecode::Instruction::StoreInt(1, 1),
             bytecode::Instruction::Exit(1),
             bytecode::Instruction::Return
         ]
@@ -107,9 +107,9 @@ fn generates_nested_arithmetic() {
         name: "unknown:main".to_string(),
         arity: 0,
         code: vec![
-            bytecode::Instruction::Store(1, 1),
-            bytecode::Instruction::Store(3, 2),
-            bytecode::Instruction::Store(4, 3),
+            bytecode::Instruction::StoreInt(1, 1),
+            bytecode::Instruction::StoreInt(3, 2),
+            bytecode::Instruction::StoreInt(4, 3),
             bytecode::Instruction::Sub(2, 3, 4),
             bytecode::Instruction::Add(0, 1, 2),
             bytecode::Instruction::Return,
@@ -126,7 +126,7 @@ fn generates_print_op() {
     let res = bytecode::generate_function(&ast);
 
     assert_eq!(res.code, vec![
-            bytecode::Instruction::Store(1, 1),
+            bytecode::Instruction::StoreInt(1, 1),
             bytecode::Instruction::Print(1),
             bytecode::Instruction::Return,
         ]
@@ -148,9 +148,9 @@ fn generates_simple_if_statement() {
     assert_eq!(res.code, vec![
             bytecode::Instruction::StoreTrue(1),
             bytecode::Instruction::Test(1, 7),
-            bytecode::Instruction::Store(0, 0),
+            bytecode::Instruction::StoreInt(0, 0),
             bytecode::Instruction::Jmp(7),
-            bytecode::Instruction::Store(1, 1),
+            bytecode::Instruction::StoreInt(1, 1),
             bytecode::Instruction::Print(1),
             bytecode::Instruction::Return
         ]
@@ -210,8 +210,8 @@ fn generates_tuple() {
     let res = bytecode::generate_function(&main);
 
     assert_eq!(res.code, vec![
-        bytecode::Instruction::Store(1, 1),
-        bytecode::Instruction::Store(2, 2),
+        bytecode::Instruction::StoreInt(1, 1),
+        bytecode::Instruction::StoreInt(2, 2),
         bytecode::Instruction::Tuple(0, 2, vec![1, 2]),
         bytecode::Instruction::Return,
     ])
@@ -226,8 +226,8 @@ fn generates_vector() {
     let res = bytecode::generate_function(&main);
 
     assert_eq!(res.code, vec![
-        bytecode::Instruction::Store(1, 1),
-        bytecode::Instruction::Store(2, 2),
+        bytecode::Instruction::StoreInt(1, 1),
+        bytecode::Instruction::StoreInt(2, 2),
         bytecode::Instruction::Vector(0, 2, vec![1, 2]),
         bytecode::Instruction::Return,
     ])

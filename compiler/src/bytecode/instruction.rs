@@ -7,7 +7,7 @@ pub type Bytecode = Vec<Instruction>;
 #[derive(Debug, Eq, PartialEq)]
 pub enum Instruction {
     Exit(Reg),
-    Store(Reg, u16),
+    StoreInt(Reg, u16),
     Print(Reg),
     Test(Reg, u8),
     Add(Reg, Reg, Reg),
@@ -35,10 +35,10 @@ impl Instruction {
             &Instruction::Sub(to, arg1, arg2) => {
                 out.write(&[opcodes::SUB, to, arg1, arg2]).unwrap();
             },
-            &Instruction::Store(to, val) => {
+            &Instruction::StoreInt(to, val) => {
                 let first = val % 250;
                 let second = val / 250;
-                out.write(&[opcodes::STORE, to, first as u8, second as u8]).unwrap();
+                out.write(&[opcodes::STORE_INT, to, first as u8, second as u8]).unwrap();
             }
             &Instruction::Mov(to, from) => {
                 out.write(&[opcodes::MOV, to, from]).unwrap();
@@ -112,8 +112,8 @@ impl Instruction {
                 let string = format!("sub %{}, %{}, %{}\n", to, arg1, arg2);
                 out.write(&string.as_bytes()).unwrap();
             },
-            &Instruction::Store(to, val) => {
-                let string = format!("store %{}, {}\n", to, val);
+            &Instruction::StoreInt(to, val) => {
+                let string = format!("store_int %{}, {}\n", to, val);
                 out.write(&string.as_bytes()).unwrap();
             }
             &Instruction::Mov(to, from) => {
@@ -206,7 +206,7 @@ impl Instruction {
         match self {
             &Instruction::Add(_, _, _)    => 4,
             &Instruction::Sub(_, _, _)    => 4,
-            &Instruction::Store(_, _)     => 4,
+            &Instruction::StoreInt(_, _)  => 4,
             &Instruction::Mov(_, _)       => 3,
             &Instruction::Print(_)        => 2,
             &Instruction::Test(_, _)      => 3,
