@@ -17,6 +17,8 @@
 * Generalise `if` to `cond`
 * Dynamically grow the stack
 * Dynamically grow the code array
+* Dynamically grow register array
+* Dynamically grow function table
 * Provide allocator for c-rrb
 * Signed ints
 * Floats
@@ -27,15 +29,14 @@
 * Module imports
 * Alias module
 * Exceptions (Is it possible to avoid them?)
-* Benchmarks
 * Check that functions exist at compile time
 * Dead code analysis
 * Higher-order functions
 * Closures (oh boy)
 * Pattern matching
+* Benchmarks
 * Direct threaded VM
 * Register windowing
-* Dynamically grow register array
 * Linear-Scan register allocation in compiler
 * Custom garbage collection
 * FFI (at least C)
