@@ -27,8 +27,6 @@ vm_t *vm_new() {
   vm->function_names = strings_new();
   vm->ip = 0;
   vm->current_frame = 0;
-  vm->running = true;
-
 
   opcode_init(vm);
 
@@ -184,7 +182,7 @@ void vm_load_module(vm_t *vm, const char *module_name) {
 void vm_run(vm_t *vm) {
   GC_init();
 
-  while (vm->running == true) {
+  while (true) {
     int opcode = vm->code[vm->ip];
 
     if (vm->opcodes[opcode] != NULL)

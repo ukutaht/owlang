@@ -32,7 +32,6 @@ typedef struct vm {
     opcode_impl *opcodes[255];   // Opcode lookup table
     struct strings *function_names;      // Interned function names
     uint64_t functions[MAX_FUNCTIONS];   // Function lookup table
-    bool running;
 } vm_t;
 
 
