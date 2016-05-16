@@ -1,6 +1,5 @@
 ### Big list of TODO items
 
-* Rename `store` to `store_int`
 * Local arguments
 * Add short-circuit `&&` and `||`
 * Add `nil`
