@@ -87,14 +87,32 @@ fn _if(i: Input<u8>) -> U8Result<Expr> {
         satisfy(|i| is_whitespace(i));
         let condition = expr();
         skip_newline_and_whitespace();
+        let body = block();
+        skip_newline_and_whitespace();
+        let else_body = option(else_branch, Vec::new());
+
+        ret mk_if(condition, body, else_body)
+    }
+}
+
+fn else_branch(i: Input<u8>) -> U8Result<Vec<Expr>> {
+    parse!{i;
+        string(b"else");
+        skip_newline_and_whitespace();
+        let body = block();
+        ret body
+   }
+}
+
+fn block(i: Input<u8>) -> U8Result<Vec<Expr>> {
+    parse!{i;
         token(b'{');
         skip_newline_and_whitespace();
         let body: Vec<_> = sep_by(expr, skip_newline_and_whitespace);
         skip_newline_and_whitespace();
         token(b'}');
-        skip_newline_and_whitespace();
 
-        ret mk_if(condition, body)
+        ret body
     }
 }
 
@@ -109,12 +127,7 @@ fn function(i: Input<u8>) -> U8Result<Function> {
         skip_whitespace();
         token(b')');
         skip_newline_and_whitespace();
-        token(b'{');
-        skip_newline_and_whitespace();
-        let body: Vec<_> = sep_by(expr, skip_newline_and_whitespace);
-        skip_newline_and_whitespace();
-        token(b'}');
-        skip_newline_and_whitespace();
+        let body = block();
 
         ret mk_function(name, args, body)
     }

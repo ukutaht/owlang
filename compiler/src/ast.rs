@@ -25,6 +25,7 @@ impl<'a> Apply<'a> {
 pub struct If<'a> {
     pub condition: Box<Expr<'a>>,
     pub body: Vec<Expr<'a>>,
+    pub else_body: Vec<Expr<'a>>,
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -103,8 +104,8 @@ pub fn mk_argument(name: &str) -> Argument {
     Argument {name: name}
 }
 
-pub fn mk_if<'a>(condition: Expr<'a>, body: Vec<Expr<'a>>) -> Expr<'a> {
-    Expr::If(If{condition: Box::new(condition), body: body})
+pub fn mk_if<'a>(condition: Expr<'a>, body: Vec<Expr<'a>>, else_body: Vec<Expr<'a>>) -> Expr<'a> {
+    Expr::If(If{condition: Box::new(condition), body: body, else_body: else_body})
 }
 
 pub fn mk_tuple<'a>(elems: Vec<Expr<'a>>) -> Expr<'a> {

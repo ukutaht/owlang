@@ -131,7 +131,13 @@ fn parses_less_than_or_equal_comp() {
 #[test]
 fn parses_if_statement() {
     let res = parser::parse_expr(b"if a { 1 }");
-    assert_eq!(res, Ok(mk_if(mk_ident("a"), vec![mk_int("1")])));
+    assert_eq!(res, Ok(mk_if(mk_ident("a"), vec![mk_int("1")], Vec::new())));
+}
+
+#[test]
+fn parses_else_branch() {
+    let res = parser::parse_expr(b"if a { 1 } else { 2 }");
+    assert_eq!(res, Ok(mk_if(mk_ident("a"), vec![mk_int("1")], vec![mk_int("2")])));
 }
 
 #[test]

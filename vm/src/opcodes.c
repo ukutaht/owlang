@@ -189,7 +189,7 @@ void op_jmp(struct vm *vm) {
   debug_print("%04x OP_JMP\n", vm->ip);
   uint8_t loc = next_byte(vm);
 
-  vm->ip = loc;
+  vm->ip += loc;
 }
 
 void op_tuple(struct vm *vm) {

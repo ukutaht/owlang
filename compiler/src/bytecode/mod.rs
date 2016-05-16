@@ -51,84 +51,98 @@ impl<'a> FnGenerator<'a> {
         let mut code = Vec::new();
 
         for expr in self.function.body.iter() {
-            let mut generated = self.generate_expr(expr);
+            let mut generated = self.generate_expr(0, expr);
             code.append(&mut generated);
         }
 
-        code.push(Instruction::Mov(0, self.var_count));
         code.push(Instruction::Return);
         code
     }
 
-    fn generate_expr(&mut self, expr: &'a ast::Expr) -> Bytecode {
+    fn generate_expr(&mut self, out: Reg, expr: &'a ast::Expr) -> Bytecode {
         match expr {
             &ast::Expr::Apply(ref a) => {
                 let mut res = Vec::new();
                 for arg in a.args.iter() {
-                    res.append(&mut self.generate_expr(arg))
+                    let arg_out = self.push();
+                    res.append(&mut self.generate_expr(arg_out, arg))
                 }
                 let mut arg_locations: Vec<Reg> = a.args.iter().map(|_| self.pop()).collect();
                 arg_locations.reverse();
-                let ret_loc  = self.push();
-
-                let mut me = self.apply_op(a, ret_loc, arg_locations);
+                let mut me = self.apply_op(a, out, arg_locations);
                 res.append(&mut me);
                 res
             },
             &ast::Expr::Int(ref i) => {
                 let val = i.value.parse::<u16>().unwrap();
-                vec![Instruction::Store(self.push(), val)]
+                vec![Instruction::Store(out, val)]
             },
             &ast::Expr::If(ref i) => {
                 let mut res = Vec::new();
-                let mut else_branch = vec![Instruction::Return];
-                let else_size = instruction::byte_size_of(&else_branch);
+                let mut then_branch = Vec::new();
+                let mut else_branch = Vec::new();
 
-                res.append(&mut self.generate_expr(&(*i.condition)));
+                if i.body.len() > 0 {
+                    for expr in i.body.iter() {
+                        then_branch.append(&mut self.generate_expr(out, expr))
+                    }
+                } else {
+                    then_branch.push(Instruction::Store(out, 0));
+                }
+
+                if i.else_body.len() > 0 {
+                    for expr in i.else_body.iter() {
+                        else_branch.append(&mut self.generate_expr(out, expr))
+                    }
+                } else {
+                    else_branch.push(Instruction::Store(out, 0));
+                }
+
+                let then_size = instruction::byte_size_of(&then_branch);
+                else_branch.push(Instruction::Jmp(then_size + 1));
+                let else_size = instruction::byte_size_of(&else_branch);
+                let condition_out = self.push();
+                res.append(&mut self.generate_expr(condition_out, &(*i.condition)));
                 res.push(Instruction::Test(self.pop(), else_size + 1));
 
                 res.append(&mut else_branch);
-                for expr in i.body.iter() {
-                    res.append(&mut self.generate_expr(expr))
-                }
+                res.append(&mut then_branch);
                 res
             },
             &ast::Expr::Tuple(ref t) => {
                 let mut res = Vec::new();
                 for elem in t.elems.iter() {
-                    res.append(&mut self.generate_expr(elem))
+                    let elem_out = self.push();
+                    res.append(&mut self.generate_expr(elem_out, elem))
                 }
 
                 let mut elem_locations: Vec<Reg> = t.elems.iter().map(|_| self.pop()).collect();
                 elem_locations.reverse();
-                let reg = self.push();
-
-                let mut me = vec![Instruction::Tuple(reg, t.elems.len() as u8, elem_locations)];
+                let mut me = vec![Instruction::Tuple(out, t.elems.len() as u8, elem_locations)];
                 res.append(&mut me);
                 res
             },
             &ast::Expr::Vector(ref v) => {
                 let mut res = Vec::new();
                 for elem in v.elems.iter() {
-                    res.append(&mut self.generate_expr(elem))
+                    let elem_out = self.push();
+                    res.append(&mut self.generate_expr(elem_out, elem))
                 }
 
                 let mut elem_locations: Vec<Reg> = v.elems.iter().map(|_| self.pop()).collect();
                 elem_locations.reverse();
-                let reg = self.push();
-
-                let mut me = vec![Instruction::Vector(reg, v.elems.len() as u8, elem_locations)];
+                let mut me = vec![Instruction::Vector(out, v.elems.len() as u8, elem_locations)];
                 res.append(&mut me);
                 res
             },
             &ast::Expr::Ident(ref i) => {
-                vec![Instruction::Mov(self.push(), *self.env.get(i.name).unwrap())]
+                vec![Instruction::Mov(out, *self.env.get(i.name).unwrap())]
             }
             &ast::Expr::True => {
-                vec![Instruction::StoreTrue(self.push())]
+                vec![Instruction::StoreTrue(out)]
             }
             &ast::Expr::False => {
-                vec![Instruction::StoreFalse(self.push())]
+                vec![Instruction::StoreFalse(out)]
             }
         }
     }

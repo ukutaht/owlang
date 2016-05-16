@@ -52,11 +52,11 @@ void vm_load_module_from_file(vm_t *vm, const char *filename) {
       default:
         printf("Unknown opcode: 0x%02x\n", ch);
         exit(1);
-      case OP_EXIT:
       case OP_RETURN:
         *code_ptr++ = ch;
         vm->code_size += 1;
         break;
+      case OP_EXIT:
       case OP_PRINT:
       case OP_STORE_TRUE:
       case OP_STORE_FALSE:
@@ -66,7 +66,6 @@ void vm_load_module_from_file(vm_t *vm, const char *filename) {
         vm->code_size += 2;
         break;
       case OP_MOV:
-      case OP_STORE:
       case OP_NOT:
       case OP_TEST:
         *code_ptr++ = ch;
@@ -74,6 +73,7 @@ void vm_load_module_from_file(vm_t *vm, const char *filename) {
         *code_ptr++ = fgetc(fp);
         vm->code_size += 3;
         break;
+      case OP_STORE:
       case OP_ADD:
       case OP_SUB:
       case OP_EQ:

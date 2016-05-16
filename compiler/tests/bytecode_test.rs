@@ -145,7 +145,8 @@ fn generates_simple_if_statement() {
     let ast = mk_function("main", Vec::new(), vec![
         mk_if(
             mk_true(),
-            vec![mk_apply(None, "print", vec![mk_int("1")])]
+            vec![mk_apply(None, "print", vec![mk_int("1")])],
+            Vec::new()
             )
     ]);
 
