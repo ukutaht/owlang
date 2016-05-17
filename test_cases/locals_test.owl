@@ -1,0 +1,6 @@
+module locals_test {
+  fn main() {
+    let a = 1
+    owl_unit:assert_eq(a, 1)
+  }
+}

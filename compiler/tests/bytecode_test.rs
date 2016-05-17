@@ -260,3 +260,19 @@ fn generates_false() {
         bytecode::Instruction::Return,
     ])
 }
+
+#[test]
+fn generates_local_variable() {
+    let main = mk_function("main", Vec::new(), vec![
+        mk_let(mk_ident("a"), mk_int("1")),
+        mk_ident("a")
+    ]);
+
+    let res = bytecode::generate_function(&main);
+
+    assert_eq!(res.code, vec![
+        bytecode::Instruction::StoreInt(1, 1),
+        bytecode::Instruction::Mov(0, 1),
+        bytecode::Instruction::Return,
+    ])
+}

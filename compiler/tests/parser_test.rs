@@ -163,3 +163,26 @@ fn parses_simple_vector() {
         mk_int("1"), mk_int("2")
     ])));
 }
+
+#[test]
+fn parses_simple_let() {
+    let res = parser::parse_expr(b"let a = 1");
+    assert_eq!(res, Ok(mk_let(mk_ident("a"), mk_int("1"))));
+}
+
+#[test]
+fn parses_let_with_functions() {
+    let res = parser::parse_expr(b"let a = 2 + wut(1)");
+    assert_eq!(res, Ok(mk_let(mk_ident("a"),
+        mk_apply(None, "+", vec![
+                 mk_int("2"),
+                 mk_apply(None, "wut", vec![mk_int("1")]),
+        ])
+    )));
+}
+
+#[test]
+fn parses_let_with_vector() {
+    let res = parser::parse_expr(b"let a = [1, 2]");
+    assert_eq!(res, Ok(mk_let(mk_ident("a"), mk_vector(vec![mk_int("1"), mk_int("2")]))));
+}

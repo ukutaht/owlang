@@ -144,6 +144,11 @@ impl<'a> FnGenerator<'a> {
             &ast::Expr::False => {
                 vec![Instruction::StoreFalse(out)]
             }
+            &ast::Expr::Let(ref l) => {
+                let var = self.push();
+                self.env.insert(l.left.name.to_string(), var);
+                self.generate_expr(var, &(*l.right))
+            }
         }
     }
 

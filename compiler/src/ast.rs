@@ -4,6 +4,12 @@ pub struct Int<'a> {
 }
 
 #[derive(Debug, Eq, PartialEq)]
+pub struct Let<'a> {
+    pub left: Ident<'a>,
+    pub right: Box<Expr<'a>>
+}
+
+#[derive(Debug, Eq, PartialEq)]
 pub struct Ident<'a> {
     pub name: &'a str,
 }
@@ -61,6 +67,7 @@ pub enum Expr<'a> {
     Int(Int<'a>),
     True,
     False,
+    Let(Let<'a>),
     Ident(Ident<'a>),
     Apply(Apply<'a>),
     If(If<'a>),
@@ -118,4 +125,12 @@ pub fn mk_vector<'a>(elems: Vec<Expr<'a>>) -> Expr<'a> {
 
 pub fn mk_module<'a>(name: &'a str, fns: Vec<Function<'a>>) -> Module<'a> {
     Module { name: name, functions: fns  }
+}
+
+pub fn mk_let<'a>(left: Expr<'a>, right: Expr<'a>) -> Expr<'a> {
+    let ident = match left {
+        Expr::Ident(i) => i,
+        _ => panic!("Expected ident")
+    };
+    Expr::Let(Let {left: ident, right: Box::new(right)})
 }

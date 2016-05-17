@@ -38,7 +38,21 @@ pub fn parse_module(input: &[u8]) -> Result<Module, ParseError<u8, Error<u8>>> {
 
 fn expr(i: Input<u8>) -> U8Result<Expr> {
     parse!{i;
-        _if() <|> apply() <|> infix() <|> unary() <|> tuple() <|> vector() <|> bool_true() <|> bool_false() <|> ident() <|> int()
+        _if() <|> _let() <|> apply() <|> infix() <|> unary() <|> tuple() <|> vector() <|> bool_true() <|> bool_false() <|> ident() <|> int()
+    }
+}
+
+fn _let(i: Input<u8>) -> U8Result<Expr> {
+    parse!{i;
+        string(b"let");
+        satisfy(|i| is_whitespace(i));
+        let left = ident();
+        skip_whitespace();
+        token(b'=');
+        skip_whitespace();
+        let right = expr();
+
+        ret mk_let(left, right)
     }
 }
 
