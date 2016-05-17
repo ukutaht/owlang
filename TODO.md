@@ -1,6 +1,5 @@
 ### Big list of TODO items
 
-* Local arguments
 * Add short-circuit `&&` and `||`
 * Add `nil`
 * Use static libraries for deps
