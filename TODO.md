@@ -5,7 +5,6 @@
 * Use static libraries for deps
 * Ensure `nil` is returned when no else branch in if
 * A graceful way to fatally quit the VM with a message (for example, when function is not found)
-* Ensure `else` branches work properly
 * stdlib testing framework
 * Tuple stdlib (bounds check for `nth`)
 * Vector stdlib
