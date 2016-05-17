@@ -276,3 +276,14 @@ fn generates_local_variable() {
         bytecode::Instruction::Return,
     ])
 }
+
+#[test]
+#[should_panic]
+fn does_not_allow_rebinding() {
+    let main = mk_function("main", Vec::new(), vec![
+        mk_let(mk_ident("a"), mk_int("1")),
+        mk_let(mk_ident("a"), mk_int("2")),
+    ]);
+
+    bytecode::generate_function(&main);
+}

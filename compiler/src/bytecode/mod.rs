@@ -145,9 +145,13 @@ impl<'a> FnGenerator<'a> {
                 vec![Instruction::StoreFalse(out)]
             }
             &ast::Expr::Let(ref l) => {
-                let var = self.push();
-                self.env.insert(l.left.name.to_string(), var);
-                self.generate_expr(var, &(*l.right))
+                if self.env.contains_key(l.left.name) {
+                    panic!("Not allowed to rebind variable: {}", l.left.name);
+                } else {
+                    let var = self.push();
+                    self.env.insert(l.left.name.to_string(), var);
+                    self.generate_expr(var, &(*l.right))
+                }
             }
         }
     }

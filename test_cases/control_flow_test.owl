@@ -13,8 +13,21 @@ module control_flow_test {
     }
   }
 
+  fn nested_three() {
+    if false {
+      1
+    } else {
+      if true {
+        3
+      } else {
+        2
+      }
+    }
+  }
+
   fn main() {
     owl_unit:assert_eq(gimme_one(), 1)
     owl_unit:assert_eq(two_in_else(), 2)
+    owl_unit:assert_eq(nested_three(), 3)
   }
 }
