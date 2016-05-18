@@ -48,12 +48,7 @@ impl<'a> FnGenerator<'a> {
     }
 
     fn generate_code(&mut self) -> Bytecode {
-        let mut code = Vec::new();
-
-        for expr in self.function.body.iter() {
-            let mut generated = self.generate_expr(0, expr);
-            code.append(&mut generated);
-        }
+        let mut code = self.generate_block(0, &self.function.body);
 
         code.push(Instruction::Return);
         code
@@ -79,24 +74,8 @@ impl<'a> FnGenerator<'a> {
             },
             &ast::Expr::If(ref i) => {
                 let mut res = Vec::new();
-                let mut then_branch = Vec::new();
-                let mut else_branch = Vec::new();
-
-                if i.body.len() > 0 {
-                    for expr in i.body.iter() {
-                        then_branch.append(&mut self.generate_expr(out, expr))
-                    }
-                } else {
-                    then_branch.push(Instruction::StoreNil(out));
-                }
-
-                if i.else_body.len() > 0 {
-                    for expr in i.else_body.iter() {
-                        else_branch.append(&mut self.generate_expr(out, expr))
-                    }
-                } else {
-                    else_branch.push(Instruction::StoreNil(out));
-                }
+                let mut then_branch = self.generate_block(out, &i.body);
+                let mut else_branch = self.generate_block(out, &i.else_body);
 
                 let then_size = instruction::byte_size_of(&then_branch);
                 else_branch.push(Instruction::Jmp(then_size + 1));
@@ -157,6 +136,20 @@ impl<'a> FnGenerator<'a> {
                 }
             }
         }
+    }
+
+    fn generate_block(&mut self, out: Reg, block: &'a Vec<ast::Expr<'a>>) -> Bytecode {
+        let mut buffer = Vec::new();
+
+        if block.len() > 0 {
+            for expr in block.iter() {
+                buffer.append(&mut self.generate_expr(out, expr))
+            }
+        } else {
+            buffer.push(Instruction::StoreNil(out));
+        }
+
+        buffer
     }
 
     fn apply_op(&self, ap: &ast::Apply, ret_loc: Reg, args: Vec<Reg>) -> Bytecode {

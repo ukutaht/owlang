@@ -301,3 +301,15 @@ fn does_not_allow_rebinding() {
 
     bytecode::generate_function(&main);
 }
+
+#[test]
+fn empty_function_returns_nil() {
+    let main = mk_function("main", Vec::new(), vec![]);
+
+    let res = bytecode::generate_function(&main);
+
+    assert_eq!(res.code, vec![
+        bytecode::Instruction::StoreNil(0),
+        bytecode::Instruction::Return,
+    ])
+}

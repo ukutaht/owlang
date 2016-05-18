@@ -17,10 +17,13 @@ module functions_test {
     a + b
   }
 
+  fn empty_function() {}
+
   fn main() {
     owl_unit:assert_eq(gimme_five(), 5)
     owl_unit:assert_eq(add_five(5), 10)
     owl_unit:assert_eq(add_together(7, 11), 18)
     owl_unit:assert_eq(functions:gimme_six(), 6)
+    owl_unit:assert_eq(empty_function(), nil)
   }
 }
