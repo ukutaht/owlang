@@ -147,8 +147,8 @@ fn generates_simple_if_statement() {
 
     assert_eq!(res.code, vec![
             bytecode::Instruction::StoreTrue(1),
-            bytecode::Instruction::Test(1, 7),
-            bytecode::Instruction::StoreInt(0, 0),
+            bytecode::Instruction::Test(1, 5),
+            bytecode::Instruction::StoreNil(0),
             bytecode::Instruction::Jmp(7),
             bytecode::Instruction::StoreInt(1, 1),
             bytecode::Instruction::Print(1),

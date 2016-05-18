@@ -87,7 +87,7 @@ impl<'a> FnGenerator<'a> {
                         then_branch.append(&mut self.generate_expr(out, expr))
                     }
                 } else {
-                    then_branch.push(Instruction::StoreInt(out, 0));
+                    then_branch.push(Instruction::StoreNil(out));
                 }
 
                 if i.else_body.len() > 0 {
@@ -95,7 +95,7 @@ impl<'a> FnGenerator<'a> {
                         else_branch.append(&mut self.generate_expr(out, expr))
                     }
                 } else {
-                    else_branch.push(Instruction::StoreInt(out, 0));
+                    else_branch.push(Instruction::StoreNil(out));
                 }
 
                 let then_size = instruction::byte_size_of(&then_branch);

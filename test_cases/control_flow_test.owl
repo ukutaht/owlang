@@ -33,10 +33,17 @@ module control_flow_test {
     }
   }
 
+  fn nil_is_returned_in_empty_else() {
+    if false {
+      1
+    }
+  }
+
   fn main() {
     owl_unit:assert_eq(gimme_one(), 1)
     owl_unit:assert_eq(two_in_else(), 2)
     owl_unit:assert_eq(nested_three(), 3)
     owl_unit:assert_eq(nil_is_falsey(), 2)
+    owl_unit:assert_eq(nil_is_returned_in_empty_else(), nil)
   }
 }
