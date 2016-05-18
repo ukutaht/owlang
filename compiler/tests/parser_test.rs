@@ -35,6 +35,12 @@ fn parses_false() {
 }
 
 #[test]
+fn parses_nil() {
+    let res = parser::parse_expr(b"nil");
+    assert_eq!(res, Ok(mk_nil()));
+}
+
+#[test]
 fn parses_unary_not() {
     let res = parser::parse_expr(b"!false");
     assert_eq!(res, Ok(mk_apply(None, "!", vec![mk_false()])));

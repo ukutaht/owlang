@@ -22,10 +22,10 @@ owl_term owl_tuple_nth(owl_term tuple, uint8_t index) {
 }
 
 owl_term owl_negate(owl_term value) {
-  if (value == OWL_FALSE) {
-    return OWL_TRUE;
-  } else {
+  if (owl_term_truthy(value)) {
     return OWL_FALSE;
+  } else {
+    return OWL_TRUE;
   }
 }
 

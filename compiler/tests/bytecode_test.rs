@@ -262,6 +262,20 @@ fn generates_false() {
 }
 
 #[test]
+fn generates_nil() {
+    let main = mk_function("main", Vec::new(), vec![
+        mk_nil()
+    ]);
+
+    let res = bytecode::generate_function(&main);
+
+    assert_eq!(res.code, vec![
+        bytecode::Instruction::StoreNil(0),
+        bytecode::Instruction::Return,
+    ])
+}
+
+#[test]
 fn generates_local_variable() {
     let main = mk_function("main", Vec::new(), vec![
         mk_let(mk_ident("a"), mk_int("1")),

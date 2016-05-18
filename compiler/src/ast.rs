@@ -67,6 +67,7 @@ pub enum Expr<'a> {
     Int(Int<'a>),
     True,
     False,
+    Nil,
     Let(Let<'a>),
     Ident(Ident<'a>),
     Apply(Apply<'a>),
@@ -93,6 +94,10 @@ pub fn mk_true<'a>() -> Expr<'a> {
 
 pub fn mk_false<'a>() -> Expr<'a> {
     Expr::False
+}
+
+pub fn mk_nil<'a>() -> Expr<'a> {
+    Expr::Nil
 }
 
 pub fn mk_ident(name: &str) -> Expr {

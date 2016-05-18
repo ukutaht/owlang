@@ -7,10 +7,12 @@
 #define owl_extract_ptr(term) ((void*) (term >> 3))
 #define int_from_owl_int(term) (term >> 3)
 #define owl_tag_of(term) ((owl_tag) (term & 0x7))
-#define owl_term_truthy(term) (term != OWL_FALSE)
+#define owl_term_falsey(term) (term == OWL_FALSE || term == OWL_NIL)
+#define owl_term_truthy(term) (!owl_term_falsey(term))
 
 #define OWL_FALSE 1
 #define OWL_TRUE  2
+#define OWL_NIL  3
 
 typedef uint64_t owl_term;
 

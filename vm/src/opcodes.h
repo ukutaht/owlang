@@ -33,6 +33,7 @@ enum opcode_values {
     OP_EQ,
     OP_NOT_EQ,
     OP_NOT,
+    OP_STORE_NIL,
 };
 
 void opcode_init(vm_t *vm);

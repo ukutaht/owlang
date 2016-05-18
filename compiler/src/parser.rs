@@ -1,5 +1,4 @@
-use std::str;
-use std::io::Read;
+use std::str; use std::io::Read;
 use chomp::{Input, U8Result, ParseError, Error, parse_only, take_while1, take_while};
 use chomp::{token, string};
 use chomp::parsers::{satisfy, peek_next};
@@ -38,7 +37,7 @@ pub fn parse_module(input: &[u8]) -> Result<Module, ParseError<u8, Error<u8>>> {
 
 fn expr(i: Input<u8>) -> U8Result<Expr> {
     parse!{i;
-        _if() <|> _let() <|> apply() <|> infix() <|> unary() <|> tuple() <|> vector() <|> bool_true() <|> bool_false() <|> ident() <|> int()
+        _if() <|> _let() <|> apply() <|> infix() <|> unary() <|> tuple() <|> vector() <|> nil() <|> bool_true() <|> bool_false() <|> ident() <|> int()
     }
 }
 
@@ -75,6 +74,13 @@ fn bool_false(i: Input<u8>) -> U8Result<Expr> {
     parse!{i;
         string(b"false");
         ret mk_false()
+    }
+}
+
+fn nil(i: Input<u8>) -> U8Result<Expr> {
+    parse!{i;
+        string(b"nil");
+        ret mk_nil()
     }
 }
 

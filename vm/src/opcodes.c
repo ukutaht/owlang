@@ -296,6 +296,14 @@ void op_store_false(struct vm *vm) {
   vm->ip += 1;
 }
 
+void op_store_nil(struct vm *vm) {
+  debug_print("%04x OP_STORE_NIL\n", vm->ip);
+  uint8_t reg = next_byte(vm);
+
+  set_reg(vm, reg, OWL_NIL);
+  vm->ip += 1;
+}
+
 void opcode_init(vm_t * vm) {
   for (int i = 0; i < 255; i++)
     vm->opcodes[i] = op_unknown;
@@ -318,4 +326,5 @@ void opcode_init(vm_t * vm) {
   vm->opcodes[OP_EQ] = op_eq;
   vm->opcodes[OP_NOT_EQ] = op_not_eq;
   vm->opcodes[OP_NOT] = op_not;
+  vm->opcodes[OP_STORE_NIL] = op_store_nil;
 }

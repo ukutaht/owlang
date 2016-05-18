@@ -17,3 +17,4 @@ pub const TEST: u8        = 0x0f;
 pub const EQ: u8          = 0x10;
 pub const NOT_EQ: u8      = 0x11;
 pub const NOT: u8         = 0x12;
+pub const STORE_NIL: u8   = 0x13;

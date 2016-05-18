@@ -21,6 +21,7 @@ pub enum Instruction {
     Vector(Reg, u8, Vec<Reg>),
     StoreTrue(Reg),
     StoreFalse(Reg),
+    StoreNil(Reg),
     Eq(Reg, Reg, Reg),
     NotEq(Reg, Reg, Reg),
     Not(Reg, Reg),
@@ -89,6 +90,9 @@ impl Instruction {
             }
             &Instruction::StoreFalse(reg) => {
                 out.write(&[opcodes::STORE_FALSE, reg]).unwrap();
+            }
+            &Instruction::StoreNil(reg) => {
+                out.write(&[opcodes::STORE_NIL, reg]).unwrap();
             }
             &Instruction::Eq(to, reg1, reg2) => {
                 out.write(&[opcodes::EQ, to, reg1, reg2]).unwrap();
@@ -187,6 +191,10 @@ impl Instruction {
                 let string = format!("store_false %{}\n", reg);
                 out.write(&string.as_bytes()).unwrap();
             }
+            &Instruction::StoreNil(reg) => {
+                let string = format!("store_nil %{}\n", reg);
+                out.write(&string.as_bytes()).unwrap();
+            }
             &Instruction::Eq(to, reg1, reg2) => {
                 let string = format!("eq %{}, %{}, %{}\n", to, reg1, reg2);
                 out.write(&string.as_bytes()).unwrap();
@@ -219,6 +227,7 @@ impl Instruction {
             &Instruction::Vector(_, _, ref regs)   => 3 + regs.len() as u8,
             &Instruction::StoreTrue(_)     => 2,
             &Instruction::StoreFalse(_)    => 2,
+            &Instruction::StoreNil(_)      => 2,
             &Instruction::Eq(_, _, _)      => 4,
             &Instruction::NotEq(_, _, _)   => 4,
             &Instruction::Not(_, _)        => 3,
