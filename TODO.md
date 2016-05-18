@@ -1,11 +1,12 @@
 ### Big list of TODO items
 
+* Rename `vector` to `list`
 * Add short-circuit `&&` and `||`
 * Use static libraries for deps
 * A graceful way to fatally quit the VM with a message (for example, when function is not found)
 * stdlib testing framework
 * Tuple stdlib (bounds check for `nth`)
-* Vector stdlib
+* List stdlib
 * IO stdlib
 * Public/Private distinction
 * Module constants
@@ -36,3 +37,4 @@
 * Custom garbage collection
 * FFI (at least C)
 * Lightweight concurrency (CSP? Actors?)
+* dare I say tracing JIT?
