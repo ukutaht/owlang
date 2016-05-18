@@ -21,5 +21,5 @@ if (NOT HAVE_RRB)
 endif()
 
 include_directories ("${PROJECT_SOURCE_DIR}/src")
-add_executable(vm src/main.c src/vm.c src/opcodes.c src/term.c src/alloc.c src/vector.c src/util/file.c)
+add_executable(vm src/main.c src/vm.c src/opcodes.c src/term.c src/alloc.c src/list.c src/util/file.c)
 target_link_libraries(vm gc rrb intern)

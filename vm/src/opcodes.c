@@ -8,7 +8,7 @@
 #include "vm.h"
 #include "term.h"
 #include "alloc.h"
-#include "vector.h"
+#include "list.h"
 
 // Read and return the next byte from the current instruction-pointer.
 uint8_t next_byte(vm_t *vm) {
@@ -212,18 +212,18 @@ void op_tuple(struct vm *vm) {
   vm->ip += 1;
 }
 
-void op_vector(struct vm *vm) {
-  debug_print("%04x OP_VECTOR\n", vm->ip);
+void op_list(struct vm *vm) {
+  debug_print("%04x OP_LIST\n", vm->ip);
   uint8_t reg  = next_byte(vm);
   uint8_t size = next_byte(vm);
 
-  owl_term vector = vector_init();
+  owl_term list = list_init();
 
   for(uint8_t i = 0; i < size; i++) {
-    vector = vector_push(vector, get_reg(vm, next_byte(vm)));
+    list = list_push(list, get_reg(vm, next_byte(vm)));
   }
 
-  set_reg(vm, reg, vector);
+  set_reg(vm, reg, list);
 
   vm->ip += 1;
 }
@@ -319,7 +319,7 @@ void opcode_init(vm_t * vm) {
   vm->opcodes[OP_JMP] = op_jmp;
   vm->opcodes[OP_TUPLE]     = op_tuple;
   vm->opcodes[OP_TUPLE_NTH] = op_tuple_nth;
-  vm->opcodes[OP_VECTOR] = op_vector;
+  vm->opcodes[OP_LIST] = op_list;
   vm->opcodes[OP_STORE_TRUE] = op_store_true;
   vm->opcodes[OP_STORE_FALSE] = op_store_false;
   vm->opcodes[OP_TEST] = op_test;

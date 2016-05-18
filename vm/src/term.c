@@ -1,7 +1,7 @@
 #include <stdint.h>
 
 #include "term.h"
-#include "vector.h"
+#include "list.h"
 
 
 owl_term owl_int_from(uint64_t val) {
@@ -62,8 +62,8 @@ bool owl_terms_eq(owl_term left, owl_term right) {
       }
       return true;
     }
-    case VECTOR:
-      return vector_eq(left, right);
+    case LIST:
+      return list_eq(left, right);
     default:
       return false;
   }

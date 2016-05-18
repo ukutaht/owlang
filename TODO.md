@@ -1,6 +1,5 @@
 ### Big list of TODO items
 
-* Rename `vector` to `list`
 * Add short-circuit `&&` and `||`
 * Use static libraries for deps
 * A graceful way to fatally quit the VM with a message (for example, when function is not found)

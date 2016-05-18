@@ -25,7 +25,7 @@ enum opcode_values {
     OP_JMP,
     OP_TUPLE,
     OP_TUPLE_NTH,
-    OP_VECTOR,
+    OP_LIST,
     OP_PUB_FN,
     OP_STORE_TRUE,
     OP_STORE_FALSE,

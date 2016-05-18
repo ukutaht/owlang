@@ -1,26 +1,24 @@
 #include <rrb.h>
-#include "vector.h"
+#include "list.h"
 #include "vm.h"
 
-#define rrb_to_vec(rrb) ((((owl_term) rrb) << 3) | VECTOR)
-#define vec_to_rrb(vec) ((RRB*) owl_extract_ptr(vec))
+#define rrb_to_list(rrb) ((((owl_term) rrb) << 3) | LIST)
+#define list_to_rrb(list) ((RRB*) owl_extract_ptr(list))
 
-owl_term vector_init() {
+owl_term list_init() {
   const RRB *rrb = rrb_create();
-  return rrb_to_vec(rrb);
+  return rrb_to_list(rrb);
 }
 
-owl_term vector_push(owl_term vec, owl_term elem) {
-  const RRB *rrb = vec_to_rrb(vec);
+owl_term list_push(owl_term list, owl_term elem) {
+  const RRB *rrb = list_to_rrb(list);
   rrb = rrb_push(rrb, (void*) elem);
-  return rrb_to_vec(rrb);
+  return rrb_to_list(rrb);
 }
 
-bool vector_eq(owl_term left_vec, owl_term right_vec) {
-  if (left_vec == right_vec) return true;
-
-  const RRB *left = vec_to_rrb(left_vec);
-  const RRB *right = vec_to_rrb(right_vec);
+bool list_eq(owl_term left_list, owl_term right_list) {
+  const RRB *left = list_to_rrb(left_list);
+  const RRB *right = list_to_rrb(right_list);
 
   uint32_t left_count = rrb_count(left);
   uint32_t right_count = rrb_count(right);

@@ -86,7 +86,7 @@ void vm_load_module_from_file(vm_t *vm, const char *filename) {
         vm->code_size += 4;
         break;
       case OP_TUPLE:
-      case OP_VECTOR:
+      case OP_LIST:
         *code_ptr++ = ch;
         *code_ptr++ = fgetc(fp);
         uint8_t size = fgetc(fp);

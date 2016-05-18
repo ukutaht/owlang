@@ -19,12 +19,12 @@ typedef uint64_t owl_term;
 // pointer: 000
 // int:     001
 // tuple:   010
-// vector:  011
+// list:    011
 typedef enum owl_tag {
     POINTER = 0,
     INT,
     TUPLE,
-    VECTOR
+    LIST
 } owl_tag;
 
 

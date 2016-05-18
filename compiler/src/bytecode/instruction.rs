@@ -18,7 +18,7 @@ pub enum Instruction {
     Jmp(u8),
     Tuple(Reg, u8, Vec<Reg>),
     TupleNth(Reg, Reg, u8),
-    Vector(Reg, u8, Vec<Reg>),
+    List(Reg, u8, Vec<Reg>),
     StoreTrue(Reg),
     StoreFalse(Reg),
     StoreNil(Reg),
@@ -79,8 +79,8 @@ impl Instruction {
             &Instruction::TupleNth(dest, reg, nth) => {
                 out.write(&[opcodes::TUPLE_NTH, dest, reg, nth]).unwrap();
             },
-            &Instruction::Vector(reg, size, ref elems) => {
-                let mut res = vec![opcodes::VECTOR, reg, size];
+            &Instruction::List(reg, size, ref elems) => {
+                let mut res = vec![opcodes::LIST, reg, size];
                 res.append(&mut elems.clone());
 
                 out.write(&res).unwrap();
@@ -171,14 +171,14 @@ impl Instruction {
                 let string = format!("tuple_nth %{}, %{}, %{}\n", dest, reg, nth);
                 out.write(&string.as_bytes()).unwrap();
             },
-            &Instruction::Vector(reg, size, ref regs) => {
+            &Instruction::List(reg, size, ref regs) => {
                 let string;
 
                 if regs.len() > 0 {
                     let elems: Vec<_> = regs.iter().map(|int| format!("%{}", int)).collect();
-                    string = format!("vector %{}, {}, {}\n", reg, size, elems.join(", "));
+                    string = format!("list %{}, {}, {}\n", reg, size, elems.join(", "));
                 } else {
-                    string = format!("vector %{}, {}\n", reg, size);
+                    string = format!("list %{}, {}\n", reg, size);
                 }
 
                 out.write(&string.as_bytes()).unwrap();
@@ -224,7 +224,7 @@ impl Instruction {
             &Instruction::Tuple(_, _, ref regs)   => 3 + regs.len() as u8,
             &Instruction::TupleNth(_, _, _)  => 4,
             &Instruction::Return           => 1,
-            &Instruction::Vector(_, _, ref regs)   => 3 + regs.len() as u8,
+            &Instruction::List(_, _, ref regs)   => 3 + regs.len() as u8,
             &Instruction::StoreTrue(_)     => 2,
             &Instruction::StoreFalse(_)    => 2,
             &Instruction::StoreNil(_)      => 2,

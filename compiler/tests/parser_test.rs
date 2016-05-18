@@ -163,9 +163,9 @@ fn parses_simple_tuple() {
 }
 
 #[test]
-fn parses_simple_vector() {
+fn parses_simple_list() {
     let res = parser::parse_expr(b"[1, 2]");
-    assert_eq!(res, Ok(mk_vector(vec![
+    assert_eq!(res, Ok(mk_list(vec![
         mk_int("1"), mk_int("2")
     ])));
 }
@@ -188,7 +188,7 @@ fn parses_let_with_functions() {
 }
 
 #[test]
-fn parses_let_with_vector() {
+fn parses_let_with_list() {
     let res = parser::parse_expr(b"let a = [1, 2]");
-    assert_eq!(res, Ok(mk_let(mk_ident("a"), mk_vector(vec![mk_int("1"), mk_int("2")]))));
+    assert_eq!(res, Ok(mk_let(mk_ident("a"), mk_list(vec![mk_int("1"), mk_int("2")]))));
 }

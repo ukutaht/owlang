@@ -218,9 +218,9 @@ fn generates_tuple() {
 }
 
 #[test]
-fn generates_vector() {
+fn generates_list() {
     let main = mk_function("main", Vec::new(), vec![
-        mk_vector(vec![mk_int("1"), mk_int("2")])
+        mk_list(vec![mk_int("1"), mk_int("2")])
     ]);
 
     let res = bytecode::generate_function(&main);
@@ -228,7 +228,7 @@ fn generates_vector() {
     assert_eq!(res.code, vec![
         bytecode::Instruction::StoreInt(1, 1),
         bytecode::Instruction::StoreInt(2, 2),
-        bytecode::Instruction::Vector(0, 2, vec![1, 2]),
+        bytecode::Instruction::List(0, 2, vec![1, 2]),
         bytecode::Instruction::Return,
     ])
 }

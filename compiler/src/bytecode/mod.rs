@@ -101,7 +101,7 @@ impl<'a> FnGenerator<'a> {
                 res.append(&mut me);
                 res
             },
-            &ast::Expr::Vector(ref v) => {
+            &ast::Expr::List(ref v) => {
                 let mut res = Vec::new();
                 for elem in v.elems.iter() {
                     let elem_out = self.push();
@@ -110,7 +110,7 @@ impl<'a> FnGenerator<'a> {
 
                 let mut elem_locations: Vec<Reg> = v.elems.iter().map(|_| self.pop()).collect();
                 elem_locations.reverse();
-                let mut me = vec![Instruction::Vector(out, v.elems.len() as u8, elem_locations)];
+                let mut me = vec![Instruction::List(out, v.elems.len() as u8, elem_locations)];
                 res.append(&mut me);
                 res
             },
