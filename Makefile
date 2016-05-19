@@ -25,7 +25,7 @@ stdlib:
 	compiler/target/debug/owlc stdlib -o .build/stdlib
 
 clean:
-	rm -rf compiler/target vm/target .build lib/target
+	rm -rf compiler/target vm/target .build vm/lib/target
 
 check: check-compiler check-test-cases
 
