@@ -2,22 +2,14 @@ cmake_minimum_required (VERSION 3.4)
 project (owlang)
 
 SET (CMAKE_C_FLAGS "-Wall -Wextra -pedantic -std=c99")
+link_directories(lib/target/lib/)
+include_directories(lib/target/include/)
 
 INCLUDE (CheckIncludeFiles)
 check_include_files (gc.h HAVE_GC)
-check_include_files (intern/strings.h HAVE_STRING_INTERNS)
-check_include_files (rrb.h HAVE_RRB)
 
 if (NOT HAVE_GC)
   message(FATAL_ERROR "gc.h not found")
-endif()
-
-if (NOT HAVE_STRING_INTERNS)
-  message(FATAL_ERROR "intern/strings.h not found")
-endif()
-
-if (NOT HAVE_RRB)
-  message(FATAL_ERROR "rrb.h not found")
 endif()
 
 include_directories ("${PROJECT_SOURCE_DIR}/src")
