@@ -4,7 +4,9 @@
 * A graceful way to fatally quit the VM with a message (for example, when function is not found)
 * Ensure that infix operations work for everything in the first argument
 * Report parsing errors (depends on next chomp release)
-* stdlib testing framework
+* Stdlib testing framework (does it need compiler support?)
+* Vim syntax file
+* Basic build tool
 * Tuple stdlib (bounds check for `nth`)
 * List stdlib
 * IO stdlib
