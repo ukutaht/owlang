@@ -78,6 +78,7 @@ void vm_load_module_from_file(vm_t *vm, const char *filename) {
       case OP_SUB:
       case OP_EQ:
       case OP_NOT_EQ:
+      case OP_GREATER_THAN:
       case OP_TUPLE_NTH:
         *code_ptr++ = ch;
         *code_ptr++ = fgetc(fp);

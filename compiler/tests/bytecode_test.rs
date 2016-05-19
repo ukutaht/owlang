@@ -74,6 +74,23 @@ fn generates_not_op() {
 }
 
 #[test]
+fn generates_greater_than_op() {
+    let ast = mk_function("main", Vec::new(), vec![
+        mk_apply(None, ">", vec![mk_int("1"), mk_int("2")])
+    ]);
+
+    let res = bytecode::generate_function(&ast);
+
+    assert_eq!(res.code, vec![
+            bytecode::Instruction::StoreInt(1, 1),
+            bytecode::Instruction::StoreInt(2, 2),
+            bytecode::Instruction::GreaterThan(0, 1, 2),
+            bytecode::Instruction::Return
+        ]
+    )
+}
+
+#[test]
 fn generates_system_exit_with_value() {
     let ast = mk_function("main", Vec::new(), vec![
         mk_apply(None, "exit", vec![mk_int("1")])

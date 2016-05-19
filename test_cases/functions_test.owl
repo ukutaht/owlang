@@ -19,11 +19,22 @@ module functions_test {
 
   fn empty_function() {}
 
+  fn mccarthy(n) {
+    if n > 100 {
+      n - 10
+    } else {
+      mccarthy(mccarthy(n + 11))
+    }
+  }
+
   fn main() {
     owl_unit:assert_eq(gimme_five(), 5)
     owl_unit:assert_eq(add_five(5), 10)
     owl_unit:assert_eq(add_together(7, 11), 18)
     owl_unit:assert_eq(functions:gimme_six(), 6)
     owl_unit:assert_eq(empty_function(), nil)
+
+    owl_unit:assert_eq(mccarthy(5), 91)
+    owl_unit:assert_eq(mccarthy(103), 93)
   }
 }

@@ -25,6 +25,7 @@ pub enum Instruction {
     Eq(Reg, Reg, Reg),
     NotEq(Reg, Reg, Reg),
     Not(Reg, Reg),
+    GreaterThan(Reg, Reg, Reg),
 }
 
 impl Instruction {
@@ -103,6 +104,9 @@ impl Instruction {
             &Instruction::Not(to, reg) => {
                 out.write(&[opcodes::NOT, to, reg]).unwrap();
             }
+            &Instruction::GreaterThan(to, arg1, arg2) => {
+                out.write(&[opcodes::GREATER_THAN, to, arg1, arg2]).unwrap();
+            },
         }
     }
 
@@ -207,30 +211,35 @@ impl Instruction {
                 let string = format!("not %{}, %{}\n", to, reg);
                 out.write(&string.as_bytes()).unwrap();
             }
+            &Instruction::GreaterThan(to, arg1, arg2) => {
+                let string = format!("greater_than %{}, %{}, %{}\n", to, arg1, arg2);
+                out.write(&string.as_bytes()).unwrap();
+            },
         }
     }
 
     pub fn byte_size(&self) -> u8 {
         match self {
-            &Instruction::Add(_, _, _)    => 4,
-            &Instruction::Sub(_, _, _)    => 4,
-            &Instruction::StoreInt(_, _)  => 4,
-            &Instruction::Mov(_, _)       => 3,
-            &Instruction::Print(_)        => 2,
-            &Instruction::Test(_, _)      => 3,
-            &Instruction::Exit(_)         => 2,
-            &Instruction::Call(_, ref name, _, ref regs) => 5 + (name.len() as u8) + (regs.len() as u8),
-            &Instruction::Jmp(_)          => 2,
-            &Instruction::Tuple(_, _, ref regs)   => 3 + regs.len() as u8,
-            &Instruction::TupleNth(_, _, _)  => 4,
-            &Instruction::Return           => 1,
-            &Instruction::List(_, _, ref regs)   => 3 + regs.len() as u8,
-            &Instruction::StoreTrue(_)     => 2,
-            &Instruction::StoreFalse(_)    => 2,
-            &Instruction::StoreNil(_)      => 2,
-            &Instruction::Eq(_, _, _)      => 4,
-            &Instruction::NotEq(_, _, _)   => 4,
-            &Instruction::Not(_, _)        => 3,
+            &Instruction::Add(_, _, _)          => 4,
+            &Instruction::Sub(_, _, _)          => 4,
+            &Instruction::StoreInt(_, _)        => 4,
+            &Instruction::Mov(_, _)             => 3,
+            &Instruction::Print(_)              => 2,
+            &Instruction::Test(_, _)            => 3,
+            &Instruction::Exit(_)               => 2,
+            &Instruction::Call(_, _, _, ref regs) => 4 + (regs.len() as u8), // Name only counts for 1 byte because it is interned at load-time
+            &Instruction::Jmp(_)                => 2,
+            &Instruction::Tuple(_, _, ref regs) => 3 + regs.len() as u8,
+            &Instruction::TupleNth(_, _, _)     => 4,
+            &Instruction::Return                => 1,
+            &Instruction::List(_, _, ref regs)  => 3 + regs.len() as u8,
+            &Instruction::StoreTrue(_)          => 2,
+            &Instruction::StoreFalse(_)         => 2,
+            &Instruction::StoreNil(_)           => 2,
+            &Instruction::Eq(_, _, _)           => 4,
+            &Instruction::NotEq(_, _, _)        => 4,
+            &Instruction::Not(_, _)             => 3,
+            &Instruction::GreaterThan(_, _, _)  => 4,
         }
     }
 }

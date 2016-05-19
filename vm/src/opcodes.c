@@ -304,6 +304,20 @@ void op_store_nil(struct vm *vm) {
   vm->ip += 1;
 }
 
+void op_greater_than(struct vm *vm) {
+  debug_print("%04x OP_GREATER_THAN\n", vm->ip);
+  uint8_t reg1  = next_reg(vm);
+  uint8_t reg2  = next_reg(vm);
+  uint8_t reg3  = next_reg(vm);
+
+  owl_term val1 = get_reg(vm, reg2);
+  owl_term val2 = get_reg(vm, reg3);
+  owl_term result = owl_bool(int_from_owl_int(val1) > int_from_owl_int(val2));
+
+  set_reg(vm, reg1, result);
+  vm->ip += 1;
+}
+
 void opcode_init(vm_t * vm) {
   for (int i = 0; i < 255; i++)
     vm->opcodes[i] = op_unknown;
@@ -327,4 +341,5 @@ void opcode_init(vm_t * vm) {
   vm->opcodes[OP_NOT_EQ] = op_not_eq;
   vm->opcodes[OP_NOT] = op_not;
   vm->opcodes[OP_STORE_NIL] = op_store_nil;
+  vm->opcodes[OP_GREATER_THAN] = op_greater_than;
 }
