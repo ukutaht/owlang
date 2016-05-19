@@ -1,13 +1,15 @@
 ### Big list of TODO items
 
-* Add short-circuit `&&` and `||`
 * Use static libraries for deps
 * A graceful way to fatally quit the VM with a message (for example, when function is not found)
+* Ensure that infix operations work for everything in the first argument
+* Report parsing errors (depends on next chomp release)
 * stdlib testing framework
 * Tuple stdlib (bounds check for `nth`)
 * List stdlib
 * IO stdlib
 * Public/Private distinction
+* Deal with parsing edge cases(keywords)
 * Module constants
 * Generalise `if` to `cond`
 * Dynamically grow the stack
