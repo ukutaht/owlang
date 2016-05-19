@@ -37,7 +37,7 @@ pub fn parse_module(input: &[u8]) -> Result<Module, ParseError<u8, Error<u8>>> {
 
 fn expr(i: Input<u8>) -> U8Result<Expr> {
     parse!{i;
-        _if() <|> _let() <|> apply() <|> infix() <|> binop() <|> unary() <|> tuple() <|> list() <|> nil() <|> bool_true() <|> bool_false() <|> ident() <|> int()
+        _if() <|> _let() <|> apply() <|> infix() <|> unary() <|> tuple() <|> list() <|> nil() <|> _bool() <|> ident() <|> int()
     }
 }
 
@@ -60,18 +60,6 @@ fn unary(i: Input<u8>) -> U8Result<Expr> {
         string(b"!");
         let arg = expr();
         ret mk_apply(None, "!", vec![arg])
-    }
-}
-
-fn binop(i: Input<u8>) -> U8Result<Expr> {
-    parse!{i;
-        let left = _bool() <|> nil() <|> ident();
-        skip_whitespace();
-        string(b"&&");
-        skip_whitespace();
-        let right = expr();
-
-        ret mk_and_and(left, right)
     }
 }
 
@@ -210,7 +198,7 @@ fn ident(i: Input<u8>) -> U8Result<Expr> {
 
 fn infix(i: Input<u8>) -> U8Result<Expr> {
     parse!{i;
-        let lhs = int() <|> ident();
+        let lhs = int() <|> nil() <|> _bool() <|> ident();
         skip_whitespace();
         let op = infix_op();
         skip_whitespace();
@@ -242,7 +230,7 @@ fn list(i: Input<u8>) -> U8Result<Expr> {
 
 fn infix_op(i: Input<u8>) -> U8Result<&str> {
     parse!{i;
-        let op = string(b"+") <|> string(b"-") <|> string(b"==") <|> string(b"!=") <|> string(b">=") <|> string(b">")  <|> string(b"<=") <|> string(b"<") ;
+        let op = string(b"+") <|> string(b"-") <|> string(b"==") <|> string(b"!=") <|> string(b">=") <|> string(b">")  <|> string(b"<=") <|> string(b"<") <|> string(b"&&");
         ret unsafe { str::from_utf8_unchecked(op) }
     }
 }

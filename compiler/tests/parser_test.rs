@@ -196,5 +196,5 @@ fn parses_let_with_list() {
 #[test]
 fn parses_and_and() {
     let res = parser::parse_expr(b"true && false");
-    assert_eq!(res, Ok(mk_and_and(mk_true(), mk_false())));
+    assert_eq!(res, Ok(mk_apply(None, "&&", vec![mk_true(), mk_false()])));
 }

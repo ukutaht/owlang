@@ -57,16 +57,20 @@ impl<'a> FnGenerator<'a> {
     fn generate_expr(&mut self, out: Reg, expr: &'a ast::Expr) -> Bytecode {
         match expr {
             &ast::Expr::Apply(ref a) => {
-                let mut res = Vec::new();
-                for arg in a.args.iter() {
-                    let arg_out = self.push();
-                    res.append(&mut self.generate_expr(arg_out, arg))
+                if a.name == "&&" {
+                    self.generate_and_and(out, &a.args[0], &a.args[1])
+                } else {
+                    let mut res = Vec::new();
+                    for arg in a.args.iter() {
+                        let arg_out = self.push();
+                        res.append(&mut self.generate_expr(arg_out, arg))
+                    }
+                    let mut arg_locations: Vec<Reg> = a.args.iter().map(|_| self.pop()).collect();
+                    arg_locations.reverse();
+                    let mut me = self.apply_op(a, out, arg_locations);
+                    res.append(&mut me);
+                    res
                 }
-                let mut arg_locations: Vec<Reg> = a.args.iter().map(|_| self.pop()).collect();
-                arg_locations.reverse();
-                let mut me = self.apply_op(a, out, arg_locations);
-                res.append(&mut me);
-                res
             },
             &ast::Expr::Int(ref i) => {
                 let val = i.value.parse::<u16>().unwrap();
@@ -126,21 +130,6 @@ impl<'a> FnGenerator<'a> {
             &ast::Expr::Nil => {
                 vec![Instruction::StoreNil(out)]
             }
-            &ast::Expr::AndAnd(ref left, ref right) => {
-                let mut res = Vec::new();
-                res.append(&mut self.generate_expr(out, left));
-
-                let mut then_branch = self.generate_expr(out, right);
-
-                let then_size = instruction::byte_size_of(&then_branch);
-                let mut else_branch = vec![Instruction::Jmp(then_size + 1)];
-
-                let else_size = instruction::byte_size_of(&else_branch);
-                res.push(Instruction::Test(out, else_size + 1));
-                res.append(&mut else_branch);
-                res.append(&mut then_branch);
-                res
-            }
             &ast::Expr::Let(ref l) => {
                 if self.env.contains_key(l.left.name) {
                     panic!("Not allowed to rebind variable: {}", l.left.name);
@@ -151,20 +140,6 @@ impl<'a> FnGenerator<'a> {
                 }
             }
         }
-    }
-
-    fn generate_block(&mut self, out: Reg, block: &'a Vec<ast::Expr<'a>>) -> Bytecode {
-        let mut buffer = Vec::new();
-
-        if block.len() > 0 {
-            for expr in block.iter() {
-                buffer.append(&mut self.generate_expr(out, expr))
-            }
-        } else {
-            buffer.push(Instruction::StoreNil(out));
-        }
-
-        buffer
     }
 
     fn apply_op(&self, ap: &ast::Apply, ret_loc: Reg, args: Vec<Reg>) -> Bytecode {
@@ -183,6 +158,37 @@ impl<'a> FnGenerator<'a> {
                 vec![Instruction::Call(ret_loc, name, ap.arity(), args)]
             }
         }
+    }
+
+
+    fn generate_and_and(&mut self, out: Reg, left: &'a ast::Expr<'a>, right: &'a ast::Expr<'a>) -> Bytecode {
+        let mut res = Vec::new();
+        res.append(&mut self.generate_expr(out, left));
+
+        let mut then_branch = self.generate_expr(out, right);
+
+        let then_size = instruction::byte_size_of(&then_branch);
+        let mut else_branch = vec![Instruction::Jmp(then_size + 1)];
+
+        let else_size = instruction::byte_size_of(&else_branch);
+        res.push(Instruction::Test(out, else_size + 1));
+        res.append(&mut else_branch);
+        res.append(&mut then_branch);
+        res
+    }
+
+    fn generate_block(&mut self, out: Reg, block: &'a Vec<ast::Expr<'a>>) -> Bytecode {
+        let mut buffer = Vec::new();
+
+        if block.len() > 0 {
+            for expr in block.iter() {
+                buffer.append(&mut self.generate_expr(out, expr))
+            }
+        } else {
+            buffer.push(Instruction::StoreNil(out));
+        }
+
+        buffer
     }
 
     fn push(&mut self) -> u8 {
