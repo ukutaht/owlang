@@ -126,6 +126,21 @@ impl<'a> FnGenerator<'a> {
             &ast::Expr::Nil => {
                 vec![Instruction::StoreNil(out)]
             }
+            &ast::Expr::AndAnd(ref left, ref right) => {
+                let mut res = Vec::new();
+                res.append(&mut self.generate_expr(out, left));
+
+                let mut then_branch = self.generate_expr(out, right);
+
+                let then_size = instruction::byte_size_of(&then_branch);
+                let mut else_branch = vec![Instruction::Jmp(then_size + 1)];
+
+                let else_size = instruction::byte_size_of(&else_branch);
+                res.push(Instruction::Test(out, else_size + 1));
+                res.append(&mut else_branch);
+                res.append(&mut then_branch);
+                res
+            }
             &ast::Expr::Let(ref l) => {
                 if self.env.contains_key(l.left.name) {
                     panic!("Not allowed to rebind variable: {}", l.left.name);

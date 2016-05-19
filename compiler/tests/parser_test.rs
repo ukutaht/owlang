@@ -192,3 +192,9 @@ fn parses_let_with_list() {
     let res = parser::parse_expr(b"let a = [1, 2]");
     assert_eq!(res, Ok(mk_let(mk_ident("a"), mk_list(vec![mk_int("1"), mk_int("2")]))));
 }
+
+#[test]
+fn parses_and_and() {
+    let res = parser::parse_expr(b"true && false");
+    assert_eq!(res, Ok(mk_and_and(mk_true(), mk_false())));
+}

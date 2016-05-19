@@ -37,7 +37,7 @@ pub fn parse_module(input: &[u8]) -> Result<Module, ParseError<u8, Error<u8>>> {
 
 fn expr(i: Input<u8>) -> U8Result<Expr> {
     parse!{i;
-        _if() <|> _let() <|> apply() <|> infix() <|> unary() <|> tuple() <|> list() <|> nil() <|> bool_true() <|> bool_false() <|> ident() <|> int()
+        _if() <|> _let() <|> apply() <|> infix() <|> binop() <|> unary() <|> tuple() <|> list() <|> nil() <|> bool_true() <|> bool_false() <|> ident() <|> int()
     }
 }
 
@@ -60,6 +60,24 @@ fn unary(i: Input<u8>) -> U8Result<Expr> {
         string(b"!");
         let arg = expr();
         ret mk_apply(None, "!", vec![arg])
+    }
+}
+
+fn binop(i: Input<u8>) -> U8Result<Expr> {
+    parse!{i;
+        let left = _bool() <|> nil() <|> ident();
+        skip_whitespace();
+        string(b"&&");
+        skip_whitespace();
+        let right = expr();
+
+        ret mk_and_and(left, right)
+    }
+}
+
+fn _bool(i: Input<u8>) -> U8Result<Expr> {
+    parse!{i;
+        bool_true() <|> bool_false()
     }
 }
 

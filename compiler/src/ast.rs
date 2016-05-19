@@ -74,6 +74,7 @@ pub enum Expr<'a> {
     If(If<'a>),
     Tuple(Tuple<'a>),
     List(List<'a>),
+    AndAnd(Box<Expr<'a>>, Box<Expr<'a>>)
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -138,4 +139,8 @@ pub fn mk_let<'a>(left: Expr<'a>, right: Expr<'a>) -> Expr<'a> {
         _ => panic!("Expected ident")
     };
     Expr::Let(Let {left: ident, right: Box::new(right)})
+}
+
+pub fn mk_and_and<'a>(left: Expr<'a>, right: Expr<'a>) -> Expr<'a> {
+    Expr::AndAnd(Box::new(left), Box::new(right))
 }

@@ -313,3 +313,20 @@ fn empty_function_returns_nil() {
         bytecode::Instruction::Return,
     ])
 }
+
+#[test]
+fn generates_and_and() {
+    let main = mk_function("main", Vec::new(), vec![
+        mk_and_and(mk_true(), mk_false())
+    ]);
+
+    let res = bytecode::generate_function(&main);
+
+    assert_eq!(res.code, vec![
+        bytecode::Instruction::StoreTrue(0),
+        bytecode::Instruction::Test(0, 3),
+        bytecode::Instruction::Jmp(3),
+        bytecode::Instruction::StoreFalse(0),
+        bytecode::Instruction::Return,
+    ])
+}
