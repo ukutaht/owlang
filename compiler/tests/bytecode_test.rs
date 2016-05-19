@@ -330,3 +330,19 @@ fn generates_and_and() {
         bytecode::Instruction::Return,
     ])
 }
+
+#[test]
+fn generates_or_or() {
+    let main = mk_function("main", Vec::new(), vec![
+        mk_apply(None, "||", vec![mk_true(), mk_false()])
+    ]);
+
+    let res = bytecode::generate_function(&main);
+
+    assert_eq!(res.code, vec![
+        bytecode::Instruction::StoreTrue(0),
+        bytecode::Instruction::Test(0, 3),
+        bytecode::Instruction::StoreFalse(0),
+        bytecode::Instruction::Return,
+    ])
+}

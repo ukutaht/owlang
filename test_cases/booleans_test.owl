@@ -1,5 +1,5 @@
 module booleans_test {
-  fn test_short_circuits() {
+  fn test_and_and() {
     let test1 = true && false
     owl_unit:assert_eq(test1, false)
 
@@ -10,12 +10,24 @@ module booleans_test {
     owl_unit:assert_eq(test3, nil)
   }
 
+  fn test_or_or() {
+    let test1 = true || false
+    owl_unit:assert_eq(test1, true)
+
+    let test2 = false || true
+    owl_unit:assert_eq(test2, true)
+
+    let test3 = nil || true
+    owl_unit:assert_eq(test3, true)
+  }
+
   fn main() {
     owl_unit:assert_eq(true, true)
     owl_unit:assert_eq(false, false)
     owl_unit:assert_eq(false, !true)
     owl_unit:assert_eq(true, !false)
     owl_unit:assert_eq(true, !!true)
-    test_short_circuits()
+    test_and_and()
+    test_or_or()
   }
 }

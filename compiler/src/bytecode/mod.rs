@@ -59,6 +59,8 @@ impl<'a> FnGenerator<'a> {
             &ast::Expr::Apply(ref a) => {
                 if a.name == "&&" {
                     self.generate_and_and(out, &a.args[0], &a.args[1])
+                } else if a.name == "||" {
+                    self.generate_or_or(out, &a.args[0], &a.args[1])
                 } else {
                     let mut res = Vec::new();
                     for arg in a.args.iter() {
@@ -81,15 +83,9 @@ impl<'a> FnGenerator<'a> {
                 let mut then_branch = self.generate_block(out, &i.body);
                 let mut else_branch = self.generate_block(out, &i.else_body);
 
-                let then_size = instruction::byte_size_of(&then_branch);
-                else_branch.push(Instruction::Jmp(then_size + 1));
-                let else_size = instruction::byte_size_of(&else_branch);
                 let condition_out = self.push();
                 res.append(&mut self.generate_expr(condition_out, &(*i.condition)));
-                res.push(Instruction::Test(self.pop(), else_size + 1));
-
-                res.append(&mut else_branch);
-                res.append(&mut then_branch);
+                self.gen_branch_into(&mut res, condition_out, &mut then_branch, &mut else_branch);
                 res
             },
             &ast::Expr::Tuple(ref t) => {
@@ -166,16 +162,36 @@ impl<'a> FnGenerator<'a> {
         res.append(&mut self.generate_expr(out, left));
 
         let mut then_branch = self.generate_expr(out, right);
+        let mut else_branch = Vec::new();
 
-        let then_size = instruction::byte_size_of(&then_branch);
-        let mut else_branch = vec![Instruction::Jmp(then_size + 1)];
-
-        let else_size = instruction::byte_size_of(&else_branch);
-        res.push(Instruction::Test(out, else_size + 1));
-        res.append(&mut else_branch);
-        res.append(&mut then_branch);
+        self.gen_branch_into(&mut res, out, &mut then_branch, &mut else_branch);
         res
     }
+
+    fn generate_or_or(&mut self, out: Reg, left: &'a ast::Expr<'a>, right: &'a ast::Expr<'a>) -> Bytecode {
+        let mut res = Vec::new();
+        res.append(&mut self.generate_expr(out, left));
+
+        let mut then_branch = Vec::new();
+        let mut else_branch = self.generate_expr(out, right);
+
+        self.gen_branch_into(&mut res, out, &mut then_branch, &mut else_branch);
+        res
+    }
+
+    fn gen_branch_into(&mut self, code: &mut Bytecode, reg: Reg, then_branch: &mut Bytecode, else_branch: &mut Bytecode) {
+        let then_size = instruction::byte_size_of(&then_branch);
+        if then_size > 0 {
+            else_branch.push(Instruction::Jmp(then_size + 1));
+        }
+
+        let else_size = instruction::byte_size_of(&else_branch);
+
+        code.push(Instruction::Test(reg, else_size + 1));
+        code.append(else_branch);
+        code.append(then_branch);
+    }
+
 
     fn generate_block(&mut self, out: Reg, block: &'a Vec<ast::Expr<'a>>) -> Bytecode {
         let mut buffer = Vec::new();

@@ -198,3 +198,9 @@ fn parses_and_and() {
     let res = parser::parse_expr(b"true && false");
     assert_eq!(res, Ok(mk_apply(None, "&&", vec![mk_true(), mk_false()])));
 }
+
+#[test]
+fn parses_or_or() {
+    let res = parser::parse_expr(b"true || false");
+    assert_eq!(res, Ok(mk_apply(None, "||", vec![mk_true(), mk_false()])));
+}
