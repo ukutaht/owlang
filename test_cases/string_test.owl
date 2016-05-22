@@ -3,6 +3,9 @@ module string_test {
     let res = "Hello " ++ "World!"
     owl_unit:assert_eq(res, "Hello World!")
     owl_unit:refute_eq(res, "something else")
+
+    let many_res = "One " ++ "and " ++ "Two"
+    owl_unit:assert_eq(many_res, "One and Two")
   }
 
   fn main() {
