@@ -1,5 +1,6 @@
 module string_test {
   fn main() {
-    owl_unit:assert_eq("ne", "ne")
+    owl_unit:assert_eq("ab", "ab")
+    owl_unit:refute_eq("one", "two")
   }
 }
