@@ -4,19 +4,12 @@
 #include <assert.h>
 #include <string.h>
 
-// File stuff
-#include <unistd.h>
-#include <limits.h>
-
-#ifndef PATH_MAX
-  #define PATH_MAX 1024
-#endif
-
 #include "opcodes.h"
 #include "vm.h"
 #include "term.h"
 #include "alloc.h"
 #include "list.h"
+#include "std/owl_file.h"
 
 // Read and return the next byte from the current instruction-pointer.
 uint8_t next_byte(vm_t *vm) {
@@ -152,7 +145,12 @@ void op_call(struct vm *vm) {
     location = vm->functions[function_id];
   }
 
-  assert(location != NO_FUNCTION);
+  if (location == NO_FUNCTION) {
+    const char *fname = strings_lookup_id(vm->function_names, function_id);
+    printf("Undefined function %s\n", fname);
+    exit(1);
+  }
+
   assert(vm->current_frame + 1 <= STACK_DEPTH);
 
   unsigned int next_frame = vm->current_frame + 1;
@@ -340,10 +338,17 @@ void op_file_pwd(struct vm *vm) {
   debug_print("%04x OP_FILE_PWD\n", vm->ip);
   uint8_t reg = next_reg(vm);
 
-  char *cwd = owl_alloc(PATH_MAX);
-  getcwd(cwd, PATH_MAX);
-  owl_term str = owl_string_from(cwd);
-  set_reg(vm, reg, str);
+  set_reg(vm, reg, owl_file_pwd());
+
+  vm->ip += 1;
+}
+
+void op_file_ls(struct vm *vm) {
+  debug_print("%04x OP_FILE_LS\n", vm->ip);
+  uint8_t result_reg = next_reg(vm);
+  owl_term path = get_reg(vm, next_reg(vm));
+
+  set_reg(vm, result_reg, owl_file_ls(path));
 
   vm->ip += 1;
 }
@@ -398,4 +403,5 @@ void opcode_init(vm_t * vm) {
   vm->opcodes[OP_LOAD_STRING] = op_load_string;
   vm->opcodes[OP_FILE_PWD] = op_file_pwd;
   vm->opcodes[OP_CONCAT] = op_concat;
+  vm->opcodes[OP_FILE_LS] = op_file_ls;
 }

@@ -122,6 +122,22 @@ fn generates_file_pwd() {
 }
 
 #[test]
+fn generates_file_ls() {
+    let ast = mk_function("main", Vec::new(), vec![
+        mk_apply(None, "file_ls", vec![mk_string(".")])
+    ]);
+
+    let res = bytecode::generate_function(&ast);
+
+    assert_eq!(res.code, vec![
+            bytecode::Instruction::LoadString(1, ".".to_string()),
+            bytecode::Instruction::FileLs(0, 1),
+            bytecode::Instruction::Return
+        ]
+    )
+}
+
+#[test]
 fn generates_concat() {
     let ast = mk_function("main", Vec::new(), vec![
         mk_apply(None, "++", vec![mk_string("a"), mk_string("b")])

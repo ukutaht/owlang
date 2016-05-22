@@ -1,6 +1,16 @@
 module file_test {
-  fn main() {
+  fn test_pwd() {
     owl_unit:assert_eq("/Users/ukutaht/dev/owlang", file:pwd())
     owl_unit:refute_eq("wut", file:pwd())
+  }
+
+  fn test_ls() {
+    let files = file:ls("vm/lib")
+    owl_unit:assert_eq(files, ["c-rrb", "intern", "target"])
+  }
+
+  fn main() {
+    test_pwd()
+    test_ls()
   }
 }

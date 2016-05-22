@@ -153,6 +153,7 @@ impl<'a> FnGenerator<'a> {
             "exit" => vec![Instruction::Exit(args[0])],
             "print" => vec![Instruction::Print(args[0])],
             "file_pwd" => vec![Instruction::FilePwd(ret_loc)],
+            "file_ls" => vec![Instruction::FileLs(ret_loc, args[0])],
             "tuple_nth" => vec![Instruction::TupleNth(ret_loc, args[0], args[1])],
             _   => {
                 let module = ap.module.unwrap_or(self.module_name);

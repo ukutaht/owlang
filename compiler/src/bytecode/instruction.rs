@@ -29,6 +29,7 @@ pub enum Instruction {
     GreaterThan(Reg, Reg, Reg),
     LoadString(Reg, String),
     FilePwd(Reg),
+    FileLs(Reg, Reg),
     Concat(Reg, Reg, Reg),
 }
 
@@ -63,6 +64,9 @@ impl Instruction {
             },
             &Instruction::FilePwd(reg) => {
                 out.write(&[opcodes::FILE_PWD, reg]).unwrap();
+            },
+            &Instruction::FileLs(reg, path) => {
+                out.write(&[opcodes::FILE_LS, reg, path]).unwrap();
             },
             &Instruction::Call(ret_loc, ref name, arity, ref regs) => {
                 let full_name = format!("{}/{}", name, arity);
@@ -164,6 +168,10 @@ impl Instruction {
                 let string = format!("file_pwd %{}\n", reg);
                 out.write(string.as_bytes()).unwrap();
             }
+            &Instruction::FileLs(reg, path) => {
+                let string = format!("file_ls %{}, %{}\n", reg, path);
+                out.write(string.as_bytes()).unwrap();
+            }
             &Instruction::Call(ret_loc, ref name, arity, ref regs) => {
                 let string;
 
@@ -257,6 +265,7 @@ impl Instruction {
             &Instruction::Test(_, _)            => 3,
             &Instruction::Exit(_)               => 2,
             &Instruction::FilePwd(_)            => 2,
+            &Instruction::FileLs(_, _)          => 3,
             &Instruction::Call(_, _, _, ref regs) => 4 + (regs.len() as u8), // Name only counts for 1 byte because it is interned at load-time
             &Instruction::Jmp(_)                => 2,
             &Instruction::Tuple(_, _, ref regs) => 3 + regs.len() as u8,

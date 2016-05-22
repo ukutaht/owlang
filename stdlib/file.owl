@@ -2,4 +2,8 @@ module file {
   fn pwd() {
     file_pwd()
   }
+
+  fn ls(path) {
+    file_ls(path)
+  }
 }

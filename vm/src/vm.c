@@ -68,6 +68,7 @@ void vm_load_module_from_file(vm_t *vm, const char *filename) {
         vm->code_size += 2;
         break;
       case OP_MOV:
+      case OP_FILE_LS:
       case OP_NOT:
       case OP_TEST:
         *code_ptr++ = ch;
