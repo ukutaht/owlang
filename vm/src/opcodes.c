@@ -48,6 +48,43 @@ owl_term get_reg(vm_t *vm, uint8_t reg) {
   return curr_frame.registers[reg];
 }
 
+uint64_t load_function(vm_t *vm, uint8_t function_id) {
+  uint64_t location = vm->functions[function_id];
+
+  if (location == NO_FUNCTION) {
+    char fname_buf[255];
+    char *fname_copy = fname_buf;
+    strcpy(fname_copy, strings_lookup_id(vm->function_names, function_id));
+    char *module_name = strsep(&fname_copy, ":");
+    debug_print("Attempting to load module: %s\n", module_name);
+    vm_load_module(vm, module_name);
+    location = vm->functions[function_id];
+  }
+
+  if (location == NO_FUNCTION) {
+    const char *fname = strings_lookup_id(vm->function_names, function_id);
+    printf("Undefined function %s\n", fname);
+    exit(1);
+  }
+
+  return location;
+}
+
+void setup_next_stackframe(vm_t *vm, uint8_t arity, uint8_t ret_reg) {
+  assert(vm->current_frame + 1 <= STACK_DEPTH);
+
+  unsigned int next_frame = vm->current_frame + 1;
+
+  for(uint8_t i = 0; i < arity; i++) {
+    owl_term arg = get_reg(vm, next_reg(vm));
+    vm->frames[next_frame].registers[i + 1] = arg;
+  }
+
+  vm->frames[next_frame].ret_address = vm->ip + 1;
+  vm->frames[next_frame].ret_register = ret_reg;
+  vm->current_frame += 1;
+}
+
 void set_reg(vm_t *vm, uint8_t reg, owl_term term) {
   frame_t *curr_frame = &vm->frames[vm->current_frame];
   curr_frame->registers[reg] = term;
@@ -130,37 +167,11 @@ void op_call(struct vm *vm) {
 
   uint8_t ret_reg = next_byte(vm);
   uint8_t function_id = next_byte(vm);
-  uint64_t location = vm->functions[function_id];
   uint8_t arity = next_byte(vm);
 
-  if (location == NO_FUNCTION) {
-    char fname_buf[255];
-    char *fname_copy = fname_buf;
-    strcpy(fname_copy, strings_lookup_id(vm->function_names, function_id));
-    char *module_name = strsep(&fname_copy, ":");
-    debug_print("Attempting to load module: %s\n", module_name);
-    vm_load_module(vm, module_name);
-    location = vm->functions[function_id];
-  }
+  uint64_t location = load_function(vm, function_id);
 
-  if (location == NO_FUNCTION) {
-    const char *fname = strings_lookup_id(vm->function_names, function_id);
-    printf("Undefined function %s\n", fname);
-    exit(1);
-  }
-
-  assert(vm->current_frame + 1 <= STACK_DEPTH);
-
-  unsigned int next_frame = vm->current_frame + 1;
-
-  for(uint8_t i = 0; i < arity; i++) {
-    owl_term arg = get_reg(vm, next_reg(vm));
-    vm->frames[next_frame].registers[i + 1] = arg;
-  }
-
-  vm->frames[next_frame].ret_address = vm->ip + 1;
-  vm->frames[next_frame].ret_register = ret_reg;
-  vm->current_frame += 1;
+  setup_next_stackframe(vm, arity, ret_reg);
 
   vm->ip = location;
 }
@@ -378,14 +389,7 @@ void op_capture(struct vm *vm) {
   uint8_t result_reg = next_reg(vm);
   uint8_t function_id = next_byte(vm);
 
-  uint64_t instruction = vm->functions[function_id];
-
-  if (instruction == NO_FUNCTION) {
-    const char *fname = strings_lookup_id(vm->function_names, function_id);
-    printf("Undefined function %s\n", fname);
-    exit(1);
-  }
-
+  uint64_t instruction = load_function(vm, function_id);
   owl_term function = owl_function_from(instruction);
 
   set_reg(vm, result_reg, function);
@@ -400,19 +404,7 @@ void op_call_local(struct vm *vm) {
   uint8_t arity = next_byte(vm);
 
   uint64_t location = instruction_from_function(function);
-
-  assert(vm->current_frame + 1 <= STACK_DEPTH);
-
-  unsigned int next_frame = vm->current_frame + 1;
-
-  for(uint8_t i = 0; i < arity; i++) {
-    owl_term arg = get_reg(vm, next_reg(vm));
-    vm->frames[next_frame].registers[i + 1] = arg;
-  }
-
-  vm->frames[next_frame].ret_address = vm->ip + 1;
-  vm->frames[next_frame].ret_register = ret_reg;
-  vm->current_frame += 1;
+  setup_next_stackframe(vm, arity, ret_reg);
 
   vm->ip = location;
 }
