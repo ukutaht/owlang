@@ -81,9 +81,7 @@ void op_print(struct vm *vm) {
   debug_print("%04x OP_PRINT\n", vm->ip);
   uint8_t reg = next_reg(vm);
 
-  owl_term val = get_reg(vm, reg);
-
-  printf("%llu\n", int_from_owl_int(val));
+  owl_term_print(get_reg(vm, reg));
 
   vm->ip += 1;
 }

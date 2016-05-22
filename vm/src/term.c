@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "term.h"
 #include "list.h"
@@ -71,5 +72,46 @@ bool owl_terms_eq(owl_term left, owl_term right) {
       return list_eq(left, right);
     default:
       return false;
+  }
+}
+
+void owl_term_print(owl_term term) {
+  switch(term) {
+    case OWL_TRUE:
+      puts("true");
+      return;
+    case OWL_FALSE:
+      puts("false");
+      return;
+    case OWL_NIL:
+      puts("nil");
+      return;
+  }
+
+  switch(owl_tag_of(term)) {
+    case INT:
+      printf("%llu\n", int_from_owl_int(term));
+      return;
+    case TUPLE:
+    {
+      owl_term *ary = owl_extract_ptr(term);
+      uint8_t size = ary[0];
+      for(uint8_t i = 1; i <= size; i++) {
+        owl_term_print(ary[i]);
+      }
+      return;
+    }
+    case LIST:
+    {
+      list_print(term);
+      return;
+    }
+    case STRING:
+      printf("\"");
+      printf("%s", (char*) owl_extract_ptr(term));
+      printf("\"");
+      return;
+    default:
+      return;
   }
 }

@@ -1,24 +1,30 @@
 module owl_unit {
   fn assert(value) {
     if !value {
+      print(value)
       exit(1)
     }
   }
 
   fn refute(value) {
     if value {
+      print(value)
       exit(1)
     }
   }
 
   fn assert_eq(left, right) {
     if left != right {
+      print(left)
+      print(right)
       exit(1)
     }
   }
 
   fn refute_eq(left, right) {
     if left == right {
+      print(left)
+      print(right)
       exit(1)
     }
   }

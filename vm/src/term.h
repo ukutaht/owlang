@@ -33,6 +33,8 @@ typedef enum owl_tag {
 owl_term owl_int_from(uint64_t val);
 owl_term owl_string_from(const char *val);
 
+void owl_term_print(owl_term term);
+
 owl_term owl_tuple_nth(owl_term tuple, uint8_t index);
 owl_term owl_bool(bool value);
 owl_term owl_negate(owl_term value);

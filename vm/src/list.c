@@ -1,5 +1,7 @@
 #include <rrb/rrb.h>
+
 #include "list.h"
+#include "term.h"
 #include "vm.h"
 
 #define rrb_to_list(rrb) ((((owl_term) rrb) << 3) | LIST)
@@ -14,6 +16,21 @@ owl_term list_push(owl_term list, owl_term elem) {
   const RRB *rrb = list_to_rrb(list);
   rrb = rrb_push(rrb, (void*) elem);
   return rrb_to_list(rrb);
+}
+
+void list_print(owl_term list) {
+  const RRB *rrb = list_to_rrb(list);
+
+  uint32_t count = rrb_count(rrb);
+
+  printf("[");
+  for (uint32_t i = 0; i < count; i++) {
+    owl_term_print((owl_term) rrb_nth(rrb, i));
+    if (i != count - 1) {
+      printf(",");
+    }
+  }
+  printf("]\n");
 }
 
 bool list_eq(owl_term left_list, owl_term right_list) {
