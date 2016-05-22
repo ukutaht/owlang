@@ -27,6 +27,18 @@ module functions_test {
     }
   }
 
+  fn arity_test() {
+    0
+  }
+
+  fn arity_test(one) {
+    1
+  }
+
+  fn arity_test(one, two) {
+    2
+  }
+
   fn main() {
     owl_unit:assert_eq(gimme_five(), 5)
     owl_unit:assert_eq(add_five(5), 10)
@@ -36,5 +48,9 @@ module functions_test {
 
     owl_unit:assert_eq(mccarthy(5), 91)
     owl_unit:assert_eq(mccarthy(103), 93)
+
+    owl_unit:assert_eq(arity_test(), 0)
+    owl_unit:assert_eq(arity_test(1), 1)
+    owl_unit:assert_eq(arity_test(1, 2), 2)
   }
 }
