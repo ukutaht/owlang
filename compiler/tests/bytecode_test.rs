@@ -455,3 +455,13 @@ fn generates_calling_function_indirectly() {
         bytecode::Instruction::Return,
     ])
 }
+
+#[test]
+#[should_panic]
+fn does_not_insert_var_in_env_during_binding() {
+    let main = mk_function("main", Vec::new(), vec![
+        mk_let(mk_ident("a"), mk_ident("a")),
+    ]);
+
+    bytecode::generate_function(&main);
+}

@@ -139,8 +139,9 @@ impl<'a> FnGenerator<'a> {
                     panic!("Not allowed to rebind variable: {}", l.left.name);
                 } else {
                     let var = self.push();
+                    let generated = self.generate_expr(var, &(*l.right));
                     self.env.insert(l.left.name.to_string(), var);
-                    self.generate_expr(var, &(*l.right))
+                    generated
                 }
             }
         }

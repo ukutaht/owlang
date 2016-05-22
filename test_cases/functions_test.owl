@@ -39,6 +39,10 @@ module functions_test {
     2
   }
 
+  fn capture_gimme_six() {
+    functions:gimme_six\0
+  }
+
   fn main() {
     owl_unit:assert_eq(gimme_five(), 5)
     owl_unit:assert_eq(add_five(5), 10)
@@ -55,5 +59,8 @@ module functions_test {
 
     let captured_gimme_five = gimme_five\0
     owl_unit:assert_eq(captured_gimme_five(), 5)
+
+    let captured_gimme_six = capture_gimme_six()
+    owl_unit:assert_eq(captured_gimme_six(), 6)
   }
 }
