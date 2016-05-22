@@ -1,0 +1,6 @@
+module file_test {
+  fn main() {
+    owl_unit:assert_eq("/Users/ukutaht/dev/owlang", file:pwd())
+    owl_unit:refute_eq("wut", file:pwd())
+  }
+}

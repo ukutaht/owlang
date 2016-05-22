@@ -58,6 +58,7 @@ void vm_load_module_from_file(vm_t *vm, const char *filename) {
         break;
       case OP_EXIT:
       case OP_PRINT:
+      case OP_FILE_PWD:
       case OP_STORE_TRUE:
       case OP_STORE_FALSE:
       case OP_STORE_NIL:

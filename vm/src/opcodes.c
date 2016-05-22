@@ -4,6 +4,14 @@
 #include <assert.h>
 #include <string.h>
 
+// File stuff
+#include <unistd.h>
+#include <limits.h>
+
+#ifndef PATH_MAX
+  #define PATH_MAX 1024
+#endif
+
 #include "opcodes.h"
 #include "vm.h"
 #include "term.h"
@@ -328,6 +336,18 @@ void op_load_string(struct vm *vm) {
   vm->ip += 1;
 }
 
+void op_file_pwd(struct vm *vm) {
+  debug_print("%04x OP_FILE_PWD\n", vm->ip);
+  uint8_t reg = next_byte(vm);
+
+  char *cwd = owl_alloc(PATH_MAX);
+  getcwd(cwd, PATH_MAX);
+  owl_term str = owl_string_from(cwd);
+  set_reg(vm, reg, str);
+
+  vm->ip += 1;
+}
+
 void opcode_init(vm_t * vm) {
   for (int i = 0; i < 255; i++)
     vm->opcodes[i] = op_unknown;
@@ -353,4 +373,5 @@ void opcode_init(vm_t * vm) {
   vm->opcodes[OP_STORE_NIL] = op_store_nil;
   vm->opcodes[OP_GREATER_THAN] = op_greater_than;
   vm->opcodes[OP_LOAD_STRING] = op_load_string;
+  vm->opcodes[OP_FILE_PWD] = op_file_pwd;
 }

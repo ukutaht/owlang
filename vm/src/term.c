@@ -70,6 +70,13 @@ bool owl_terms_eq(owl_term left, owl_term right) {
     }
     case LIST:
       return list_eq(left, right);
+    case STRING: // Comparing non-interned strings
+    {
+      const char *left_str = owl_extract_ptr(left);
+      const char *right_str = owl_extract_ptr(right);
+
+      return strcmp(left_str, right_str) == 0;
+    }
     default:
       return false;
   }

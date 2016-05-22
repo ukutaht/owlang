@@ -107,6 +107,21 @@ fn generates_system_exit_with_value() {
 }
 
 #[test]
+fn generates_file_pwd() {
+    let ast = mk_function("main", Vec::new(), vec![
+        mk_apply(None, "file_pwd", vec![])
+    ]);
+
+    let res = bytecode::generate_function(&ast);
+
+    assert_eq!(res.code, vec![
+            bytecode::Instruction::FilePwd(0),
+            bytecode::Instruction::Return
+        ]
+    )
+}
+
+#[test]
 fn generates_nested_arithmetic() {
     let ast = mk_function("main", Vec::new(), vec![
         mk_apply(None, "+", vec![
