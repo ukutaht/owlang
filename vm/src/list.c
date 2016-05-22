@@ -27,7 +27,7 @@ bool list_eq(owl_term left_list, owl_term right_list) {
 
   for (uint32_t i = 0; i < left_count; i++) {
     owl_term left_elem  = (owl_term) rrb_nth(left, i);
-    owl_term right_elem = (owl_term) rrb_nth(left, i);
+    owl_term right_elem = (owl_term) rrb_nth(right, i);
 
     if (!owl_terms_eq(left_elem, right_elem)) return false;
   }
