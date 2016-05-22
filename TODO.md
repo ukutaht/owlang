@@ -4,6 +4,8 @@
 * A graceful way to fatally quit the VM with a message (for example, when function is not found)
 * Ensure that infix operations work for everything in the first argument
 * Report parsing errors (depends on next chomp release)
+* Higher-order functions
+* Closures (oh boy)
 * Stdlib testing framework (does it need compiler support?)
 * Vim syntax file
 * Basic build tool
@@ -30,8 +32,6 @@
 * Exceptions (Is it possible to avoid them?)
 * Check that functions exist at compile time
 * Dead code analysis
-* Higher-order functions
-* Closures (oh boy)
 * Pattern matching
 * Benchmarks
 * Direct threaded VM

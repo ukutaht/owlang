@@ -20,15 +20,18 @@ typedef uint64_t owl_term;
 // int:     001
 // tuple:   010
 // list:    011
+// string:  100
 typedef enum owl_tag {
     POINTER = 0,
     INT,
     TUPLE,
-    LIST
+    LIST,
+    STRING,
 } owl_tag;
 
 
 owl_term owl_int_from(uint64_t val);
+owl_term owl_string_from(const char *val);
 
 owl_term owl_tuple_nth(owl_term tuple, uint8_t index);
 owl_term owl_bool(bool value);

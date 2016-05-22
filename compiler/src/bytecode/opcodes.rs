@@ -19,3 +19,4 @@ pub const NOT_EQ: u8       = 0x11;
 pub const NOT: u8          = 0x12;
 pub const STORE_NIL: u8    = 0x13;
 pub const GREATER_THAN: u8 = 0x14;
+pub const LOAD_STRING: u8  = 0x15;

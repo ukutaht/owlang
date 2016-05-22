@@ -3,4 +3,4 @@
 	url = git@github.com:ukutaht/c-rrb.git
 [submodule "vm/lib/intern"]
 	path = vm/lib/intern
-	url = git@github.com:chriso/intern.git
+	url = git@github.com:ukutaht/intern.git

@@ -37,7 +37,17 @@ pub fn parse_module(input: &[u8]) -> Result<Module, ParseError<u8, Error<u8>>> {
 
 fn expr(i: Input<u8>) -> U8Result<Expr> {
     parse!{i;
-        _if() <|> _let() <|> apply() <|> infix() <|> unary() <|> tuple() <|> list() <|> nil() <|> _bool() <|> ident() <|> int()
+        _if() <|> _let() <|> str() <|> apply() <|> infix() <|> unary() <|> tuple() <|> list() <|> nil() <|> _bool() <|> ident() <|> int()
+    }
+}
+
+fn str(i: Input<u8>) -> U8Result<Expr> {
+    parse!{i;
+        token(b'"');
+        let content = take_while(|c| c != b'"');
+        token(b'"');
+
+        ret mk_string(unsafe { str::from_utf8_unchecked(content) })
     }
 }
 

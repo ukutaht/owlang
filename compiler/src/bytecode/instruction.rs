@@ -2,6 +2,7 @@ use std::io::Write;
 use bytecode::opcodes;
 
 pub type Reg = u8;
+pub type Length = u8;
 pub type Bytecode = Vec<Instruction>;
 
 #[derive(Debug, Eq, PartialEq)]
@@ -12,13 +13,13 @@ pub enum Instruction {
     Test(Reg, u8),
     Add(Reg, Reg, Reg),
     Sub(Reg, Reg, Reg),
-    Call(u8, String, u8, Vec<Reg>),
+    Call(Reg, String, Length, Vec<Reg>),
     Return,
     Mov(Reg, Reg),
     Jmp(u8),
-    Tuple(Reg, u8, Vec<Reg>),
+    Tuple(Reg, Length, Vec<Reg>),
     TupleNth(Reg, Reg, u8),
-    List(Reg, u8, Vec<Reg>),
+    List(Reg, Length, Vec<Reg>),
     StoreTrue(Reg),
     StoreFalse(Reg),
     StoreNil(Reg),
@@ -26,6 +27,7 @@ pub enum Instruction {
     NotEq(Reg, Reg, Reg),
     Not(Reg, Reg),
     GreaterThan(Reg, Reg, Reg),
+    LoadString(Reg, String),
 }
 
 impl Instruction {
@@ -103,6 +105,12 @@ impl Instruction {
             }
             &Instruction::Not(to, reg) => {
                 out.write(&[opcodes::NOT, to, reg]).unwrap();
+            }
+            &Instruction::LoadString(to, ref content) => {
+                let content_size = content.len() as u8;
+                out.write(&[opcodes::LOAD_STRING, to, content_size + 1]).unwrap();; // +1 accounts for null termination
+                out.write(&content.as_bytes()).unwrap();
+                out.write(&[0]).unwrap(); // Null terminate the string
             }
             &Instruction::GreaterThan(to, arg1, arg2) => {
                 out.write(&[opcodes::GREATER_THAN, to, arg1, arg2]).unwrap();
@@ -215,6 +223,10 @@ impl Instruction {
                 let string = format!("greater_than %{}, %{}, %{}\n", to, arg1, arg2);
                 out.write(&string.as_bytes()).unwrap();
             },
+            &Instruction::LoadString(to, ref content) => {
+                let string = format!("load_string %{}, \"{}\"\n", to, content);
+                out.write(&string.as_bytes()).unwrap();
+            }
         }
     }
 
@@ -240,6 +252,7 @@ impl Instruction {
             &Instruction::NotEq(_, _, _)        => 4,
             &Instruction::Not(_, _)             => 3,
             &Instruction::GreaterThan(_, _, _)  => 4,
+            &Instruction::LoadString(_, _)      => 3, // Content only counts for 1 byte because it is interned at load-time
         }
     }
 }

@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <string.h>
 
 #include "term.h"
 #include "list.h"
@@ -6,6 +7,10 @@
 
 owl_term owl_int_from(uint64_t val) {
   return (val << 3) | INT;
+}
+
+owl_term owl_string_from(const char* val) {
+  return ((uint64_t) val << 3) | STRING;
 }
 
 owl_term owl_bool(bool val) {
@@ -30,6 +35,7 @@ owl_term owl_negate(owl_term value) {
 }
 
 bool owl_terms_eq(owl_term left, owl_term right) {
+  // This cathes booleans, nils, ints and interned strings all at once
   if (left == right) return true;
 
   owl_tag left_tag  = owl_tag_of(left);
@@ -39,7 +45,6 @@ bool owl_terms_eq(owl_term left, owl_term right) {
     return false;
   }
 
-  // Booleans need not to be handled here because they are caught by strict equality earlier
   switch(left_tag) {
     case INT:
       return left == right;

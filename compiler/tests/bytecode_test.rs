@@ -363,3 +363,17 @@ fn generates_or_or() {
         bytecode::Instruction::Return,
     ])
 }
+
+#[test]
+fn generates_interned_string() {
+    let main = mk_function("main", Vec::new(), vec![
+        mk_string("Hello")
+    ]);
+
+    let res = bytecode::generate_function(&main);
+
+    assert_eq!(res.code, vec![
+        bytecode::Instruction::LoadString(0, "Hello".to_string()),
+        bytecode::Instruction::Return,
+    ])
+}

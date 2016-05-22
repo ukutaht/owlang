@@ -318,6 +318,18 @@ void op_greater_than(struct vm *vm) {
   vm->ip += 1;
 }
 
+void op_load_string(struct vm *vm) {
+  debug_print("%04x OP_LOAD_STRING\n", vm->ip);
+  uint8_t reg = next_byte(vm);
+  uint8_t string_id = next_byte(vm);
+
+  const char* string = strings_lookup_id(vm->intern_pool, string_id);
+  owl_term owl_string = owl_string_from(string);
+
+  set_reg(vm, reg, owl_string);
+  vm->ip += 1;
+}
+
 void opcode_init(vm_t * vm) {
   for (int i = 0; i < 255; i++)
     vm->opcodes[i] = op_unknown;
@@ -342,4 +354,5 @@ void opcode_init(vm_t * vm) {
   vm->opcodes[OP_NOT] = op_not;
   vm->opcodes[OP_STORE_NIL] = op_store_nil;
   vm->opcodes[OP_GREATER_THAN] = op_greater_than;
+  vm->opcodes[OP_LOAD_STRING] = op_load_string;
 }

@@ -63,6 +63,11 @@ pub struct List<'a> {
 }
 
 #[derive(Debug, Eq, PartialEq)]
+pub struct Str<'a> {
+    pub value: &'a str,
+}
+
+#[derive(Debug, Eq, PartialEq)]
 pub enum Expr<'a> {
     Int(Int<'a>),
     True,
@@ -74,6 +79,7 @@ pub enum Expr<'a> {
     If(If<'a>),
     Tuple(Tuple<'a>),
     List(List<'a>),
+    Str(Str<'a>),
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -130,6 +136,10 @@ pub fn mk_list<'a>(elems: Vec<Expr<'a>>) -> Expr<'a> {
 
 pub fn mk_module<'a>(name: &'a str, fns: Vec<Function<'a>>) -> Module<'a> {
     Module { name: name, functions: fns  }
+}
+
+pub fn mk_string(string: &str) -> Expr {
+    Expr::Str(Str {value: string})
 }
 
 pub fn mk_let<'a>(left: Expr<'a>, right: Expr<'a>) -> Expr<'a> {

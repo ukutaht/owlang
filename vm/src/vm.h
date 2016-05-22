@@ -32,6 +32,7 @@ typedef struct vm {
     uint64_t code_size;         // Loaded code size
     opcode_impl *opcodes[255];   // Opcode lookup table
     struct strings *function_names;      // Interned function names
+    struct strings *intern_pool;         // General intern pool
     uint64_t functions[MAX_FUNCTIONS];   // Function lookup table
 } vm_t;
 

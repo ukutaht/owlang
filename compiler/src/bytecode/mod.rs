@@ -126,6 +126,9 @@ impl<'a> FnGenerator<'a> {
             &ast::Expr::Nil => {
                 vec![Instruction::StoreNil(out)]
             }
+            &ast::Expr::Str(ref string) => {
+                vec![Instruction::LoadString(out, string.value.to_string())]
+            }
             &ast::Expr::Let(ref l) => {
                 if self.env.contains_key(l.left.name) {
                     panic!("Not allowed to rebind variable: {}", l.left.name);

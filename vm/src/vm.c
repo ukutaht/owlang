@@ -25,6 +25,7 @@ vm_t *vm_new() {
   vm->code_size = 0;
 
   vm->function_names = strings_new();
+  vm->intern_pool = strings_new();
   vm->ip = 0;
   vm->current_frame = 0;
   memset(vm->functions, NO_FUNCTION, MAX_FUNCTIONS);
@@ -106,6 +107,18 @@ void vm_load_module_from_file(vm_t *vm, const char *filename) {
         uint64_t instruction = (uint64_t) (code_ptr - vm->code);
 
         vm->functions[id] = instruction;
+        break;
+        }
+      case OP_LOAD_STRING: {
+        *code_ptr++ = OP_LOAD_STRING;
+        *code_ptr++ = fgetc(fp); // ret loc
+
+        uint8_t size = fgetc(fp);
+        char str[size];
+        fread(&str, size, 1, fp);
+        uint64_t id = strings_intern(vm->intern_pool, str);
+        *code_ptr++ = (uint8_t) id; // string_id (needs to be bigger than 8 bit int)
+        vm->code_size += 3;
         break;
         }
       case OP_CALL:

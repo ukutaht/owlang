@@ -35,6 +35,7 @@ enum opcode_values {
     OP_NOT,
     OP_STORE_NIL,
     OP_GREATER_THAN,
+    OP_LOAD_STRING,
 };
 
 void opcode_init(vm_t *vm);
