@@ -70,10 +70,8 @@ void op_exit(vm_t *vm) {
 void op_store_int(vm_t *vm) {
   debug_print("%04x OP_STORE_INT\n", vm->ip);
   uint8_t reg = next_reg(vm);
-  owl_term value = next_int(vm);
 
-  frame_t *curr_frame = &vm->frames[vm->current_frame];
-  curr_frame->registers[reg] = value;
+  set_reg(vm, reg, next_int(vm));
 
   vm->ip += 1;
 }
