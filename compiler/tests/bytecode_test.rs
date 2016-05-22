@@ -122,6 +122,23 @@ fn generates_file_pwd() {
 }
 
 #[test]
+fn generates_concat() {
+    let ast = mk_function("main", Vec::new(), vec![
+        mk_apply(None, "++", vec![mk_string("a"), mk_string("b")])
+    ]);
+
+    let res = bytecode::generate_function(&ast);
+
+    assert_eq!(res.code, vec![
+            bytecode::Instruction::LoadString(1, "a".to_string()),
+            bytecode::Instruction::LoadString(2, "b".to_string()),
+            bytecode::Instruction::Concat(0, 1, 2),
+            bytecode::Instruction::Return
+        ]
+    )
+}
+
+#[test]
 fn generates_nested_arithmetic() {
     let ast = mk_function("main", Vec::new(), vec![
         mk_apply(None, "+", vec![

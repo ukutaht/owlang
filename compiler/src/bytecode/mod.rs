@@ -144,6 +144,7 @@ impl<'a> FnGenerator<'a> {
     fn apply_op(&self, ap: &ast::Apply, ret_loc: Reg, args: Vec<Reg>) -> Bytecode {
         match ap.name {
             "+" => vec![Instruction::Add(ret_loc, args[0], args[1])],
+            "++" => vec![Instruction::Concat(ret_loc, args[0], args[1])],
             "-" => vec![Instruction::Sub(ret_loc, args[0], args[1])],
             "==" => vec![Instruction::Eq(ret_loc, args[0], args[1])],
             "!=" => vec![Instruction::NotEq(ret_loc, args[0], args[1])],

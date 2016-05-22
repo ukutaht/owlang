@@ -37,6 +37,7 @@ enum opcode_values {
     OP_GREATER_THAN,
     OP_LOAD_STRING,
     OP_FILE_PWD,
+    OP_CONCAT,
 };
 
 void opcode_init(vm_t *vm);

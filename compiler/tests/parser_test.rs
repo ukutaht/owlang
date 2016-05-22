@@ -210,3 +210,9 @@ fn parses_string() {
     let res = parser::parse_expr(b"\"Hello\"");
     assert_eq!(res, Ok(mk_string("Hello")));
 }
+
+#[test]
+fn parses_concat_operator() {
+    let res = parser::parse_expr(b"a ++ b");
+    assert_eq!(res, Ok(mk_apply(None, "++", vec![mk_ident("a"), mk_ident("b")])));
+}

@@ -21,3 +21,4 @@ pub const STORE_NIL: u8    = 0x13;
 pub const GREATER_THAN: u8 = 0x14;
 pub const LOAD_STRING: u8  = 0x15;
 pub const FILE_PWD: u8     = 0x16;
+pub const CONCAT: u8       = 0x17;

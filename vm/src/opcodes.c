@@ -338,7 +338,7 @@ void op_load_string(struct vm *vm) {
 
 void op_file_pwd(struct vm *vm) {
   debug_print("%04x OP_FILE_PWD\n", vm->ip);
-  uint8_t reg = next_byte(vm);
+  uint8_t reg = next_reg(vm);
 
   char *cwd = owl_alloc(PATH_MAX);
   getcwd(cwd, PATH_MAX);
@@ -347,6 +347,29 @@ void op_file_pwd(struct vm *vm) {
 
   vm->ip += 1;
 }
+
+void op_concat(struct vm *vm) {
+  debug_print("%04x OP_CONCAT\n", vm->ip);
+  uint8_t result_reg = next_reg(vm);
+  owl_term left_term = get_reg(vm, next_reg(vm));
+  owl_term right_term = get_reg(vm, next_reg(vm));
+
+  const char *left_str = owl_extract_ptr(left_term);
+  const char *right_str = owl_extract_ptr(right_term);
+
+  size_t left_len = strlen(left_str);
+  size_t total_len = left_len + strlen(right_str);
+  char *result = owl_alloc(total_len);
+  strcpy(result, left_str);
+  strcpy(result + left_len, right_str);
+
+  owl_term owl_result = owl_string_from(result);
+
+  set_reg(vm, result_reg, owl_result);
+
+  vm->ip += 1;
+}
+
 
 void opcode_init(vm_t * vm) {
   for (int i = 0; i < 255; i++)
@@ -374,4 +397,5 @@ void opcode_init(vm_t * vm) {
   vm->opcodes[OP_GREATER_THAN] = op_greater_than;
   vm->opcodes[OP_LOAD_STRING] = op_load_string;
   vm->opcodes[OP_FILE_PWD] = op_file_pwd;
+  vm->opcodes[OP_CONCAT] = op_concat;
 }

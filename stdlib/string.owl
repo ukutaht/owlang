@@ -1,0 +1,5 @@
+module string {
+  fn join(string, delimiter) {
+    string_join(string, delimiter)
+  }
+}

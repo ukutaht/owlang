@@ -29,6 +29,7 @@ pub enum Instruction {
     GreaterThan(Reg, Reg, Reg),
     LoadString(Reg, String),
     FilePwd(Reg),
+    Concat(Reg, Reg, Reg),
 }
 
 impl Instruction {
@@ -47,6 +48,9 @@ impl Instruction {
             }
             &Instruction::Mov(to, from) => {
                 out.write(&[opcodes::MOV, to, from]).unwrap();
+            },
+            &Instruction::Concat(to, left, right) => {
+                out.write(&[opcodes::CONCAT, to, left, right]).unwrap();
             },
             &Instruction::Print(reg) => {
                 out.write(&[opcodes::PRINT, reg]).unwrap();
@@ -138,6 +142,10 @@ impl Instruction {
             }
             &Instruction::Mov(to, from) => {
                 let string = format!("mov %{}, %{}\n", to, from);
+                out.write(&string.as_bytes()).unwrap();
+            }
+            &Instruction::Concat(to, left, right) => {
+                let string = format!("concat %{}, %{}, %{}\n", to, left, right);
                 out.write(&string.as_bytes()).unwrap();
             }
             &Instruction::Print(reg) => {
@@ -242,6 +250,7 @@ impl Instruction {
         match self {
             &Instruction::Add(_, _, _)          => 4,
             &Instruction::Sub(_, _, _)          => 4,
+            &Instruction::Concat(_, _, _)       => 4,
             &Instruction::StoreInt(_, _)        => 4,
             &Instruction::Mov(_, _)             => 3,
             &Instruction::Print(_)              => 2,
