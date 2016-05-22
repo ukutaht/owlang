@@ -2,7 +2,7 @@ use std::str; use std::io::Read;
 use chomp::{Input, U8Result, ParseError, Error, parse_only, take_while1, take_while};
 use chomp::{token, string};
 use chomp::parsers::{satisfy, peek_next};
-use chomp::ascii::{is_digit, is_alpha, is_lowercase, skip_whitespace, is_end_of_line, is_whitespace};
+use chomp::ascii::{is_digit, is_alpha, is_lowercase, skip_whitespace, is_end_of_line, is_whitespace, digit};
 use chomp::combinators::{sep_by, option};
 use chomp::buffer::{Source, Stream, StreamError};
 
@@ -37,7 +37,18 @@ pub fn parse_module(input: &[u8]) -> Result<Module, ParseError<u8, Error<u8>>> {
 
 fn expr(i: Input<u8>) -> U8Result<Expr> {
     parse!{i;
-        _if() <|> _let() <|> infix() <|> str() <|> apply() <|> unary() <|> tuple() <|> list() <|> nil() <|> _bool() <|> ident() <|> int()
+        _if() <|> _let() <|> infix() <|> str() <|> apply() <|> capture() <|> unary() <|> tuple() <|> list() <|> nil() <|> _bool() <|> ident() <|> int()
+    }
+}
+
+fn capture(i: Input<u8>) -> U8Result<Expr> {
+    parse!{i;
+        let module = option(module_prefix, None);
+        let name = identifier();
+        token(b'\\');
+        let arity = arity();
+
+        ret mk_capture(module, name, arity)
     }
 }
 
@@ -282,4 +293,11 @@ fn comma(i: Input<u8>) -> U8Result<()> {
 
 fn skip_newline_and_whitespace(i: Input<u8>) -> U8Result<()> {
     take_while(i, |i| is_end_of_line(i) || is_whitespace(i)).map(|_| ())
+}
+
+fn arity(i: Input<u8>) -> U8Result<u8> {
+    digit(i)
+        .map(|byte|
+            (byte as char).to_digit(10).unwrap() as u8
+        )
 }

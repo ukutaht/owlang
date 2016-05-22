@@ -375,6 +375,50 @@ void op_concat(struct vm *vm) {
   vm->ip += 1;
 }
 
+void op_capture(struct vm *vm) {
+  debug_print("%04x OP_CAPTURE\n", vm->ip);
+  uint8_t result_reg = next_reg(vm);
+  uint8_t function_id = next_byte(vm);
+
+  uint64_t instruction = vm->functions[function_id];
+
+  if (instruction == NO_FUNCTION) {
+    const char *fname = strings_lookup_id(vm->function_names, function_id);
+    printf("Undefined function %s\n", fname);
+    exit(1);
+  }
+
+  owl_term function = owl_function_from(instruction);
+
+  set_reg(vm, result_reg, function);
+
+  vm->ip += 1;
+}
+
+void op_call_local(struct vm *vm) {
+  debug_print("%04x OP_CALL_LOCAL\n", vm->ip);
+  uint8_t ret_reg = next_reg(vm);
+  owl_term function = get_reg(vm, next_reg(vm));
+  uint8_t arity = next_byte(vm);
+
+  uint64_t location = instruction_from_function(function);
+
+  assert(vm->current_frame + 1 <= STACK_DEPTH);
+
+  unsigned int next_frame = vm->current_frame + 1;
+
+  for(uint8_t i = 0; i < arity; i++) {
+    owl_term arg = get_reg(vm, next_reg(vm));
+    vm->frames[next_frame].registers[i + 1] = arg;
+  }
+
+  vm->frames[next_frame].ret_address = vm->ip + 1;
+  vm->frames[next_frame].ret_register = ret_reg;
+  vm->current_frame += 1;
+
+  vm->ip = location;
+}
+
 
 void opcode_init(vm_t * vm) {
   for (int i = 0; i < 255; i++)
@@ -404,4 +448,6 @@ void opcode_init(vm_t * vm) {
   vm->opcodes[OP_FILE_PWD] = op_file_pwd;
   vm->opcodes[OP_CONCAT] = op_concat;
   vm->opcodes[OP_FILE_LS] = op_file_ls;
+  vm->opcodes[OP_CAPTURE] = op_capture;
+  vm->opcodes[OP_CALL_LOCAL] = op_call_local;
 }

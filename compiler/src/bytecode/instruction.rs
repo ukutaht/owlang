@@ -3,6 +3,8 @@ use bytecode::opcodes;
 
 pub type Reg = u8;
 pub type Length = u8;
+pub type Arity = u8;
+pub type Jump = u8;
 pub type Bytecode = Vec<Instruction>;
 
 #[derive(Debug, Eq, PartialEq)]
@@ -10,13 +12,13 @@ pub enum Instruction {
     Exit(Reg),
     StoreInt(Reg, u16),
     Print(Reg),
-    Test(Reg, u8),
+    Test(Reg, Jump),
     Add(Reg, Reg, Reg),
     Sub(Reg, Reg, Reg),
-    Call(Reg, String, Length, Vec<Reg>),
+    Call(Reg, String, Arity, Vec<Reg>),
     Return,
     Mov(Reg, Reg),
-    Jmp(u8),
+    Jmp(Jump),
     Tuple(Reg, Length, Vec<Reg>),
     TupleNth(Reg, Reg, u8),
     List(Reg, Length, Vec<Reg>),
@@ -31,6 +33,8 @@ pub enum Instruction {
     FilePwd(Reg),
     FileLs(Reg, Reg),
     Concat(Reg, Reg, Reg),
+    Capture(Reg, String, Arity),
+    CallLocal(Reg, Reg, Vec<Reg>),
 }
 
 impl Instruction {
@@ -78,6 +82,20 @@ impl Instruction {
 
                 let copied_regs = regs.clone();
                 out.write(&copied_regs).unwrap();
+            }
+            &Instruction::CallLocal(ret_loc, func_loc, ref regs) => {
+                out.write(&[opcodes::CALL_LOCAL, ret_loc, func_loc]).unwrap();
+                out.write(&[regs.len() as u8]).unwrap();
+
+                let copied_regs = regs.clone();
+                out.write(&copied_regs).unwrap();
+            }
+            &Instruction::Capture(ret_loc, ref name, arity) => {
+                let full_name = format!("{}/{}", name, arity);
+                let name_size = full_name.len() as u8;
+                out.write(&[opcodes::CAPTURE, ret_loc, name_size + 1]).unwrap(); // +1 accounts for null termination
+                out.write(&full_name.as_bytes()).unwrap();
+                out.write(&[0]).unwrap(); // Null terminate the string
             }
             &Instruction::Jmp(loc) => {
                 out.write(&vec![opcodes::JMP, loc]).unwrap();
@@ -184,6 +202,22 @@ impl Instruction {
 
                 out.write(&string.as_bytes()).unwrap();
             }
+            &Instruction::CallLocal(ret_loc, func_loc, ref regs) => {
+                let string;
+
+                if regs.len() > 0 {
+                    let args: Vec<_> = regs.iter().map(|int| format!("%{}", int)).collect();
+                    string = format!("call_local %{}, %{}, {}\n", ret_loc, func_loc, args.join(", "));
+                } else {
+                    string = format!("call_local %{}, %{}\n", ret_loc, func_loc);
+                }
+
+                out.write(&string.as_bytes()).unwrap();
+            }
+            &Instruction::Capture(ret_loc, ref name, arity) => {
+                let string = format!("capture %{}, {}/{}\n", ret_loc, name, arity);
+                out.write(&string.as_bytes()).unwrap();
+            }
             &Instruction::Jmp(loc) => {
                 let string = format!("jmp {}\n", loc);
                 out.write(&string.as_bytes()).unwrap();
@@ -267,6 +301,8 @@ impl Instruction {
             &Instruction::FilePwd(_)            => 2,
             &Instruction::FileLs(_, _)          => 3,
             &Instruction::Call(_, _, _, ref regs) => 4 + (regs.len() as u8), // Name only counts for 1 byte because it is interned at load-time
+            &Instruction::Capture(_, _, _)      => 4, // Name only counts for 1 byte because it is interned at load-time
+            &Instruction::CallLocal(_, _, ref regs) => 3 + (regs.len() as u8), // Name only counts for 1 byte because it is interned at load-time
             &Instruction::Jmp(_)                => 2,
             &Instruction::Tuple(_, _, ref regs) => 3 + regs.len() as u8,
             &Instruction::TupleNth(_, _, _)     => 4,

@@ -39,6 +39,8 @@ enum opcode_values {
     OP_FILE_PWD,
     OP_CONCAT,
     OP_FILE_LS,
+    OP_CAPTURE,
+    OP_CALL_LOCAL,
 };
 
 void opcode_init(vm_t *vm);

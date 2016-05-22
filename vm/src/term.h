@@ -6,6 +6,7 @@
 
 #define owl_extract_ptr(term) ((void*) (term >> 3))
 #define int_from_owl_int(term) (term >> 3)
+#define instruction_from_function(term) (term >> 3)
 #define owl_tag_of(term) ((owl_tag) (term & 0x7))
 #define owl_term_falsey(term) (term == OWL_FALSE || term == OWL_NIL)
 #define owl_term_truthy(term) (!owl_term_falsey(term))
@@ -27,11 +28,13 @@ typedef enum owl_tag {
     TUPLE,
     LIST,
     STRING,
+    FUNCTION,
 } owl_tag;
 
 
 owl_term owl_int_from(uint64_t val);
 owl_term owl_string_from(const char *val);
+owl_term owl_function_from(uint64_t instruction);
 
 void owl_term_print(owl_term term);
 

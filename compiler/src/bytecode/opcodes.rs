@@ -23,3 +23,5 @@ pub const LOAD_STRING: u8  = 0x15;
 pub const FILE_PWD: u8     = 0x16;
 pub const CONCAT: u8       = 0x17;
 pub const FILE_LS: u8      = 0x18;
+pub const CAPTURE: u8      = 0x19;
+pub const CALL_LOCAL: u8   = 0x1a;

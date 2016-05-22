@@ -68,6 +68,13 @@ pub struct Str<'a> {
 }
 
 #[derive(Debug, Eq, PartialEq)]
+pub struct Capture<'a> {
+    pub module: Option<&'a str>,
+    pub name: &'a str,
+    pub arity: u8,
+}
+
+#[derive(Debug, Eq, PartialEq)]
 pub enum Expr<'a> {
     Int(Int<'a>),
     True,
@@ -80,6 +87,7 @@ pub enum Expr<'a> {
     Tuple(Tuple<'a>),
     List(List<'a>),
     Str(Str<'a>),
+    Capture(Capture<'a>),
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -148,4 +156,8 @@ pub fn mk_let<'a>(left: Expr<'a>, right: Expr<'a>) -> Expr<'a> {
         _ => panic!("Expected ident")
     };
     Expr::Let(Let {left: ident, right: Box::new(right)})
+}
+
+pub fn mk_capture<'a>(module: Option<&'a str>, name: &'a str, arity: u8) -> Expr<'a> {
+    Expr::Capture(Capture {module: module, name: name, arity: arity})
 }

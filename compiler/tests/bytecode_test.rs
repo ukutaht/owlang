@@ -425,3 +425,33 @@ fn generates_interned_string() {
         bytecode::Instruction::Return,
     ])
 }
+
+#[test]
+fn generates_function_capture() {
+    let main = mk_function("main", Vec::new(), vec![
+        mk_capture(None, "some_function", 0)
+    ]);
+
+    let res = bytecode::generate_function(&main);
+
+    assert_eq!(res.code, vec![
+        bytecode::Instruction::Capture(0, "unknown:some_function".to_string(), 0),
+        bytecode::Instruction::Return,
+    ])
+}
+
+#[test]
+fn generates_calling_function_indirectly() {
+    let main = mk_function("main", Vec::new(), vec![
+        mk_let(mk_ident("captured"), mk_capture(None, "some_function", 0)),
+        mk_apply(None, "captured", Vec::new())
+    ]);
+
+    let res = bytecode::generate_function(&main);
+
+    assert_eq!(res.code, vec![
+        bytecode::Instruction::Capture(1, "unknown:some_function".to_string(), 0),
+        bytecode::Instruction::CallLocal(0, 1, Vec::new()),
+        bytecode::Instruction::Return,
+    ])
+}

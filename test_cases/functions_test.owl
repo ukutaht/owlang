@@ -52,5 +52,8 @@ module functions_test {
     owl_unit:assert_eq(arity_test(), 0)
     owl_unit:assert_eq(arity_test(1), 1)
     owl_unit:assert_eq(arity_test(1, 2), 2)
+
+    let captured_gimme_five = gimme_five\0
+    owl_unit:assert_eq(captured_gimme_five(), 5)
   }
 }

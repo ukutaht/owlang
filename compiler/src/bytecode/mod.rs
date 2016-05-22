@@ -129,6 +129,11 @@ impl<'a> FnGenerator<'a> {
             &ast::Expr::Str(ref string) => {
                 vec![Instruction::LoadString(out, string.value.to_string())]
             }
+            &ast::Expr::Capture(ref capture) => {
+                let module = capture.module.unwrap_or(self.module_name);
+                let name = format!("{}:{}", module, capture.name);
+                vec![Instruction::Capture(out, name, capture.arity)]
+            }
             &ast::Expr::Let(ref l) => {
                 if self.env.contains_key(l.left.name) {
                     panic!("Not allowed to rebind variable: {}", l.left.name);
@@ -156,6 +161,17 @@ impl<'a> FnGenerator<'a> {
             "file_ls" => vec![Instruction::FileLs(ret_loc, args[0])],
             "tuple_nth" => vec![Instruction::TupleNth(ret_loc, args[0], args[1])],
             _   => {
+                self.generic_apply(ap, ret_loc, args)
+            }
+        }
+    }
+
+    fn generic_apply(&self, ap: &ast::Apply, ret_loc: Reg, args: Vec<Reg>) -> Bytecode {
+        match self.env.get(ap.name) {
+            Some(reg) => {
+                vec![Instruction::CallLocal(ret_loc, *reg, args)]
+            },
+            None => {
                 let module = ap.module.unwrap_or(self.module_name);
                 let name = format!("{}:{}", module, ap.name);
                 vec![Instruction::Call(ret_loc, name, ap.arity(), args)]

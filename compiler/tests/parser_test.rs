@@ -216,3 +216,9 @@ fn parses_concat_operator() {
     let res = parser::parse_expr(b"a ++ b");
     assert_eq!(res, Ok(mk_apply(None, "++", vec![mk_ident("a"), mk_ident("b")])));
 }
+
+#[test]
+fn parses_function_capture() {
+    let res = parser::parse_expr(b"some_function\\0");
+    assert_eq!(res, Ok(mk_capture(None, "some_function", 0)));
+}

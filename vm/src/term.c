@@ -14,6 +14,10 @@ owl_term owl_string_from(const char* val) {
   return ((uint64_t) val << 3) | STRING;
 }
 
+owl_term owl_function_from(uint64_t instruction) {
+  return (instruction << 3) | FUNCTION;
+}
+
 owl_term owl_bool(bool val) {
   if (val) {
     return OWL_TRUE;

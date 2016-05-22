@@ -102,6 +102,19 @@ void vm_load_module_from_file(vm_t *vm, const char *filename) {
           vm->code_size += 1;
         }
         break;
+      case OP_CAPTURE: {
+        *code_ptr++ = OP_CAPTURE;
+        *code_ptr++ = fgetc(fp); // ret loc
+
+        uint8_t name_size = fgetc(fp);
+        char name[name_size];
+        fread(&name, name_size, 1, fp);
+        uint64_t id = strings_intern(vm->function_names, name);
+
+        *code_ptr++ = (uint8_t) id;
+        vm->code_size += 3;
+        break;
+        }
       case OP_PUB_FN: {
         uint8_t name_size = fgetc(fp);
         char name[name_size];
@@ -123,7 +136,22 @@ void vm_load_module_from_file(vm_t *vm, const char *filename) {
         *code_ptr++ = (uint8_t) id; // string_id (needs to be bigger than 8 bit int)
         vm->code_size += 3;
         break;
+      }
+      case OP_CALL_LOCAL: {
+        *code_ptr++ = OP_CALL_LOCAL;
+        *code_ptr++ = fgetc(fp); // ret loc
+        *code_ptr++ = fgetc(fp); // function_loc
+
+        uint8_t func_arity = fgetc(fp);
+        *code_ptr++ = func_arity;
+        vm->code_size += 4;
+
+        for (int i = 0; i < func_arity; i++) {
+          *code_ptr++ = fgetc(fp); // arguments
+          vm->code_size += 1;
         }
+        break;
+      }
       case OP_CALL:
         *code_ptr++ = OP_CALL;
         *code_ptr++ = fgetc(fp); // ret loc
