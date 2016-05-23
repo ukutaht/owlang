@@ -25,3 +25,4 @@ pub const CONCAT: u8       = 0x17;
 pub const FILE_LS: u8      = 0x18;
 pub const CAPTURE: u8      = 0x19;
 pub const CALL_LOCAL: u8   = 0x1a;
+pub const LIST_NTH: u8     = 0x1b;

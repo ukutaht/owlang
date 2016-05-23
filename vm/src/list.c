@@ -18,6 +18,18 @@ owl_term list_push(owl_term list, owl_term elem) {
   return rrb_to_list(rrb);
 }
 
+owl_term list_nth(owl_term list, owl_term owl_index) {
+  const RRB *rrb = list_to_rrb(list);
+  uint64_t index = int_from_owl_int(owl_index);
+  void *found = rrb_nth(rrb, index);
+
+  if (found == NULL) {
+    return OWL_NIL;
+  } else {
+    return (owl_term) found;
+  }
+}
+
 void list_print(owl_term list) {
   const RRB *rrb = list_to_rrb(list);
 

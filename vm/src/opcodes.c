@@ -409,6 +409,17 @@ void op_call_local(struct vm *vm) {
   vm->ip = location;
 }
 
+void op_list_nth(struct vm *vm) {
+  debug_print("%04x OP_LIST_NTH\n", vm->ip);
+  uint8_t ret_reg = next_reg(vm);
+  owl_term list = get_reg(vm, next_reg(vm));
+  owl_term index = get_reg(vm, next_reg(vm));
+
+  owl_term elem = list_nth(list, index);
+  set_reg(vm, ret_reg, elem);
+
+  vm->ip += 1;
+}
 
 void opcode_init(vm_t * vm) {
   for (int i = 0; i < 255; i++)
@@ -440,4 +451,5 @@ void opcode_init(vm_t * vm) {
   vm->opcodes[OP_FILE_LS] = op_file_ls;
   vm->opcodes[OP_CAPTURE] = op_capture;
   vm->opcodes[OP_CALL_LOCAL] = op_call_local;
+  vm->opcodes[OP_LIST_NTH] = op_list_nth;
 }

@@ -1,0 +1,5 @@
+module list {
+  fn nth(list, index) {
+    list_nth(list, index)
+  }
+}
