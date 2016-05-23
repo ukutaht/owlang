@@ -162,6 +162,7 @@ impl<'a> FnGenerator<'a> {
             "file_ls" => vec![Instruction::FileLs(ret_loc, args[0])],
             "tuple_nth" => vec![Instruction::TupleNth(ret_loc, args[0], args[1])],
             "list_nth" => vec![Instruction::ListNth(ret_loc, args[0], args[1])],
+            "list_count" => vec![Instruction::ListCount(ret_loc, args[0])],
             _   => {
                 self.generic_apply(ap, ret_loc, args)
             }

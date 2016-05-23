@@ -30,6 +30,11 @@ owl_term list_nth(owl_term list, owl_term owl_index) {
   }
 }
 
+owl_term list_count(owl_term list) {
+  const RRB *rrb = list_to_rrb(list);
+  return owl_int_from(rrb_count(rrb));
+}
+
 void list_print(owl_term list) {
   const RRB *rrb = list_to_rrb(list);
 

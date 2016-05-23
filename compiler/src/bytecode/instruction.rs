@@ -36,6 +36,7 @@ pub enum Instruction {
     Concat(Reg, Reg, Reg),
     Capture(Reg, String, Arity),
     CallLocal(Reg, Reg, Vec<Reg>),
+    ListCount(Reg, Reg),
 }
 
 impl Instruction {
@@ -139,6 +140,9 @@ impl Instruction {
             }
             &Instruction::Not(to, reg) => {
                 out.write(&[opcodes::NOT, to, reg]).unwrap();
+            }
+            &Instruction::ListCount(to, reg) => {
+                out.write(&[opcodes::LIST_COUNT, to, reg]).unwrap();
             }
             &Instruction::LoadString(to, ref content) => {
                 let content_size = content.len() as u8;
@@ -285,6 +289,10 @@ impl Instruction {
                 let string = format!("not %{}, %{}\n", to, reg);
                 out.write(&string.as_bytes()).unwrap();
             }
+            &Instruction::ListCount(to, reg) => {
+                let string = format!("list_count %{}, %{}\n", to, reg);
+                out.write(&string.as_bytes()).unwrap();
+            }
             &Instruction::GreaterThan(to, arg1, arg2) => {
                 let string = format!("greater_than %{}, %{}, %{}\n", to, arg1, arg2);
                 out.write(&string.as_bytes()).unwrap();
@@ -323,6 +331,7 @@ impl Instruction {
             &Instruction::Eq(_, _, _)           => 4,
             &Instruction::NotEq(_, _, _)        => 4,
             &Instruction::Not(_, _)             => 3,
+            &Instruction::ListCount(_, _)       => 3,
             &Instruction::GreaterThan(_, _, _)  => 4,
             &Instruction::LoadString(_, _)      => 3, // Content only counts for 1 byte because it is interned at load-time
         }

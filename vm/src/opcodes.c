@@ -421,6 +421,17 @@ void op_list_nth(struct vm *vm) {
   vm->ip += 1;
 }
 
+void op_list_count(struct vm *vm) {
+  debug_print("%04x OP_LIST_COUNT\n", vm->ip);
+  uint8_t ret_reg = next_reg(vm);
+  owl_term list = get_reg(vm, next_reg(vm));
+
+  owl_term count = list_count(list);
+  set_reg(vm, ret_reg, count);
+
+  vm->ip += 1;
+}
+
 void opcode_init(vm_t * vm) {
   for (int i = 0; i < 255; i++)
     vm->opcodes[i] = op_unknown;
@@ -452,4 +463,5 @@ void opcode_init(vm_t * vm) {
   vm->opcodes[OP_CAPTURE] = op_capture;
   vm->opcodes[OP_CALL_LOCAL] = op_call_local;
   vm->opcodes[OP_LIST_NTH] = op_list_nth;
+  vm->opcodes[OP_LIST_COUNT] = op_list_count;
 }

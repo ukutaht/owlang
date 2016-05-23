@@ -2,4 +2,12 @@ module list {
   fn nth(list, index) {
     list_nth(list, index)
   }
+
+  fn count(list) {
+    list_count(list)
+  }
+
+  fn first(list) {
+    nth(list, 0)
+  }
 }
