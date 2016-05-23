@@ -7,6 +7,10 @@ module list {
     list_count(list)
   }
 
+  fn empty?(list) {
+    count(list) == 0
+  }
+
   fn first(list) {
     nth(list, 0)
   }
@@ -15,11 +19,11 @@ module list {
     nth(list, count(list) - 1)
   }
 
-  fn slice(list, from, to) {
-    list_slice(list, from, to)
-  }
-
   fn rest(list) {
     slice(list, 1, count(list))
+  }
+
+  fn slice(list, from, to) {
+    list_slice(list, from, to)
   }
 }

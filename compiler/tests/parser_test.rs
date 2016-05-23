@@ -20,6 +20,9 @@ fn parses_valid_identifiers() {
 
     let number = parser::parse_expr(b"a_b1");
     assert_eq!(number, Ok(mk_ident("a_b1")));
+
+    let question_mark = parser::parse_expr(b"a_b?");
+    assert_eq!(question_mark, Ok(mk_ident("a_b?")));
 }
 
 #[test]

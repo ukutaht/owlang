@@ -280,7 +280,7 @@ fn any_case_ident(i: Input<u8>) -> U8Result<&str> {
 }
 
 fn is_allowed_special_character(c: u8) -> bool {
-    c == b'_'
+    c == b'_' || c == b'?'
 }
 
 fn comma(i: Input<u8>) -> U8Result<()> {

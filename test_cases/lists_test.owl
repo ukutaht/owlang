@@ -50,6 +50,11 @@ module lists_test {
     owl_unit:assert_eq(list:slice(list, 3, 3), [])
   }
 
+  fn test_empty() {
+    owl_unit:assert(list:empty?([]))
+    owl_unit:refute(list:empty?([1]))
+  }
+
   fn main() {
     owl_unit:assert_eq([1, 2], [1, 2])
     owl_unit:refute_eq([1, 2], [9, 10])
@@ -63,5 +68,6 @@ module lists_test {
     test_last()
     test_rest()
     test_slice()
+    test_empty()
   }
 }
