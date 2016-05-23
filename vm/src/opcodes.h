@@ -43,6 +43,7 @@ enum opcode_values {
     OP_CALL_LOCAL,
     OP_LIST_NTH,
     OP_LIST_COUNT,
+    OP_LIST_SLICE,
 };
 
 void opcode_init(vm_t *vm);

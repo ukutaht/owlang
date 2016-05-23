@@ -432,6 +432,19 @@ void op_list_count(struct vm *vm) {
   vm->ip += 1;
 }
 
+void op_list_slice(struct vm *vm) {
+  debug_print("%04x OP_LIST_SLICE\n", vm->ip);
+  uint8_t ret_reg = next_reg(vm);
+  owl_term list = get_reg(vm, next_reg(vm));
+  owl_term from = get_reg(vm, next_reg(vm));
+  owl_term to = get_reg(vm, next_reg(vm));
+
+  owl_term sliced = list_slice(list, from, to);
+  set_reg(vm, ret_reg, sliced);
+
+  vm->ip += 1;
+}
+
 void opcode_init(vm_t * vm) {
   for (int i = 0; i < 255; i++)
     vm->opcodes[i] = op_unknown;
@@ -464,4 +477,5 @@ void opcode_init(vm_t * vm) {
   vm->opcodes[OP_CALL_LOCAL] = op_call_local;
   vm->opcodes[OP_LIST_NTH] = op_list_nth;
   vm->opcodes[OP_LIST_COUNT] = op_list_count;
+  vm->opcodes[OP_LIST_SLICE] = op_list_slice;
 }

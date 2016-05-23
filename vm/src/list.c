@@ -35,6 +35,15 @@ owl_term list_count(owl_term list) {
   return owl_int_from(rrb_count(rrb));
 }
 
+owl_term list_slice(owl_term list, owl_term from, owl_term to) {
+  const RRB *rrb = list_to_rrb(list);
+  uint64_t from_int = int_from_owl_int(from);
+  uint64_t to_int = int_from_owl_int(to);
+  const RRB *sliced = rrb_slice(rrb, from_int, to_int);
+
+  return rrb_to_list(sliced);
+}
+
 void list_print(owl_term list) {
   const RRB *rrb = list_to_rrb(list);
 

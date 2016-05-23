@@ -92,6 +92,14 @@ void vm_load_module_from_file(vm_t *vm, const char *filename) {
         *code_ptr++ = fgetc(fp);
         vm->code_size += 4;
         break;
+      case OP_LIST_SLICE:
+        *code_ptr++ = ch;
+        *code_ptr++ = fgetc(fp);
+        *code_ptr++ = fgetc(fp);
+        *code_ptr++ = fgetc(fp);
+        *code_ptr++ = fgetc(fp);
+        vm->code_size += 5;
+        break;
       case OP_TUPLE:
       case OP_LIST:
         *code_ptr++ = ch;

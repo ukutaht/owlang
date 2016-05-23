@@ -10,4 +10,12 @@ module list {
   fn first(list) {
     nth(list, 0)
   }
+
+  fn last(list) {
+    nth(list, count(list) - 1)
+  }
+
+  fn rest(list) {
+    list_slice(list, 1, count(list))
+  }
 }
