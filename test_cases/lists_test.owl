@@ -36,6 +36,20 @@ module lists_test {
     owl_unit:assert_eq(list:rest([]), [])
   }
 
+  fn test_slice() {
+    let list = [1, 2, 3]
+    owl_unit:assert_eq(list:slice(list, 0, 3), list)
+    owl_unit:assert_eq(list:slice(list, 0, 10), list)
+
+    owl_unit:assert_eq(list:slice(list, 0, 2), [1, 2])
+    owl_unit:assert_eq(list:slice(list, 0, 1), [1])
+    owl_unit:assert_eq(list:slice(list, 0, 0), [])
+
+    owl_unit:assert_eq(list:slice(list, 1, 3), [2, 3])
+    owl_unit:assert_eq(list:slice(list, 2, 3), [3])
+    owl_unit:assert_eq(list:slice(list, 3, 3), [])
+  }
+
   fn main() {
     owl_unit:assert_eq([1, 2], [1, 2])
     owl_unit:refute_eq([1, 2], [9, 10])
@@ -48,5 +62,6 @@ module lists_test {
     test_first()
     test_last()
     test_rest()
+    test_slice()
   }
 }
