@@ -8,8 +8,11 @@
 #define int_from_owl_int(term) (term >> 3)
 #define instruction_from_function(term) (term >> 3)
 #define owl_tag_of(term) ((owl_tag) (term & 0x7))
+
 #define owl_term_falsey(term) (term == OWL_FALSE || term == OWL_NIL)
 #define owl_term_truthy(term) (!owl_term_falsey(term))
+#define owl_bool(boolean) (boolean ? OWL_TRUE : OWL_FALSE)
+#define owl_negate(term) (owl_term_truthy(term) ? OWL_FALSE : OWL_TRUE)
 
 #define OWL_FALSE 1
 #define OWL_TRUE  2
@@ -41,8 +44,6 @@ owl_term owl_concat(owl_term left, owl_term right);
 void owl_term_print(owl_term term);
 
 owl_term owl_tuple_nth(owl_term tuple, uint8_t index);
-owl_term owl_bool(bool value);
-owl_term owl_negate(owl_term value);
 bool owl_terms_eq(owl_term left, owl_term right);
 
 #endif  // TERM_H

@@ -48,25 +48,9 @@ owl_term owl_concat(owl_term left, owl_term right) {
   }
 }
 
-owl_term owl_bool(bool val) {
-  if (val) {
-    return OWL_TRUE;
-  } else {
-    return OWL_FALSE;
-  }
-}
-
 owl_term owl_tuple_nth(owl_term tuple, uint8_t index) {
   owl_term *ary = owl_extract_ptr(tuple);
   return ary[index + 1];
-}
-
-owl_term owl_negate(owl_term value) {
-  if (owl_term_truthy(value)) {
-    return OWL_FALSE;
-  } else {
-    return OWL_TRUE;
-  }
 }
 
 bool owl_terms_eq(owl_term left, owl_term right) {
