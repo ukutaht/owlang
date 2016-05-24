@@ -326,7 +326,7 @@ impl Instruction {
             &Instruction::FileLs(_, _)          => 3,
             &Instruction::Call(_, _, _, ref regs) => 4 + (regs.len() as u8), // Name only counts for 1 byte because it is interned at load-time
             &Instruction::Capture(_, _, _)      => 4, // Name only counts for 1 byte because it is interned at load-time
-            &Instruction::CallLocal(_, _, ref regs) => 3 + (regs.len() as u8), // Name only counts for 1 byte because it is interned at load-time
+            &Instruction::CallLocal(_, _, ref regs) => 4 + (regs.len() as u8), // Name only counts for 1 byte because it is interned at load-time
             &Instruction::Jmp(_)                => 2,
             &Instruction::Tuple(_, _, ref regs) => 3 + regs.len() as u8,
             &Instruction::TupleNth(_, _, _)     => 4,

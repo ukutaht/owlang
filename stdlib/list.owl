@@ -23,6 +23,21 @@ module list {
     slice(list, 1, count(list))
   }
 
+  fn filter(list, predicate) {
+    if empty?(list) {
+      list
+    } else {
+      let first = first(list)
+      let rest = rest(list)
+
+      if predicate(first) {
+        [first] ++ filter(rest, predicate)
+      } else {
+        filter(rest, predicate)
+      }
+    }
+  }
+
   fn slice(list, from, to) {
     list_slice(list, from, to)
   }
