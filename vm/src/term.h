@@ -8,11 +8,15 @@
 #define int_from_owl_int(term) (term >> 3)
 #define instruction_from_function(term) (term >> 3)
 #define owl_tag_of(term) ((owl_tag) (term & 0x7))
+#define owl_tag_as(term, tag) ((((owl_term) term) << 3) | tag)
+
+#define owl_int_from(val) owl_tag_as(val, INT)
+#define owl_function_from(val) owl_tag_as(val, FUNCTION)
 
 #define owl_term_falsey(term) (term == OWL_FALSE || term == OWL_NIL)
 #define owl_term_truthy(term) (!owl_term_falsey(term))
-#define owl_bool(boolean) (boolean ? OWL_TRUE : OWL_FALSE)
 #define owl_negate(term) (owl_term_truthy(term) ? OWL_FALSE : OWL_TRUE)
+#define owl_bool(val) (val ? OWL_TRUE : OWL_FALSE)
 
 #define OWL_FALSE 1
 #define OWL_TRUE  2
@@ -35,12 +39,7 @@ typedef enum owl_tag {
 } owl_tag;
 
 
-owl_term owl_int_from(uint64_t val);
-owl_term owl_string_from(const char *val);
-owl_term owl_function_from(uint64_t instruction);
-
 owl_term owl_concat(owl_term left, owl_term right);
-
 void owl_term_print(owl_term term);
 
 owl_term owl_tuple_nth(owl_term tuple, uint8_t index);

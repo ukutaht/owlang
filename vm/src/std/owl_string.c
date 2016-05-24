@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "std/owl_string.h"
 #include "term.h"
 #include "alloc.h"
 
@@ -24,4 +25,17 @@ owl_term owl_string_slice(owl_term string, owl_term from, owl_term to) {
   memcpy(sliced, the_string + from_int, slice_size);
 
   return owl_string_from(sliced);
+}
+
+owl_term owl_string_concat(owl_term left, owl_term right) {
+  const char *left_str = owl_extract_ptr(left);
+  const char *right_str = owl_extract_ptr(right);
+
+  size_t left_len = strlen(left_str);
+  size_t total_len = left_len + strlen(right_str);
+  char *result = owl_alloc(total_len);
+  strcpy(result, left_str);
+  strcpy(result + left_len, right_str);
+
+  return owl_string_from(result);
 }

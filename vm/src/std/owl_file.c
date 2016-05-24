@@ -8,6 +8,7 @@
 #endif
 
 #include "term.h"
+#include "std/owl_string.h"
 #include "owl_list.h"
 #include "alloc.h"
 

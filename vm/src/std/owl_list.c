@@ -3,7 +3,7 @@
 #include "term.h"
 #include "vm.h"
 
-#define rrb_to_list(rrb) ((((owl_term) rrb) << 3) | LIST)
+#define rrb_to_list(rrb) owl_tag_as(rrb, LIST)
 #define list_to_rrb(list) ((RRB*) owl_extract_ptr(list))
 
 owl_term owl_list_init() {
