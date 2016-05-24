@@ -44,6 +44,13 @@ owl_term list_slice(owl_term list, owl_term from, owl_term to) {
   return rrb_to_list(sliced);
 }
 
+owl_term list_concat(owl_term left_list, owl_term right_list) {
+  const RRB *left = list_to_rrb(left_list);
+  const RRB *right = list_to_rrb(right_list);
+  const RRB *result = rrb_concat(left, right);
+  return rrb_to_list(result);
+}
+
 void list_print(owl_term list) {
   const RRB *rrb = list_to_rrb(list);
 

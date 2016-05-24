@@ -36,6 +36,8 @@ owl_term owl_int_from(uint64_t val);
 owl_term owl_string_from(const char *val);
 owl_term owl_function_from(uint64_t instruction);
 
+owl_term owl_concat(owl_term left, owl_term right);
+
 void owl_term_print(owl_term term);
 
 owl_term owl_tuple_nth(owl_term tuple, uint8_t index);

@@ -219,7 +219,7 @@ fn ident(i: Input<u8>) -> U8Result<Expr> {
 
 fn infix(i: Input<u8>) -> U8Result<Expr> {
     parse!{i;
-        let lhs = str() <|> int() <|> nil() <|> _bool() <|> apply() <|> ident();
+        let lhs = str() <|> list() <|> int() <|> nil() <|> _bool() <|> apply() <|> ident();
         skip_whitespace();
         let op = infix_op();
         skip_whitespace();

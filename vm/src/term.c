@@ -1,7 +1,9 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
+#include "alloc.h"
 #include "term.h"
 #include "list.h"
 
@@ -16,6 +18,34 @@ owl_term owl_string_from(const char* val) {
 
 owl_term owl_function_from(uint64_t instruction) {
   return (instruction << 3) | FUNCTION;
+}
+
+owl_term owl_concat(owl_term left, owl_term right) {
+  owl_tag left_tag = owl_tag_of(left);
+  owl_tag right_tag = owl_tag_of(right);
+
+  if (left_tag != right_tag) {
+    puts("Type error in concat");
+    exit(1);
+  }
+
+  if (left_tag == STRING) {
+    const char *left_str = owl_extract_ptr(left);
+    const char *right_str = owl_extract_ptr(right);
+
+    size_t left_len = strlen(left_str);
+    size_t total_len = left_len + strlen(right_str);
+    char *result = owl_alloc(total_len);
+    strcpy(result, left_str);
+    strcpy(result + left_len, right_str);
+
+    return owl_string_from(result);
+  } else if (left_tag == LIST) {
+    return list_concat(left, right);
+  } else {
+    puts("Concat not defined for this type");
+    exit(1);
+  }
 }
 
 owl_term owl_bool(bool val) {

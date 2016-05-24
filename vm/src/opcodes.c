@@ -365,21 +365,10 @@ void op_file_ls(struct vm *vm) {
 void op_concat(struct vm *vm) {
   debug_print("%04x OP_CONCAT\n", vm->ip);
   uint8_t result_reg = next_reg(vm);
-  owl_term left_term = get_reg(vm, next_reg(vm));
-  owl_term right_term = get_reg(vm, next_reg(vm));
+  owl_term left = get_reg(vm, next_reg(vm));
+  owl_term right = get_reg(vm, next_reg(vm));
 
-  const char *left_str = owl_extract_ptr(left_term);
-  const char *right_str = owl_extract_ptr(right_term);
-
-  size_t left_len = strlen(left_str);
-  size_t total_len = left_len + strlen(right_str);
-  char *result = owl_alloc(total_len);
-  strcpy(result, left_str);
-  strcpy(result + left_len, right_str);
-
-  owl_term owl_result = owl_string_from(result);
-
-  set_reg(vm, result_reg, owl_result);
+  set_reg(vm, result_reg, owl_concat(left, right));
 
   vm->ip += 1;
 }
