@@ -1,4 +1,9 @@
 module StringTest {
+  fn test_equality() {
+    OwlUnit:assert_eq("ab", "ab")
+    OwlUnit:refute_eq("one", "two")
+  }
+
   fn test_concat() {
     let res = "Hello " ++ "World!"
     OwlUnit:assert_eq(res, "Hello World!")
@@ -8,10 +13,19 @@ module StringTest {
     OwlUnit:assert_eq(many_res, "One and Two")
   }
 
-  fn main() {
-    OwlUnit:assert_eq("ab", "ab")
-    OwlUnit:refute_eq("one", "two")
+  fn test_slice() {
+    let string = "Hello world!"
 
+    OwlUnit:assert_eq(String:slice(string, 0, 12), "Hello world!")
+    OwlUnit:assert_eq(String:slice(string, 0, 15), "Hello world!")
+    OwlUnit:assert_eq(String:slice(string, 0, 1), "H")
+    OwlUnit:assert_eq(String:slice(string, 11, 12), "!")
+    OwlUnit:assert_eq(String:slice(string, 10, 12), "d!")
+  }
+
+  fn main() {
+    test_equality()
     test_concat()
+    test_slice()
   }
 }

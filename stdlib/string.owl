@@ -2,4 +2,8 @@ module String {
   fn join(string, delimiter) {
     string_join(string, delimiter)
   }
+
+  fn slice(string, from, to) {
+    string_slice(string, from, to)
+  }
 }

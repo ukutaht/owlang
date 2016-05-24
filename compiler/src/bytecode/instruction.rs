@@ -38,6 +38,7 @@ pub enum Instruction {
     CallLocal(Reg, Reg, Vec<Reg>),
     ListCount(Reg, Reg),
     ListSlice(Reg, Reg, Reg, Reg),
+    StringSlice(Reg, Reg, Reg, Reg),
 }
 
 impl Instruction {
@@ -147,6 +148,9 @@ impl Instruction {
             }
             &Instruction::ListSlice(ret, reg, from, to) => {
                 out.write(&[opcodes::LIST_SLICE, ret, reg, from, to]).unwrap();
+            }
+            &Instruction::StringSlice(ret, reg, from, to) => {
+                out.write(&[opcodes::STRING_SLICE, ret, reg, from, to]).unwrap();
             }
             &Instruction::LoadString(to, ref content) => {
                 let content_size = content.len() as u8;
@@ -301,6 +305,10 @@ impl Instruction {
                 let string = format!("list_slice %{}, %{}, %{}, %{}\n", ret, reg, from, to);
                 out.write(&string.as_bytes()).unwrap();
             }
+            &Instruction::StringSlice(ret, reg, from, to) => {
+                let string = format!("string_slice %{}, %{}, %{}, %{}\n", ret, reg, from, to);
+                out.write(&string.as_bytes()).unwrap();
+            }
             &Instruction::GreaterThan(to, arg1, arg2) => {
                 let string = format!("greater_than %{}, %{}, %{}\n", to, arg1, arg2);
                 out.write(&string.as_bytes()).unwrap();
@@ -341,6 +349,7 @@ impl Instruction {
             &Instruction::Not(_, _)             => 3,
             &Instruction::ListCount(_, _)       => 3,
             &Instruction::ListSlice(_, _, _, _) => 5,
+            &Instruction::StringSlice(_, _, _, _) => 5,
             &Instruction::GreaterThan(_, _, _)  => 4,
             &Instruction::LoadString(_, _)      => 3, // Content only counts for 1 byte because it is interned at load-time
         }

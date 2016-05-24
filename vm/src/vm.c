@@ -93,6 +93,7 @@ void vm_load_module_from_file(vm_t *vm, const char *filename) {
         vm->code_size += 4;
         break;
       case OP_LIST_SLICE:
+      case OP_STRING_SLICE:
         *code_ptr++ = ch;
         *code_ptr++ = fgetc(fp);
         *code_ptr++ = fgetc(fp);

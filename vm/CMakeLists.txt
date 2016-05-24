@@ -13,5 +13,5 @@ if (NOT HAVE_GC)
 endif()
 
 include_directories ("${PROJECT_SOURCE_DIR}/src")
-add_executable(vm src/main.c src/vm.c src/opcodes.c src/term.c src/alloc.c src/list.c src/util/file.c src/std/owl_file.c)
+add_executable(vm src/main.c src/vm.c src/opcodes.c src/term.c src/alloc.c src/list.c src/util/file.c src/std/owl_file.c src/std/owl_string.c)
 target_link_libraries(vm gc rrb intern)
