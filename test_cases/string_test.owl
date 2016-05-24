@@ -1,16 +1,16 @@
-module string_test {
+module StringTest {
   fn test_concat() {
     let res = "Hello " ++ "World!"
-    owl_unit:assert_eq(res, "Hello World!")
-    owl_unit:refute_eq(res, "something else")
+    OwlUnit:assert_eq(res, "Hello World!")
+    OwlUnit:refute_eq(res, "something else")
 
     let many_res = "One " ++ "and " ++ "Two"
-    owl_unit:assert_eq(many_res, "One and Two")
+    OwlUnit:assert_eq(many_res, "One and Two")
   }
 
   fn main() {
-    owl_unit:assert_eq("ab", "ab")
-    owl_unit:refute_eq("one", "two")
+    OwlUnit:assert_eq("ab", "ab")
+    OwlUnit:refute_eq("one", "two")
 
     test_concat()
   }

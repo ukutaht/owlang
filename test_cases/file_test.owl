@@ -1,12 +1,12 @@
-module file_test {
+module FileTest {
   fn test_pwd() {
-    owl_unit:assert_eq("/Users/ukutaht/dev/owlang", file:pwd())
-    owl_unit:refute_eq("wut", file:pwd())
+    OwlUnit:assert_eq("/Users/ukutaht/dev/owlang", File:pwd())
+    OwlUnit:refute_eq("wut", File:pwd())
   }
 
   fn test_ls() {
-    let files = file:ls("vm/lib")
-    owl_unit:assert_eq(files, ["c-rrb", "intern", "target"])
+    let files = File:ls("vm/lib")
+    OwlUnit:assert_eq(files, ["c-rrb", "intern", "target"])
   }
 
   fn main() {

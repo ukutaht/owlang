@@ -1,4 +1,4 @@
-module owl_unit {
+module OwlUnit {
   fn assert(value) {
     if !value {
       print(value)

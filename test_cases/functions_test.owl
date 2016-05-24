@@ -1,10 +1,10 @@
-module functions {
+module Functions {
   fn gimme_six() {
     6
   }
 }
 
-module functions_test {
+module FunctionsTest {
   fn gimme_five() {
     2 + 3
   }
@@ -40,7 +40,7 @@ module functions_test {
   }
 
   fn capture_gimme_six() {
-    functions:gimme_six\0
+    Functions:gimme_six\0
   }
 
   fn apply_to_six(fn) {
@@ -48,26 +48,26 @@ module functions_test {
   }
 
   fn main() {
-    owl_unit:assert_eq(gimme_five(), 5)
-    owl_unit:assert_eq(add_five(5), 10)
-    owl_unit:assert_eq(add_together(7, 11), 18)
-    owl_unit:assert_eq(functions:gimme_six(), 6)
-    owl_unit:assert_eq(empty_function(), nil)
+    OwlUnit:assert_eq(gimme_five(), 5)
+    OwlUnit:assert_eq(add_five(5), 10)
+    OwlUnit:assert_eq(add_together(7, 11), 18)
+    OwlUnit:assert_eq(Functions:gimme_six(), 6)
+    OwlUnit:assert_eq(empty_function(), nil)
 
-    owl_unit:assert_eq(mccarthy(5), 91)
-    owl_unit:assert_eq(mccarthy(103), 93)
+    OwlUnit:assert_eq(mccarthy(5), 91)
+    OwlUnit:assert_eq(mccarthy(103), 93)
 
-    owl_unit:assert_eq(arity_test(), 0)
-    owl_unit:assert_eq(arity_test(1), 1)
-    owl_unit:assert_eq(arity_test(1, 2), 2)
+    OwlUnit:assert_eq(arity_test(), 0)
+    OwlUnit:assert_eq(arity_test(1), 1)
+    OwlUnit:assert_eq(arity_test(1, 2), 2)
 
     let captured_gimme_five = gimme_five\0
-    owl_unit:assert_eq(captured_gimme_five(), 5)
+    OwlUnit:assert_eq(captured_gimme_five(), 5)
 
     let captured_gimme_six = capture_gimme_six()
-    owl_unit:assert_eq(captured_gimme_six(), 6)
+    OwlUnit:assert_eq(captured_gimme_six(), 6)
 
     let captured_add_five = add_five\1
-    owl_unit:assert_eq(apply_to_six(captured_add_five), 11)
+    OwlUnit:assert_eq(apply_to_six(captured_add_five), 11)
   }
 }

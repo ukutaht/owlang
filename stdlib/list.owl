@@ -1,4 +1,4 @@
-module list {
+module List {
   fn nth(list, index) {
     list_nth(list, index)
   }
@@ -35,6 +35,16 @@ module list {
       } else {
         filter(rest, predicate)
       }
+    }
+  }
+
+  fn each(list, function) {
+    if !empty?(list) {
+      let first = first(list)
+      let rest = rest(list)
+
+      function(first)
+      each(rest, function)
     }
   }
 

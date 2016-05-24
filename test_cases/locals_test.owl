@@ -1,6 +1,6 @@
-module locals_test {
+module LocalsTest {
   fn main() {
     let a = 1
-    owl_unit:assert_eq(a, 1)
+    OwlUnit:assert_eq(a, 1)
   }
 }

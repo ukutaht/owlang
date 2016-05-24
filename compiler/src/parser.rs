@@ -2,7 +2,7 @@ use std::str; use std::io::Read;
 use chomp::{Input, U8Result, ParseError, Error, parse_only, take_while1, take_while};
 use chomp::{token, string};
 use chomp::parsers::{satisfy, peek_next};
-use chomp::ascii::{is_digit, is_alpha, is_lowercase, skip_whitespace, is_end_of_line, is_whitespace, digit};
+use chomp::ascii::{is_digit, is_alpha, is_lowercase, is_uppercase, skip_whitespace, is_end_of_line, is_whitespace, digit};
 use chomp::combinators::{sep_by, option};
 use chomp::buffer::{Source, Stream, StreamError};
 
@@ -115,7 +115,7 @@ fn module(i: Input<u8>) -> U8Result<Module> {
     parse!{i;
         string(b"module");
         satisfy(|i| is_whitespace(i));
-        let name = identifier();
+        let name = capitalized_ident();
         skip_newline_and_whitespace();
         token(b'{');
         skip_newline_and_whitespace();
@@ -196,7 +196,7 @@ fn apply(i: Input<u8>) -> U8Result<Expr> {
 
 fn module_prefix(i: Input<u8>) -> U8Result<Option<&str>> {
     parse!{i;
-        let name = identifier();
+        let name = capitalized_ident();
         string(b":");
         ret Some(name)
     }
@@ -267,6 +267,16 @@ fn argument(i: Input<u8>) -> U8Result<Argument> {
 fn identifier(i: Input<u8>) -> U8Result<&str> {
     peek_next(i).bind(|i, first_char| {
         if is_lowercase(first_char) {
+            any_case_ident(i)
+        } else {
+            i.err(Error::Unexpected)
+        }
+    })
+}
+
+fn capitalized_ident(i: Input<u8>) -> U8Result<&str> {
+    peek_next(i).bind(|i, first_char| {
+        if is_uppercase(first_char) {
             any_case_ident(i)
         } else {
             i.err(Error::Unexpected)

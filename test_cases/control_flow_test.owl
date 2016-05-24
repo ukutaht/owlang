@@ -1,4 +1,4 @@
-module control_flow_test {
+module ControlFlowTest {
   fn gimme_one() {
     if true {
       1
@@ -47,11 +47,11 @@ module control_flow_test {
   }
 
   fn main() {
-    owl_unit:assert_eq(gimme_one(), 1)
-    owl_unit:assert_eq(two_in_else(), 2)
-    owl_unit:assert_eq(nested_three(), 3)
-    owl_unit:assert_eq(nil_is_falsey(), 2)
-    owl_unit:assert_eq(nil_is_returned_in_empty_else(), nil)
-    owl_unit:assert_eq(nil_is_returned_in_empty_if_body(), nil)
+    OwlUnit:assert_eq(gimme_one(), 1)
+    OwlUnit:assert_eq(two_in_else(), 2)
+    OwlUnit:assert_eq(nested_three(), 3)
+    OwlUnit:assert_eq(nil_is_falsey(), 2)
+    OwlUnit:assert_eq(nil_is_returned_in_empty_else(), nil)
+    OwlUnit:assert_eq(nil_is_returned_in_empty_if_body(), nil)
   }
 }

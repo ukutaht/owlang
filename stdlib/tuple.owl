@@ -1,4 +1,4 @@
-module tuple {
+module Tuple {
   fn nth(tuple, index) {
     tuple_nth(tuple, index)
   }

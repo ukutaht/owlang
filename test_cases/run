@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 #
 require 'pathname'
+require 'active_support/inflector'
 
 class Formatter
   class << self
@@ -45,7 +46,8 @@ def run_file(file)
     return
   end
 
-  built_filename = Pathname.new(file).basename.sub_ext(".owlc")
+  built_filename = Pathname.new(file).basename.sub_ext(".owlc").to_s.camelize
+
   built = File.join(TEST_TARGET, built_filename)
 
   output = `#{VM} #{built}`

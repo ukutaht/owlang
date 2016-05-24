@@ -57,8 +57,8 @@ fn parses_simple_function_application() {
 
 #[test]
 fn parses_simple_function_application_with_module() {
-    let res = parser::parse_expr(b"module:function()");
-    assert_eq!(res, Ok(mk_apply(Some("module"), "function", Vec::new())));
+    let res = parser::parse_expr(b"Module:function()");
+    assert_eq!(res, Ok(mk_apply(Some("Module"), "function", Vec::new())));
 }
 
 #[test]
@@ -151,8 +151,8 @@ fn parses_else_branch() {
 
 #[test]
 fn parses_simple_module_definition() {
-    let res = parser::parse_module(b"module a { fn b() { 1 } }");
-    assert_eq!(res, Ok(mk_module("a", vec![
+    let res = parser::parse_module(b"module A { fn b() { 1 } }");
+    assert_eq!(res, Ok(mk_module("A", vec![
         mk_function("b", Vec::new(), vec![mk_int("1")])
     ])));
 }

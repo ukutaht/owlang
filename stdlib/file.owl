@@ -1,4 +1,4 @@
-module file {
+module File {
   fn pwd() {
     file_pwd()
   }
