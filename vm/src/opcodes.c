@@ -163,11 +163,13 @@ void op_sub(struct vm *vm) {
 }
 
 void op_call(struct vm *vm) {
-  debug_print("%04x OP_CALL\n", vm->ip);
-
   uint8_t ret_reg = next_byte(vm);
   uint8_t function_id = next_byte(vm);
   uint8_t arity = next_byte(vm);
+
+  #if DEBUG
+    debug_print("%04x OP_CALL: %s\n", vm->ip, strings_lookup_id(vm->function_names, function_id));
+  #endif
 
   uint64_t location = load_function(vm, function_id);
 
