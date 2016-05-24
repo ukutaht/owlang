@@ -8,7 +8,7 @@
 #include "vm.h"
 #include "term.h"
 #include "alloc.h"
-#include "list.h"
+#include "std/owl_list.h"
 #include "std/owl_file.h"
 #include "std/owl_string.h"
 
@@ -233,10 +233,10 @@ void op_list(struct vm *vm) {
   uint8_t reg  = next_byte(vm);
   uint8_t size = next_byte(vm);
 
-  owl_term list = list_init();
+  owl_term list = owl_list_init();
 
   for(uint8_t i = 0; i < size; i++) {
-    list = list_push(list, get_reg(vm, next_byte(vm)));
+    list = owl_list_push(list, get_reg(vm, next_byte(vm)));
   }
 
   set_reg(vm, reg, list);
@@ -407,7 +407,7 @@ void op_list_nth(struct vm *vm) {
   owl_term list = get_reg(vm, next_reg(vm));
   owl_term index = get_reg(vm, next_reg(vm));
 
-  owl_term elem = list_nth(list, index);
+  owl_term elem = owl_list_nth(list, index);
   set_reg(vm, ret_reg, elem);
 
   vm->ip += 1;
@@ -418,7 +418,7 @@ void op_list_count(struct vm *vm) {
   uint8_t ret_reg = next_reg(vm);
   owl_term list = get_reg(vm, next_reg(vm));
 
-  owl_term count = list_count(list);
+  owl_term count = owl_list_count(list);
   set_reg(vm, ret_reg, count);
 
   vm->ip += 1;
@@ -431,7 +431,7 @@ void op_list_slice(struct vm *vm) {
   owl_term from = get_reg(vm, next_reg(vm));
   owl_term to = get_reg(vm, next_reg(vm));
 
-  owl_term sliced = list_slice(list, from, to);
+  owl_term sliced = owl_list_slice(list, from, to);
   set_reg(vm, ret_reg, sliced);
 
   vm->ip += 1;

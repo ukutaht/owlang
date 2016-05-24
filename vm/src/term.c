@@ -5,7 +5,7 @@
 
 #include "alloc.h"
 #include "term.h"
-#include "list.h"
+#include "std/owl_list.h"
 
 
 owl_term owl_int_from(uint64_t val) {
@@ -41,7 +41,7 @@ owl_term owl_concat(owl_term left, owl_term right) {
 
     return owl_string_from(result);
   } else if (left_tag == LIST) {
-    return list_concat(left, right);
+    return owl_list_concat(left, right);
   } else {
     puts("Concat not defined for this type");
     exit(1);
@@ -103,7 +103,7 @@ bool owl_terms_eq(owl_term left, owl_term right) {
       return true;
     }
     case LIST:
-      return list_eq(left, right);
+      return owl_list_eq(left, right);
     case STRING: // Comparing non-interned strings
     {
       const char *left_str = owl_extract_ptr(left);
@@ -144,7 +144,7 @@ void owl_term_print(owl_term term) {
     }
     case LIST:
     {
-      list_print(term);
+      owl_list_print(term);
       return;
     }
     case STRING:
