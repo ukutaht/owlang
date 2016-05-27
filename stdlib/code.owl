@@ -1,0 +1,5 @@
+module Code {
+  fn load(filename) {
+    code_load(filename)
+  }
+}

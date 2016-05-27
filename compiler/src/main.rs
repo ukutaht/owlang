@@ -5,59 +5,7 @@ extern crate chomp;
 use owlc::*;
 use getopts::Options;
 use std::env;
-use std::fs::File;
-use std::path::{Path, PathBuf};
-
-static SOURCE_EXTENSION: &'static str = "owl";
-static TARGET_EXTENSION: &'static str = "owlc";
-
-fn generate_to_file(expr: &ast::Module, out: &PathBuf) {
-    let out_filename = PathBuf::from(expr.name).with_extension(TARGET_EXTENSION);
-    let out_name = out.join(Path::new(out_filename.file_name().unwrap()));
-    let mut out_buffer = File::create(out_name).unwrap();
-    let bytecode = bytecode::generate(expr);
-
-    bytecode.emit(&mut out_buffer);
-}
-
-fn generate_to_stdout(expr: &ast::Module) {
-    let bytecode = bytecode::generate(expr);
-    let mut writer = std::io::BufWriter::new(std::io::stdout());
-
-    bytecode.emit_human_readable(&mut writer);
-}
-
-fn has_source_extension(path: &PathBuf) -> bool {
-    let extension = path.extension()
-        .map(|os_string| os_string.to_str())
-        .unwrap_or(None)
-        .unwrap_or("");
-
-    path.is_file() && extension == SOURCE_EXTENSION
-}
-
-fn compile_to_file(inp: &PathBuf, out: &PathBuf) {
-    std::fs::create_dir_all(&out).unwrap();
-
-    if inp.is_file() {
-        if !has_source_extension(inp) { return };
-
-        let file = File::open(inp).ok().expect(&format!("Failed to open file: {}", &inp.to_str().unwrap()));
-        parser::parse(file, |module| generate_to_file(module, out))
-    } else if inp.is_dir() {
-        for file in inp.read_dir().unwrap() {
-            compile_to_file(&file.unwrap().path(), out);
-        }
-    } else {
-        panic!("Cannot read {:?}. Expected a file or a directory", inp);
-    }
-}
-
-fn compile_to_stdout(inp: &PathBuf) {
-    let file  = File::open(inp).ok().expect(&format!("Failed to open file: {}", &inp.to_str().unwrap()));
-
-    parser::parse(file, |expr| generate_to_stdout(expr))
-}
+use std::path::{PathBuf};
 
 fn print_usage(program: &str, opts: Options) {
     let brief = format!("Usage: {} FILE/DIR [options]", program);
@@ -83,13 +31,13 @@ fn main() {
     let input = PathBuf::from(matches.free[0].clone());
 
     if matches.opt_present("p") {
-        compile_to_stdout(&input);
+        compiler::compile_to_stdout(&input);
     } else {
-        let current_dir = env::current_dir().unwrap();
+        let current_dir = std::env::current_dir().unwrap();
         let output = matches.opt_str("o")
                             .map(|s| PathBuf::from(s))
                             .unwrap_or(current_dir);
 
-        compile_to_file(&input, &output);
+        compiler::compile_to_file(&input, &output);
     }
 }

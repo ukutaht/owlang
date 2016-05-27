@@ -45,6 +45,7 @@ enum opcode_values {
     OP_LIST_COUNT,
     OP_LIST_SLICE,
     OP_STRING_SLICE,
+    OP_CODE_LOAD,
 };
 
 void opcode_init(vm_t *vm);

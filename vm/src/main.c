@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <string.h>
 #include <libgen.h>
+#include <gc/gc.h>
 
 #include "util/file.h"
 #include "vm.h"
@@ -30,6 +30,8 @@ int main(int argc, char **argv) {
     printf("Usage: %s input-file\n", argv[0]);
     return 0;
   }
+
+  GC_init();
 
   init_load_path();
 

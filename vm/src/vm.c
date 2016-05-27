@@ -2,11 +2,11 @@
 #include <string.h>
 #include <stdio.h>
 #include <dirent.h>
-#include <gc/gc.h>
 
 #include "vm.h"
 #include "opcodes.h"
 #include "util/file.h"
+#include "std/owl_code.h"
 
 vm_t *vm_new() {
   vm_t *vm;
@@ -36,154 +36,17 @@ vm_t *vm_new() {
 }
 
 void vm_load_module_from_file(vm_t *vm, const char *filename) {
-  char ch;
+  FILE *f = fopen(filename, "rb");
+  fseek(f, 0, SEEK_END);
+  long fsize = ftell(f);
+  fseek(f, 0, SEEK_SET);
 
-  FILE *fp = fopen(filename, "rb");
+  uint8_t *bytecode = malloc(fsize);
+  fread(bytecode, fsize, 1, f);
+  fclose(f);
 
-  if (!fp) {
-      printf("Failed to open program-file %s\n", filename);
-      exit(1);
-  }
-
-  unsigned char *code_ptr = vm->code + vm->code_size;
-
-  while ((ch = fgetc(fp)) != EOF ) {
-    switch(ch) {
-      default:
-        printf("Unknown opcode: 0x%02x\n", ch);
-        exit(1);
-      case OP_RETURN:
-        *code_ptr++ = ch;
-        vm->code_size += 1;
-        break;
-      case OP_EXIT:
-      case OP_PRINT:
-      case OP_FILE_PWD:
-      case OP_STORE_TRUE:
-      case OP_STORE_FALSE:
-      case OP_STORE_NIL:
-      case OP_JMP:
-        *code_ptr++ = ch;
-        *code_ptr++ = fgetc(fp);
-        vm->code_size += 2;
-        break;
-      case OP_MOV:
-      case OP_FILE_LS:
-      case OP_NOT:
-      case OP_LIST_COUNT:
-      case OP_TEST:
-        *code_ptr++ = ch;
-        *code_ptr++ = fgetc(fp);
-        *code_ptr++ = fgetc(fp);
-        vm->code_size += 3;
-        break;
-      case OP_STORE_INT:
-      case OP_ADD:
-      case OP_SUB:
-      case OP_EQ:
-      case OP_NOT_EQ:
-      case OP_GREATER_THAN:
-      case OP_TUPLE_NTH:
-      case OP_LIST_NTH:
-      case OP_CONCAT:
-        *code_ptr++ = ch;
-        *code_ptr++ = fgetc(fp);
-        *code_ptr++ = fgetc(fp);
-        *code_ptr++ = fgetc(fp);
-        vm->code_size += 4;
-        break;
-      case OP_LIST_SLICE:
-      case OP_STRING_SLICE:
-        *code_ptr++ = ch;
-        *code_ptr++ = fgetc(fp);
-        *code_ptr++ = fgetc(fp);
-        *code_ptr++ = fgetc(fp);
-        *code_ptr++ = fgetc(fp);
-        vm->code_size += 5;
-        break;
-      case OP_TUPLE:
-      case OP_LIST:
-        *code_ptr++ = ch;
-        *code_ptr++ = fgetc(fp);
-        uint8_t size = fgetc(fp);
-        *code_ptr++ = size;
-        vm->code_size += 3;
-        for (int i = 0; i < size; i++) {
-          *code_ptr++ = fgetc(fp);
-          vm->code_size += 1;
-        }
-        break;
-      case OP_CAPTURE: {
-        *code_ptr++ = OP_CAPTURE;
-        *code_ptr++ = fgetc(fp); // ret loc
-
-        uint8_t name_size = fgetc(fp);
-        char name[name_size];
-        fread(&name, name_size, 1, fp);
-        uint64_t id = strings_intern(vm->function_names, name);
-
-        *code_ptr++ = (uint8_t) id;
-        vm->code_size += 3;
-        break;
-        }
-      case OP_PUB_FN: {
-        uint8_t name_size = fgetc(fp);
-        char name[name_size];
-        fread(&name, name_size, 1, fp);
-        uint64_t id = strings_intern(vm->function_names, name);
-        uint64_t instruction = (uint64_t) (code_ptr - vm->code);
-
-        vm->functions[id] = instruction;
-        break;
-        }
-      case OP_LOAD_STRING: {
-        *code_ptr++ = OP_LOAD_STRING;
-        *code_ptr++ = fgetc(fp); // ret loc
-
-        uint8_t size = fgetc(fp);
-        char str[size];
-        fread(&str, size, 1, fp);
-        uint64_t id = strings_intern(vm->intern_pool, str);
-        *code_ptr++ = (uint8_t) id; // string_id (needs to be bigger than 8 bit int)
-        vm->code_size += 3;
-        break;
-      }
-      case OP_CALL_LOCAL: {
-        *code_ptr++ = OP_CALL_LOCAL;
-        *code_ptr++ = fgetc(fp); // ret loc
-        *code_ptr++ = fgetc(fp); // function_loc
-
-        uint8_t func_arity = fgetc(fp);
-        *code_ptr++ = func_arity;
-        vm->code_size += 4;
-
-        for (int i = 0; i < func_arity; i++) {
-          *code_ptr++ = fgetc(fp); // arguments
-          vm->code_size += 1;
-        }
-        break;
-      }
-      case OP_CALL:
-        *code_ptr++ = OP_CALL;
-        *code_ptr++ = fgetc(fp); // ret loc
-
-        uint8_t name_size = fgetc(fp);
-        char name[name_size];
-        fread(&name, name_size, 1, fp);
-        uint64_t id = strings_intern(vm->function_names, name);
-        *code_ptr++ = (uint8_t) id; // function_id (needs to be bigger than 8 bit int)
-
-        uint8_t arity = fgetc(fp);
-        *code_ptr++ = arity;
-        vm->code_size += 4;
-
-        for (int i = 0; i < arity; i++) {
-          *code_ptr++ = fgetc(fp); // arguments
-          vm->code_size += 1;
-        }
-        break;
-    }
-  }
+  owl_load_module(vm, bytecode, fsize);
+  free(bytecode);
 }
 
 bool find_module_from_dir(char *buffer, char *dirname, const char *module_name) {
@@ -238,8 +101,6 @@ void vm_load_module(vm_t *vm, const char *module_name) {
 }
 
 void vm_run(vm_t *vm) {
-  GC_init();
-
   while (true) {
     int opcode = vm->code[vm->ip];
 

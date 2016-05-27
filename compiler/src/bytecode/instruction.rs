@@ -39,6 +39,7 @@ pub enum Instruction {
     ListCount(Reg, Reg),
     ListSlice(Reg, Reg, Reg, Reg),
     StringSlice(Reg, Reg, Reg, Reg),
+    CodeLoad(Reg, Reg),
 }
 
 impl Instruction {
@@ -145,6 +146,9 @@ impl Instruction {
             }
             &Instruction::ListCount(to, reg) => {
                 out.write(&[opcodes::LIST_COUNT, to, reg]).unwrap();
+            }
+            &Instruction::CodeLoad(to, reg) => {
+                out.write(&[opcodes::CODE_LOAD, to, reg]).unwrap();
             }
             &Instruction::ListSlice(ret, reg, from, to) => {
                 out.write(&[opcodes::LIST_SLICE, ret, reg, from, to]).unwrap();
@@ -301,6 +305,10 @@ impl Instruction {
                 let string = format!("list_count %{}, %{}\n", to, reg);
                 out.write(&string.as_bytes()).unwrap();
             }
+            &Instruction::CodeLoad(to, reg) => {
+                let string = format!("code_load %{}, %{}\n", to, reg);
+                out.write(&string.as_bytes()).unwrap();
+            }
             &Instruction::ListSlice(ret, reg, from, to) => {
                 let string = format!("list_slice %{}, %{}, %{}, %{}\n", ret, reg, from, to);
                 out.write(&string.as_bytes()).unwrap();
@@ -348,6 +356,7 @@ impl Instruction {
             &Instruction::NotEq(_, _, _)        => 4,
             &Instruction::Not(_, _)             => 3,
             &Instruction::ListCount(_, _)       => 3,
+            &Instruction::CodeLoad(_, _)        => 3,
             &Instruction::ListSlice(_, _, _, _) => 5,
             &Instruction::StringSlice(_, _, _, _) => 5,
             &Instruction::GreaterThan(_, _, _)  => 4,

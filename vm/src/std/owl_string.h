@@ -1,8 +1,7 @@
-#include "term.h"
-
-
 #ifndef OWL_STRING_H
 #define OWL_STRING_H 1
+
+#include "term.h"
 
 #define owl_string_from(str) owl_tag_as(str, STRING)
 

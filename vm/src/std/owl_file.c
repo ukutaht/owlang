@@ -28,7 +28,9 @@ owl_term owl_file_ls(owl_term path) {
   if (d) {
     while ((dir = readdir(d)) != NULL) {
       if (strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0) {
-        owl_term entry = owl_string_from(dir->d_name);
+        char *relpath = owl_alloc(strlen(dir->d_name));
+        strcpy(relpath, dir->d_name);
+        owl_term entry = owl_string_from(relpath);
         result = owl_list_push(result, entry);
       }
     }

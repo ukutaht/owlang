@@ -11,6 +11,7 @@
 #include "std/owl_list.h"
 #include "std/owl_file.h"
 #include "std/owl_string.h"
+#include "std/owl_code.h"
 
 // Read and return the next byte from the current instruction-pointer.
 uint8_t next_byte(vm_t *vm) {
@@ -450,6 +451,17 @@ void op_string_slice(struct vm *vm) {
   vm->ip += 1;
 }
 
+void op_code_load(struct vm *vm) {
+  debug_print("%04x OP_CODE_LOAD\n", vm->ip);
+  uint8_t ret_reg = next_reg(vm);
+  owl_term filename = get_reg(vm, next_reg(vm));
+
+  owl_term compiled = owl_code_load(vm, filename);
+  set_reg(vm, ret_reg, compiled);
+
+  vm->ip += 1;
+}
+
 void opcode_init(vm_t * vm) {
   for (int i = 0; i < 255; i++)
     vm->opcodes[i] = op_unknown;
@@ -484,4 +496,5 @@ void opcode_init(vm_t * vm) {
   vm->opcodes[OP_LIST_COUNT] = op_list_count;
   vm->opcodes[OP_LIST_SLICE] = op_list_slice;
   vm->opcodes[OP_STRING_SLICE] = op_string_slice;
+  vm->opcodes[OP_CODE_LOAD] = op_code_load;
 }

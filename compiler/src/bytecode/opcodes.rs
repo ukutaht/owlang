@@ -29,3 +29,4 @@ pub const LIST_NTH: u8     = 0x1b;
 pub const LIST_COUNT: u8   = 0x1c;
 pub const LIST_SLICE: u8   = 0x1d;
 pub const STRING_SLICE: u8 = 0x1e;
+pub const CODE_LOAD: u8    = 0x1f;
