@@ -48,6 +48,18 @@ module List {
     }
   }
 
+  fn contains?(list, elem) {
+    if !empty?(list) {
+      if first(list) == elem {
+        true
+      } else {
+        contains?(rest(list), elem)
+      }
+    } else {
+      false
+    }
+  }
+
   fn slice(list, from, to) {
     list_slice(list, from, to)
   }
