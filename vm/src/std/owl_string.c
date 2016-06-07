@@ -39,3 +39,20 @@ owl_term owl_string_concat(owl_term left, owl_term right) {
 
   return owl_string_from(result);
 }
+
+owl_term owl_string_count(owl_term string) {
+  const char *str = owl_extract_ptr(string);
+
+  return owl_int_from(strlen(str));
+}
+
+owl_term owl_string_contains(owl_term string, owl_term substr) {
+  const char *str = owl_extract_ptr(string);
+  const char *subs = owl_extract_ptr(substr);
+
+  if (strstr(str, subs) != NULL) {
+    return OWL_TRUE;
+  } else {
+    return OWL_FALSE;
+  }
+}

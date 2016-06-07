@@ -165,7 +165,10 @@ impl<'a> FnGenerator<'a> {
             "list_count" => vec![Instruction::ListCount(ret_loc, args[0])],
             "list_slice" => vec![Instruction::ListSlice(ret_loc, args[0], args[1], args[2])],
             "string_slice" => vec![Instruction::StringSlice(ret_loc, args[0], args[1], args[2])],
+            "string_count" => vec![Instruction::StringCount(ret_loc, args[0])],
             "code_load" => vec![Instruction::CodeLoad(ret_loc, args[0])],
+            "call_by_name" => vec![Instruction::CallByName(ret_loc, args[0], args[1])],
+            "string_contains" => vec![Instruction::StringContains(ret_loc, args[0], args[1])],
             _   => {
                 self.generic_apply(ap, ret_loc, args)
             }

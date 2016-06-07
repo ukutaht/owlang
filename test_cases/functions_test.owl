@@ -47,7 +47,7 @@ module FunctionsTest {
     fn(6)
   }
 
-  fn main() {
+  fn test_functions() {
     OwlUnit:assert_eq(gimme_five(), 5)
     OwlUnit:assert_eq(add_five(5), 10)
     OwlUnit:assert_eq(add_together(7, 11), 18)

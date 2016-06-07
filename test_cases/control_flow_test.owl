@@ -46,7 +46,7 @@ module ControlFlowTest {
     }
   }
 
-  fn main() {
+  fn test_control_flow() {
     OwlUnit:assert_eq(gimme_one(), 1)
     OwlUnit:assert_eq(two_in_else(), 2)
     OwlUnit:assert_eq(nested_three(), 3)

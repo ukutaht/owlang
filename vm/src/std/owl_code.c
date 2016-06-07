@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <assert.h>
 
 #include "opcodes.h"
 #include "vm.h"
@@ -8,6 +9,7 @@
 #include "std/owl_code.h"
 #include "std/owl_list.h"
 #include "std/owl_string.h"
+#include "util/file.h"
 
 
 typedef struct scanner_t {
@@ -70,6 +72,7 @@ owl_term owl_load_module(vm_t *vm, uint8_t *bytecode, size_t size) {
       case OP_FILE_LS:
       case OP_NOT:
       case OP_LIST_COUNT:
+      case OP_STRING_COUNT:
       case OP_CODE_LOAD:
       case OP_TEST:
         *code_ptr++ = ch;
@@ -77,15 +80,17 @@ owl_term owl_load_module(vm_t *vm, uint8_t *bytecode, size_t size) {
         *code_ptr++ = scanner_next(scanner);
         vm->code_size += 3;
         break;
+      case OP_TUPLE_NTH:
       case OP_STORE_INT:
       case OP_ADD:
       case OP_SUB:
       case OP_EQ:
       case OP_NOT_EQ:
       case OP_GREATER_THAN:
-      case OP_TUPLE_NTH:
       case OP_LIST_NTH:
       case OP_CONCAT:
+      case OP_STRING_CONTAINS:
+      case OP_CALL_BY_NAME:
         *code_ptr++ = ch;
         *code_ptr++ = scanner_next(scanner);
         *code_ptr++ = scanner_next(scanner);
@@ -136,6 +141,8 @@ owl_term owl_load_module(vm_t *vm, uint8_t *bytecode, size_t size) {
         const char *function_name = strings_lookup_id(vm->function_names, id);
         owl_term owl_name = owl_string_from(function_name);
         function_list = owl_list_push(function_list, owl_name);
+
+        assert(id < MAX_FUNCTIONS);
         vm->functions[id] = instruction;
         break;
         }
@@ -147,6 +154,7 @@ owl_term owl_load_module(vm_t *vm, uint8_t *bytecode, size_t size) {
         char str[size];
         scanner_read(str, size, scanner);
         uint64_t id = strings_intern(vm->intern_pool, str);
+        assert(id < UINT8_MAX);
         *code_ptr++ = (uint8_t) id; // string_id (needs to be bigger than 8 bit int)
         vm->code_size += 3;
         break;
@@ -174,6 +182,7 @@ owl_term owl_load_module(vm_t *vm, uint8_t *bytecode, size_t size) {
         char name[name_size];
         scanner_read(&name, name_size, scanner);
         uint64_t id = strings_intern(vm->function_names, name);
+        assert(id < MAX_FUNCTIONS);
         *code_ptr++ = (uint8_t) id; // function_id (needs to be bigger than 8 bit int)
 
         uint8_t arity = scanner_next(scanner);
@@ -192,7 +201,7 @@ owl_term owl_load_module(vm_t *vm, uint8_t *bytecode, size_t size) {
 }
 
 owl_term owl_code_load(vm_t *vm, owl_term owl_filename) {
-  const char *filename = owl_extract_ptr(owl_filename);
+  char *filename = owl_extract_ptr(owl_filename);
   compiled_module_t *compiled = compile_file_to_memory(filename);
   owl_term functions = owl_load_module(vm, compiled->bytecode, compiled->size);
   free_module(compiled);

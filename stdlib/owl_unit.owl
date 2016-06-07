@@ -1,6 +1,7 @@
 module OwlUnit {
   fn assert(value) {
     if !value {
+      print("Assertion failed!")
       print(value)
       exit(1)
     }
@@ -8,6 +9,7 @@ module OwlUnit {
 
   fn refute(value) {
     if value {
+      print("Assertion failed!")
       print(value)
       exit(1)
     }
@@ -15,6 +17,7 @@ module OwlUnit {
 
   fn assert_eq(left, right) {
     if left != right {
+      print("Assertion failed!")
       print(left)
       print(right)
       exit(1)
@@ -23,6 +26,7 @@ module OwlUnit {
 
   fn refute_eq(left, right) {
     if left == right {
+      print("Assertion failed!")
       print(left)
       print(right)
       exit(1)

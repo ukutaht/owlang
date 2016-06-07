@@ -8,9 +8,4 @@ module FileTest {
     let files = File:ls("vm/lib")
     OwlUnit:assert_eq(files, ["c-rrb", "intern", "target"])
   }
-
-  fn main() {
-    test_pwd()
-    test_ls()
-  }
 }

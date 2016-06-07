@@ -73,7 +73,7 @@ uint64_t load_function(vm_t *vm, uint8_t function_id) {
 }
 
 void setup_next_stackframe(vm_t *vm, uint8_t arity, uint8_t ret_reg) {
-  assert(vm->current_frame + 1 <= STACK_DEPTH);
+  assert(vm->current_frame + 1 < STACK_DEPTH);
 
   unsigned int next_frame = vm->current_frame + 1;
 
@@ -462,6 +462,53 @@ void op_code_load(struct vm *vm) {
   vm->ip += 1;
 }
 
+void op_call_by_name(struct vm *vm) {
+  uint8_t ret_reg = next_reg(vm);
+  uint8_t function_name_reg = next_reg(vm);
+  uint8_t arity = next_byte(vm);
+
+  char *function_name = owl_extract_ptr(get_reg(vm, function_name_reg));
+
+  #if DEBUG
+    debug_print("%04x OP_CALL: %s\n", vm->ip, function_name);
+  #endif
+
+  uint64_t function_id = strings_lookup(vm->function_names, function_name);
+
+  if (function_id == 0) {
+    printf("Function %s not found\n", function_name);
+    exit(1);
+  }
+
+  uint64_t location = load_function(vm, function_id);
+  setup_next_stackframe(vm, arity, ret_reg);
+
+  vm->ip = location;
+}
+
+void op_string_count(struct vm *vm) {
+  debug_print("%04x OP_STRING_COUNT\n", vm->ip);
+  uint8_t ret_reg = next_reg(vm);
+  owl_term string = get_reg(vm, next_reg(vm));
+
+  owl_term count = owl_string_count(string);
+  set_reg(vm, ret_reg, count);
+
+  vm->ip += 1;
+}
+
+void op_string_contains(struct vm *vm) {
+  debug_print("%04x OP_STRING_CONTAINS\n", vm->ip);
+  uint8_t ret_reg = next_reg(vm);
+  owl_term string = get_reg(vm, next_reg(vm));
+  owl_term substr = get_reg(vm, next_reg(vm));
+
+  owl_term res = owl_string_contains(string, substr);
+  set_reg(vm, ret_reg, res);
+
+  vm->ip += 1;
+}
+
 void opcode_init(vm_t * vm) {
   for (int i = 0; i < 255; i++)
     vm->opcodes[i] = op_unknown;
@@ -497,4 +544,7 @@ void opcode_init(vm_t * vm) {
   vm->opcodes[OP_LIST_SLICE] = op_list_slice;
   vm->opcodes[OP_STRING_SLICE] = op_string_slice;
   vm->opcodes[OP_CODE_LOAD] = op_code_load;
+  vm->opcodes[OP_CALL_BY_NAME] = op_call_by_name;
+  vm->opcodes[OP_STRING_COUNT] = op_string_count;
+  vm->opcodes[OP_STRING_CONTAINS] = op_string_contains;
 }

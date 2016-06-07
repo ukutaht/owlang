@@ -21,13 +21,11 @@ module BooleansTest {
     OwlUnit:assert_eq(test3, true)
   }
 
-  fn main() {
+  fn test_equalities() {
     OwlUnit:assert_eq(true, true)
     OwlUnit:assert_eq(false, false)
     OwlUnit:assert_eq(false, !true)
     OwlUnit:assert_eq(true, !false)
     OwlUnit:assert_eq(true, !!true)
-    test_and_and()
-    test_or_or()
   }
 }

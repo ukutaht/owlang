@@ -8,7 +8,7 @@
 #define VM_H 1
 
 #define REGISTER_COUNT 100
-#define STACK_DEPTH 100
+#define STACK_DEPTH 300
 #define MAX_FUNCTIONS 255
 #define NO_FUNCTION UINT64_MAX
 
@@ -27,10 +27,10 @@ typedef void opcode_impl(struct vm *in);
 typedef struct vm {
     frame_t frames[STACK_DEPTH];
     unsigned int current_frame;
-    unsigned int ip;             // Instruction pointer
-    unsigned char *code;         // Loaded code
-    uint64_t code_size;         // Loaded code size
-    opcode_impl *opcodes[255];   // Opcode lookup table
+    unsigned int ip;                     // Instruction pointer
+    uint8_t *code;                       // Loaded code
+    uint64_t code_size;                  // Loaded code size
+    opcode_impl *opcodes[255];           // Opcode lookup table
     struct strings *function_names;      // Interned function names
     struct strings *intern_pool;         // General intern pool
     uint64_t functions[MAX_FUNCTIONS];   // Function lookup table

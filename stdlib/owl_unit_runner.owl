@@ -1,25 +1,25 @@
 module OwlUnitRunner {
   fn main() {
     let files = File:ls(test_path())
+    let filtered = List:filter(files, test_file?\1)
 
-    List:each(files, run_tests_in\1)
+    List:each(filtered, run_tests_in\1)
   }
 
   fn run_tests_in(filename) {
     let actual_filename = File:pwd() ++ "/test_cases/" ++ filename
     let functions = Code:load(actual_filename)
-
     let filtered = List:filter(functions, test_function?\1)
+
     List:each(filtered, apply_test_fn\1)
   }
 
   fn test_file?(filename) {
-    String:ends_with?(filename, "_test.owl")
+    String:contains?(filename, "_test.owl")
   }
 
   fn test_function?(fun) {
-    let attrs = Function:attrs(fun)
-    List:contains?(attrs, "test")
+    String:contains?(fun, "test_")
   }
 
   fn apply_test_fn(test_fn) {

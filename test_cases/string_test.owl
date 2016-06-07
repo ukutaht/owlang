@@ -23,9 +23,24 @@ module StringTest {
     OwlUnit:assert_eq(String:slice(string, 10, 12), "d!")
   }
 
-  fn main() {
-    test_equality()
-    test_concat()
-    test_slice()
+  fn test_count() {
+    OwlUnit:assert_eq(String:count(""), 0)
+    OwlUnit:assert_eq(String:count("Hello"), 5)
+  }
+
+  fn test_starts_with() {
+    OwlUnit:assert(String:starts_with?("a", "a"))
+    OwlUnit:refute(String:starts_with?("a", "b"))
+
+    OwlUnit:assert(String:starts_with?("asd", "as"))
+    OwlUnit:refute(String:starts_with?("asd", "de"))
+  }
+
+  fn test_contains() {
+    OwlUnit:assert(String:contains?("a", "a"))
+    OwlUnit:refute(String:contains?("a", "b"))
+
+    OwlUnit:assert(String:contains?("asdfghjkl", "fgh"))
+    OwlUnit:refute(String:contains?("asdfghjkl", "lkjh"))
   }
 }

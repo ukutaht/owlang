@@ -84,18 +84,4 @@ module ListsTest {
     OwlUnit:assert(List:contains?([1, 2, 3], 1))
     OwlUnit:refute(List:contains?([1, 2, 3], 4))
   }
-
-  fn main() {
-    test_identity()
-    test_nth()
-    test_count()
-    test_first()
-    test_last()
-    test_rest()
-    test_slice()
-    test_empty()
-    test_concat()
-    test_filter()
-    test_contains()
-  }
 }

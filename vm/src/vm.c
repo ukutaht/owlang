@@ -28,7 +28,7 @@ vm_t *vm_new() {
   vm->intern_pool = strings_new();
   vm->ip = 0;
   vm->current_frame = 0;
-  memset(vm->functions, NO_FUNCTION, MAX_FUNCTIONS);
+  memset(vm->functions, NO_FUNCTION, MAX_FUNCTIONS * sizeof(uint64_t));
 
   opcode_init(vm);
 
