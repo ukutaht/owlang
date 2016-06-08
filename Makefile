@@ -1,4 +1,4 @@
-.PHONY: all compiler stdlib vm libs intern c-rrb
+.PHONY: all compiler vm stdlib libs intern c-rrb
 
 all: libs compiler stdlib vm
 
@@ -29,8 +29,8 @@ clean:
 
 check: check-compiler check-test-cases
 
-check-compiler:
+check-compiler: compiler
 	cd compiler && cargo test
 
-check-test-cases:
-	test_cases/run
+check-test-cases: vm stdlib
+	vm/target/debug/vm .build/stdlib/OwlUnitRunner.owlc
