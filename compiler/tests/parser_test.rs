@@ -215,6 +215,18 @@ fn parses_string() {
 }
 
 #[test]
+fn parses_escaped_newline() {
+    let res = parser::parse_expr(b"\"\\n\"");
+    assert_eq!(res, Ok(mk_string("\n")));
+}
+
+#[test]
+fn parses_escaped_tab() {
+    let res = parser::parse_expr(b"\"\\t\"");
+    assert_eq!(res, Ok(mk_string("\t")));
+}
+
+#[test]
 fn parses_concat_operator() {
     let res = parser::parse_expr(b"a ++ b");
     assert_eq!(res, Ok(mk_apply(None, "++", vec![mk_ident("a"), mk_ident("b")])));

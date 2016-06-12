@@ -52,10 +52,24 @@ fn capture(i: Input<u8>) -> U8Result<Expr> {
     }
 }
 
+fn newline(i: Input<u8>) -> U8Result<&[u8]> {
+    string(i, b"\\n").map(|_| b"\n" as &[u8])
+}
+
+fn horizontal_tab(i: Input<u8>) -> U8Result<&[u8]> {
+    string(i, b"\\t").map(|_| b"\t" as &[u8])
+}
+
+fn take_string_body(i: Input<u8>) -> U8Result<&[u8]> {
+    parse!{i;
+        newline() <|> horizontal_tab() <|> take_while(|c| c != b'"')
+    }
+}
+
 fn str(i: Input<u8>) -> U8Result<Expr> {
     parse!{i;
         token(b'"');
-        let content = take_while(|c| c != b'"');
+        let content = take_string_body();
         token(b'"');
 
         ret mk_string(unsafe { str::from_utf8_unchecked(content) })
