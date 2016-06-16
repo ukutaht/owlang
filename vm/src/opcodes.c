@@ -396,6 +396,11 @@ void op_call_local(struct vm *vm) {
   owl_term function = get_reg(vm, next_reg(vm));
   uint8_t arity = next_byte(vm);
 
+  if (owl_tag_of(function) != FUNCTION) {
+    printf("TypeError: expected Function, got %s\n", owl_extract_ptr(owl_type_of(function)));
+    exit(1);
+  }
+
   uint64_t location = instruction_from_function(function);
   setup_next_stackframe(vm, arity, ret_reg);
 

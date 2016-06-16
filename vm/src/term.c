@@ -34,6 +34,25 @@ owl_term owl_tuple_nth(owl_term tuple, uint8_t index) {
   return ary[index + 1];
 }
 
+owl_term owl_type_of(owl_term term) {
+  switch(owl_tag_of(term)) {
+    case POINTER:
+      return owl_string_from("Pointer");
+    case INT:
+      return owl_string_from("Int");
+    case TUPLE:
+      return owl_string_from("Tuple");
+    case LIST:
+      return owl_string_from("List");
+    case STRING:
+      return owl_string_from("String");
+    case FUNCTION:
+      return owl_string_from("Function");
+    default:
+      return owl_string_from("Unknown");
+  }
+}
+
 owl_term owl_term_to_string(owl_term term) {
   switch(term) {
   case OWL_TRUE:
