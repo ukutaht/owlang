@@ -1,0 +1,27 @@
+module Path {
+
+  fn join(left, right) {
+    remove_dirsep_end(left) ++ "/" ++ remove_dirsep_start(right)
+  }
+
+  fn remove_dirsep_end(path) {
+    let last = String:last(path)
+
+    if last == "/" {
+      String:drop_end(path, 1)
+    } else {
+      path
+    }
+  }
+
+  fn remove_dirsep_start(path) {
+    let first = String:first(path)
+
+    if first == "/" {
+      String:drop(path, 1)
+    } else {
+      path
+    }
+  }
+
+}

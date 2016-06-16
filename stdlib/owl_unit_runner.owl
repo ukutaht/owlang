@@ -7,7 +7,7 @@ module OwlUnitRunner {
   }
 
   fn run_tests_in(filename) {
-    let actual_filename = File:pwd() ++ "/test_cases/" ++ filename
+    let actual_filename = Path:join(test_path(), filename)
     let functions = Code:load(actual_filename)
     let filtered = List:filter(functions, test_function?\1)
 
@@ -28,6 +28,6 @@ module OwlUnitRunner {
   }
 
   fn test_path() {
-    File:pwd() ++ "/test_cases"
+    Path:join(File:pwd(), "test_cases")
   }
 }

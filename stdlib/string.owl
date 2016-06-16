@@ -1,8 +1,4 @@
 module String {
-  fn join(string, delimiter) {
-    string_join(string, delimiter)
-  }
-
   fn slice(string, from, to) {
     string_slice(string, from, to)
   }
@@ -17,5 +13,24 @@ module String {
 
   fn starts_with?(string, prefix) {
     slice(string, 0, count(prefix)) == prefix
+  }
+
+  fn last(string) {
+    let count = count(string)
+    slice(string, count - 1, count)
+  }
+
+  fn first(string) {
+    slice(string, 0, 1)
+  }
+
+  fn drop_end(string, n_chars) {
+    let count = count(string)
+    slice(string, 0, count - n_chars)
+  }
+
+  fn drop(string, n_chars) {
+    let count = count(string)
+    slice(string, n_chars, count)
   }
 }

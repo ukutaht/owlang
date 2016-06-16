@@ -11,9 +11,9 @@ module OwlUnit {
   private
 
   fn run_tests_in(filename) {
-    let (Ok, module) = Code:load(filename)
+    let (Ok, mod) = Code:load(filename)
 
-    Module:functions(module)
+    Module:functions(mod)
       | List:filter(_, test_function?\1)
       | List:each(_, Function:apply(_, ()))
   }

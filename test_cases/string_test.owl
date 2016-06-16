@@ -43,4 +43,15 @@ module StringTest {
     OwlUnit:assert(String:contains?("asdfghjkl", "fgh"))
     OwlUnit:refute(String:contains?("asdfghjkl", "lkjh"))
   }
+
+  fn test_last() {
+    OwlUnit:assert_eq(String:last(""), "")
+    OwlUnit:assert_eq(String:last("a"), "a")
+    OwlUnit:assert_eq(String:last("asd"), "d")
+  }
+
+  fn test_drop() {
+    OwlUnit:assert_eq(String:drop_end("asd", 1), "as")
+    OwlUnit:assert_eq(String:drop_end("asd", 2), "a")
+  }
 }
