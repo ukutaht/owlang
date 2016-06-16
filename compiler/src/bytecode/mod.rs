@@ -177,11 +177,11 @@ impl<'a> FnGenerator<'a> {
     }
 
     fn generic_apply(&self, ap: &ast::Apply, ret_loc: Reg, args: Vec<Reg>) -> Bytecode {
-        match self.env.get(ap.name) {
-            Some(reg) => {
+        match (ap.module, self.env.get(ap.name)) {
+            (None, Some(reg)) => {
                 vec![Instruction::CallLocal(ret_loc, *reg, args)]
             },
-            None => {
+            _ => {
                 let module = ap.module.unwrap_or(self.module_name);
                 let name = format!("{}:{}", module, ap.name);
                 vec![Instruction::Call(ret_loc, name, ap.arity(), args)]

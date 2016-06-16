@@ -25,12 +25,10 @@ module String {
   }
 
   fn drop_end(string, n_chars) {
-    let count = count(string)
-    slice(string, 0, count - n_chars)
+    slice(string, 0, count(string) - n_chars)
   }
 
   fn drop(string, n_chars) {
-    let count = count(string)
-    slice(string, n_chars, count)
+    slice(string, n_chars, count(string))
   }
 }

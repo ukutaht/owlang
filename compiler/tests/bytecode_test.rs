@@ -457,6 +457,22 @@ fn generates_calling_function_indirectly() {
 }
 
 #[test]
+fn does_not_call_locally_when_module_is_provided() {
+    let main = mk_function("main", Vec::new(), vec![
+        mk_let(mk_ident("captured"), mk_capture(None, "some_function", 0)),
+        mk_apply(Some("Module"), "captured", Vec::new())
+    ]);
+
+    let res = bytecode::generate_function(&main);
+
+    assert_eq!(res.code, vec![
+        bytecode::Instruction::Capture(1, "unknown:some_function".to_string(), 0),
+        bytecode::Instruction::Call(0, "Module:captured".to_string(), 0, Vec::new()),
+        bytecode::Instruction::Return,
+    ])
+}
+
+#[test]
 #[should_panic]
 fn does_not_insert_var_in_env_during_binding() {
     let main = mk_function("main", Vec::new(), vec![

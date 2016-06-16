@@ -5,9 +5,7 @@ module Path {
   }
 
   fn remove_dirsep_end(path) {
-    let last = String:last(path)
-
-    if last == "/" {
+    if String:last(path) == "/" {
       String:drop_end(path, 1)
     } else {
       path
@@ -15,9 +13,7 @@ module Path {
   }
 
   fn remove_dirsep_start(path) {
-    let first = String:first(path)
-
-    if first == "/" {
+    if String:first(path) == "/" {
       String:drop(path, 1)
     } else {
       path
