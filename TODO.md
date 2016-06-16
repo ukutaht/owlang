@@ -2,14 +2,10 @@
 
 * Ensure that captured functions are called with correct arity (at runtime)
 * Use \ for arity everywhere
-* Simpler way to implement intrinsics
 * A graceful way to fatally quit the VM with a message (for example, when function is not found)
 * Ensure that infix operations work for everything in the first argument
 * Report parsing errors (depends on next chomp release)
-* Higher-order functions
-* Stdlib testing framework (does it need compiler support?)
 * Closures (oh boy)
-* Vim syntax file
 * Basic build tool
 * Tuple stdlib (bounds check for `nth`)
 * List stdlib
