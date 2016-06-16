@@ -75,6 +75,7 @@ owl_term owl_load_module(vm_t *vm, uint8_t *bytecode, size_t size) {
       case OP_STRING_COUNT:
       case OP_CODE_LOAD:
       case OP_TEST:
+      case OP_TO_STRING:
         *code_ptr++ = ch;
         *code_ptr++ = scanner_next(scanner);
         *code_ptr++ = scanner_next(scanner);

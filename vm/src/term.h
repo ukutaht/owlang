@@ -18,9 +18,17 @@
 #define owl_negate(term) (owl_term_truthy(term) ? OWL_FALSE : OWL_TRUE)
 #define owl_bool(val) (val ? OWL_TRUE : OWL_FALSE)
 
-#define OWL_FALSE 1
-#define OWL_TRUE  2
-#define OWL_NIL  3
+/*
+Using concrete values for true, false and nil. Abusing the fact that low memory
+addressses are reserved for kernel stuff. We just don't expect any pointers to
+have memory addresses 0, 1, 2 etc. The values grow in increments of two because
+in owl terms the lowest bits are reserved for tagging. By making these divisible
+by two, they look like pointers when the vm inspects the tag. This ensures that
+values like FALSE and TRUE cannot be confused with integers etc.
+*/
+#define OWL_FALSE 2
+#define OWL_TRUE  4
+#define OWL_NIL  6
 
 typedef uint64_t owl_term;
 
@@ -40,9 +48,10 @@ typedef enum owl_tag {
 
 
 owl_term owl_concat(owl_term left, owl_term right);
+owl_term owl_term_to_string(owl_term term);
 void owl_term_print(owl_term term);
+bool owl_terms_eq(owl_term left, owl_term right);
 
 owl_term owl_tuple_nth(owl_term tuple, uint8_t index);
-bool owl_terms_eq(owl_term left, owl_term right);
 
 #endif  // TERM_H

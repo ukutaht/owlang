@@ -23,6 +23,7 @@ module OwlUnitRunner {
   }
 
   fn apply_test_fn(test_fn) {
+    IO:println("Running " ++ test_fn)
     Function:apply(test_fn, ())
   }
 

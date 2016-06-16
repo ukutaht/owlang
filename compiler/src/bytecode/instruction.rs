@@ -43,6 +43,7 @@ pub enum Instruction {
     CallByName(Reg, Reg, Reg),
     StringCount(Reg, Reg),
     StringContains(Reg, Reg, Reg),
+    ToString(Reg, Reg),
 }
 
 impl Instruction {
@@ -177,6 +178,9 @@ impl Instruction {
             &Instruction::GreaterThan(to, arg1, arg2) => {
                 out.write(&[opcodes::GREATER_THAN, to, arg1, arg2]).unwrap();
             },
+            &Instruction::ToString(to, reg) => {
+                out.write(&[opcodes::TO_STRING, to, reg]).unwrap();
+            }
         }
     }
 
@@ -349,6 +353,10 @@ impl Instruction {
                 let string = format!("load_string %{}, \"{}\"\n", to, content);
                 out.write(&string.as_bytes()).unwrap();
             }
+            &Instruction::ToString(to, reg) => {
+                let string = format!("to_string %{}, %{}\n", to, reg);
+                out.write(&string.as_bytes()).unwrap();
+            }
         }
     }
 
@@ -388,6 +396,7 @@ impl Instruction {
             &Instruction::StringSlice(_, _, _, _) => 5,
             &Instruction::GreaterThan(_, _, _)  => 4,
             &Instruction::LoadString(_, _)      => 3, // Content only counts for 1 byte because it is interned at load-time
+            &Instruction::ToString(_, _)        => 3,
         }
     }
 }

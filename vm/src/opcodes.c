@@ -509,6 +509,17 @@ void op_string_contains(struct vm *vm) {
   vm->ip += 1;
 }
 
+void op_to_string(struct vm *vm) {
+  debug_print("%04x OP_TO_STRING\n", vm->ip);
+  uint8_t ret_reg = next_reg(vm);
+  owl_term term = get_reg(vm, next_reg(vm));
+
+  owl_term res = owl_term_to_string(term);
+  set_reg(vm, ret_reg, res);
+
+  vm->ip += 1;
+}
+
 void opcode_init(vm_t * vm) {
   for (int i = 0; i < 255; i++)
     vm->opcodes[i] = op_unknown;
@@ -547,4 +558,5 @@ void opcode_init(vm_t * vm) {
   vm->opcodes[OP_CALL_BY_NAME] = op_call_by_name;
   vm->opcodes[OP_STRING_COUNT] = op_string_count;
   vm->opcodes[OP_STRING_CONTAINS] = op_string_contains;
+  vm->opcodes[OP_TO_STRING] = op_to_string;
 }

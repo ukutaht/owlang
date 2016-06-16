@@ -49,6 +49,7 @@ enum opcode_values {
     OP_CALL_BY_NAME,
     OP_STRING_COUNT,
     OP_STRING_CONTAINS,
+    OP_TO_STRING,
 };
 
 void opcode_init(vm_t *vm);

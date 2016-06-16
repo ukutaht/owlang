@@ -8,6 +8,8 @@
 #include "std/owl_list.h"
 #include "std/owl_string.h"
 
+#define INT_MAX_DIGITS 20
+
 owl_term owl_concat(owl_term left, owl_term right) {
   owl_tag left_tag = owl_tag_of(left);
   owl_tag right_tag = owl_tag_of(right);
@@ -30,6 +32,51 @@ owl_term owl_concat(owl_term left, owl_term right) {
 owl_term owl_tuple_nth(owl_term tuple, uint8_t index) {
   owl_term *ary = owl_extract_ptr(tuple);
   return ary[index + 1];
+}
+
+owl_term owl_term_to_string(owl_term term) {
+  switch(term) {
+  case OWL_TRUE:
+    return owl_string_from("true");
+  case OWL_FALSE:
+    return owl_string_from("false");
+  case OWL_NIL:
+    return owl_string_from("nil");
+  }
+
+  switch(owl_tag_of(term)) {
+    case INT:
+    {
+      char *buf = owl_alloc(INT_MAX_DIGITS + 1);
+      sprintf(buf, "%llu", int_from_owl_int(term));
+      return owl_string_from(buf);
+    }
+    case TUPLE:
+    {
+      owl_term buffer = owl_string_from("");
+
+      owl_term *ary = owl_extract_ptr(term);
+      uint8_t size = ary[0];
+      for(uint8_t i = 1; i <= size; i++) {
+        buffer = owl_concat(buffer, owl_term_to_string(ary[i]));
+      }
+      return buffer;
+    }
+    case LIST:
+    {
+      owl_term buffer = owl_string_from("");
+      uint64_t count = int_from_owl_int(owl_list_count(term));
+      for(uint64_t i = 0; i < count; i++) {
+        buffer = owl_string_concat(buffer, owl_term_to_string(owl_list_nth(term, owl_int_from(i))));
+      }
+      return buffer;
+    }
+    case STRING:
+      return term;
+    default:
+      puts("Unable to convert to string");
+      exit(1);
+  }
 }
 
 bool owl_terms_eq(owl_term left, owl_term right) {
@@ -80,42 +127,6 @@ bool owl_terms_eq(owl_term left, owl_term right) {
 }
 
 void owl_term_print(owl_term term) {
-  switch(term) {
-    case OWL_TRUE:
-      puts("true");
-      return;
-    case OWL_FALSE:
-      puts("false");
-      return;
-    case OWL_NIL:
-      puts("nil");
-      return;
-  }
-
-  switch(owl_tag_of(term)) {
-    case INT:
-      printf("%llu\n", int_from_owl_int(term));
-      return;
-    case TUPLE:
-    {
-      owl_term *ary = owl_extract_ptr(term);
-      uint8_t size = ary[0];
-      for(uint8_t i = 1; i <= size; i++) {
-        owl_term_print(ary[i]);
-      }
-      return;
-    }
-    case LIST:
-    {
-      owl_list_print(term);
-      return;
-    }
-    case STRING:
-      printf("\"");
-      printf("%s", (char*) owl_extract_ptr(term));
-      printf("\"");
-      return;
-    default:
-      return;
-  }
+  owl_term string = owl_term_to_string(term);
+  fputs(owl_extract_ptr(string), stdout);
 }

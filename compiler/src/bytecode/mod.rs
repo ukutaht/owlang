@@ -169,6 +169,7 @@ impl<'a> FnGenerator<'a> {
             "code_load" => vec![Instruction::CodeLoad(ret_loc, args[0])],
             "call_by_name" => vec![Instruction::CallByName(ret_loc, args[0], args[1])],
             "string_contains" => vec![Instruction::StringContains(ret_loc, args[0], args[1])],
+            "term_to_string" => vec![Instruction::ToString(ret_loc, args[0])],
             _   => {
                 self.generic_apply(ap, ret_loc, args)
             }
