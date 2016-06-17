@@ -24,7 +24,7 @@ module String {
     slice(string, 0, 1)
   }
 
-  fn drop_end(string, n_chars) {
+  fn drop_last(string, n_chars) {
     slice(string, 0, count(string) - n_chars)
   }
 

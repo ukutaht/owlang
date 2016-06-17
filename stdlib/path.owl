@@ -6,7 +6,7 @@ module Path {
 
   fn remove_dirsep_end(path) {
     if String:last(path) == "/" {
-      String:drop_end(path, 1)
+      String:drop_last(path, 1)
     } else {
       path
     }

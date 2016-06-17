@@ -50,8 +50,13 @@ module StringTest {
     OwlUnit:assert_eq(String:last("asd"), "d")
   }
 
+  fn test_drop_last() {
+    OwlUnit:assert_eq(String:drop_last("asd", 1), "as")
+    OwlUnit:assert_eq(String:drop_last("asd", 2), "a")
+  }
+
   fn test_drop() {
-    OwlUnit:assert_eq(String:drop_end("asd", 1), "as")
-    OwlUnit:assert_eq(String:drop_end("asd", 2), "a")
+    OwlUnit:assert_eq(String:drop("asd", 1), "sd")
+    OwlUnit:assert_eq(String:drop("asd", 2), "d")
   }
 }
