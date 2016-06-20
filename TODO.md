@@ -8,7 +8,7 @@
 * Report parsing errors (depends on next chomp release)
 * Closures (oh boy)
 * Basic build tool
-* Tuple stdlib (bounds check for `nth`)
+* Tuple stdlib
 * List stdlib
 * IO stdlib
 * Public/Private distinction
