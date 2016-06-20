@@ -31,7 +31,13 @@ owl_term owl_concat(owl_term left, owl_term right) {
 
 owl_term owl_tuple_nth(owl_term tuple, uint8_t index) {
   owl_term *ary = owl_extract_ptr(tuple);
-  return ary[index + 1];
+  uint64_t size = ary[0];
+
+  if (index >= 0 && size > index) {
+    return ary[index + 1];
+  } else {
+    return OWL_NIL;
+  }
 }
 
 owl_term owl_type_of(owl_term term) {
