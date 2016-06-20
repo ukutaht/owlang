@@ -73,7 +73,9 @@ module FunctionsTest {
 
   fn test_anonymous_functions() {
     let gimme_three = () -> { 1 + 2 }
-
     OwlUnit:assert_eq(gimme_three(), 3)
+
+    let adder = (a, b) -> { a + b }
+    OwlUnit:assert_eq(adder(2, 3), 5)
   }
 }

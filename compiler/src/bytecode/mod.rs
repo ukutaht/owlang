@@ -13,42 +13,46 @@ pub use self::module::Module;
 
 struct FnGenerator<'a> {
     var_count: u8,
-    function: &'a ast::Function<'a>,
     module_name: &'a str,
+    function_name: &'a str,
     env: HashMap<String, Reg>,
+    args: &'a Vec<ast::Argument<'a>>,
+    body: &'a Vec<ast::Expr<'a>>
 }
 
 impl<'a> FnGenerator<'a> {
-    fn new<'b>(module_name: &'b str, f: &'b ast::Function) -> FnGenerator<'b> {
+    fn new<'b>(module_name: &'b str, function_name: &'b str, args: &'b Vec<ast::Argument>, body: &'b Vec<ast::Expr>) -> FnGenerator<'b> {
         let mut env = HashMap::new();
         let mut var_count: u8 = 0;
 
-        for arg in f.args.iter() {
+        for arg in args.iter() {
             var_count += 1;
             env.insert(arg.name.to_string(), var_count);
         }
 
         FnGenerator {
-            function: f,
             var_count: var_count,
             module_name: module_name,
-            env: env
+            function_name: function_name,
+            env: env,
+            args: args,
+            body: body
         }
     }
 
     fn generate(&mut self) -> Function {
-        let code = self.generate_code(&self.function.body);
-        let name = format!("{}:{}", self.module_name, self.function.name);
+        let code = self.generate_code();
+        let name = format!("{}:{}", self.module_name, self.function_name);
 
         Function {
             name: name,
-            arity: self.function.arity(),
+            arity: self.args.len() as u8,
             code: code
         }
     }
 
-    fn generate_code(&mut self, body: &'a Vec<ast::Expr>) -> Bytecode {
-        let mut code = self.generate_block(0, body);
+    fn generate_code(&mut self) -> Bytecode {
+        let mut code = self.generate_block(0, self.body);
 
         code.push(Instruction::Return);
         code
@@ -145,7 +149,7 @@ impl<'a> FnGenerator<'a> {
                 }
             }
             &ast::Expr::AnonFn(ref anon) => {
-                let mut generated = self.generate_code(&anon.body);
+                let mut generated = FnGenerator::new(self.module_name, "anon", &anon.args, &anon.body).generate_code();
                 let jmp = instruction::byte_size_of(&generated) + 1;
                 let mut instruction = vec![Instruction::AnonFn(out, jmp, anon.args.len() as u8)];
                 instruction.append(&mut generated);
@@ -260,14 +264,14 @@ impl<'a> FnGenerator<'a> {
 }
 
 pub fn generate_function(f: &ast::Function) -> Function {
-    FnGenerator::new("unknown", f).generate()
+    FnGenerator::new("unknown", f.name, &f.args, &f.body).generate()
 }
 
 pub fn generate(module: &ast::Module) -> Module {
     let mut functions = Vec::new();
 
     for f in module.functions.iter() {
-        let generated = FnGenerator::new(module.name, f).generate();
+        let generated = FnGenerator::new(module.name, f.name, &f.args, &f.body).generate();
 
         functions.push(generated);
     }
