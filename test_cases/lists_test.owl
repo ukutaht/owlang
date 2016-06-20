@@ -67,14 +67,10 @@ module ListsTest {
     OwlUnit:assert_eq([1, 2] ++ [3, 4], [1, 2, 3, 4])
   }
 
-  fn bigger_than_one?(n) {
-    n > 1
-  }
-
   fn test_filter() {
     let list = [1, 2, 3]
 
-    let result = List:filter(list, bigger_than_one?\1)
+    let result = List:filter(list, (el) -> { el > 1 })
 
     OwlUnit:assert_eq(result, [2, 3])
   }
