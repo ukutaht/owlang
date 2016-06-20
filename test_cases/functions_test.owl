@@ -71,11 +71,18 @@ module FunctionsTest {
     OwlUnit:assert_eq(apply_to_six(captured_add_five), 11)
   }
 
+  fn return_adder() {
+    (a, b) -> { a + b }
+  }
+
   fn test_anonymous_functions() {
     let gimme_three = () -> { 1 + 2 }
     OwlUnit:assert_eq(gimme_three(), 3)
 
     let adder = (a, b) -> { a + b }
     OwlUnit:assert_eq(adder(2, 3), 5)
+
+    let returned_adder = return_adder()
+    OwlUnit:assert_eq(returned_adder(2, 3), 5)
   }
 }
