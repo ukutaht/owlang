@@ -75,6 +75,12 @@ pub struct Capture<'a> {
 }
 
 #[derive(Debug, Eq, PartialEq)]
+pub struct AnonFn<'a> {
+    pub args: Vec<Argument<'a>>,
+    pub body: Vec<Expr<'a>>
+}
+
+#[derive(Debug, Eq, PartialEq)]
 pub enum Expr<'a> {
     Int(Int<'a>),
     True,
@@ -88,6 +94,7 @@ pub enum Expr<'a> {
     List(List<'a>),
     Str(Str<'a>),
     Capture(Capture<'a>),
+    AnonFn(AnonFn<'a>),
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -160,4 +167,8 @@ pub fn mk_let<'a>(left: Expr<'a>, right: Expr<'a>) -> Expr<'a> {
 
 pub fn mk_capture<'a>(module: Option<&'a str>, name: &'a str, arity: u8) -> Expr<'a> {
     Expr::Capture(Capture {module: module, name: name, arity: arity})
+}
+
+pub fn mk_anon_fn<'a>(args: Vec<Argument<'a>>, body: Vec<Expr<'a>>) -> Expr<'a> {
+    Expr::AnonFn(AnonFn {args: args, body: body})
 }

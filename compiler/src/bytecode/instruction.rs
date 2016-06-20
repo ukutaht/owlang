@@ -44,6 +44,7 @@ pub enum Instruction {
     StringCount(Reg, Reg),
     StringContains(Reg, Reg, Reg),
     ToString(Reg, Reg),
+    AnonFn(Reg, Jump, Arity),
 }
 
 impl Instruction {
@@ -180,6 +181,9 @@ impl Instruction {
             },
             &Instruction::ToString(to, reg) => {
                 out.write(&[opcodes::TO_STRING, to, reg]).unwrap();
+            }
+            &Instruction::AnonFn(to, jmp, arity) => {
+                out.write(&[opcodes::ANON_FN, to, jmp, arity]).unwrap();
             }
         }
     }
@@ -357,6 +361,10 @@ impl Instruction {
                 let string = format!("to_string %{}, %{}\n", to, reg);
                 out.write(&string.as_bytes()).unwrap();
             }
+            &Instruction::AnonFn(to, jmp, arity) => {
+                let string = format!("anon_fn %{}, {}, {}\n", to, jmp, arity);
+                out.write(&string.as_bytes()).unwrap();
+            }
         }
     }
 
@@ -397,6 +405,7 @@ impl Instruction {
             &Instruction::GreaterThan(_, _, _)  => 4,
             &Instruction::LoadString(_, _)      => 3, // Content only counts for 1 byte because it is interned at load-time
             &Instruction::ToString(_, _)        => 3,
+            &Instruction::AnonFn(_, _, _)       => 4,
         }
     }
 }

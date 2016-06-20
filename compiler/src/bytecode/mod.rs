@@ -37,7 +37,7 @@ impl<'a> FnGenerator<'a> {
     }
 
     fn generate(&mut self) -> Function {
-        let code = self.generate_code();
+        let code = self.generate_code(&self.function.body);
         let name = format!("{}:{}", self.module_name, self.function.name);
 
         Function {
@@ -47,8 +47,8 @@ impl<'a> FnGenerator<'a> {
         }
     }
 
-    fn generate_code(&mut self) -> Bytecode {
-        let mut code = self.generate_block(0, &self.function.body);
+    fn generate_code(&mut self, body: &'a Vec<ast::Expr>) -> Bytecode {
+        let mut code = self.generate_block(0, body);
 
         code.push(Instruction::Return);
         code
@@ -143,6 +143,13 @@ impl<'a> FnGenerator<'a> {
                     self.env.insert(l.left.name.to_string(), var);
                     generated
                 }
+            }
+            &ast::Expr::AnonFn(ref anon) => {
+                let mut generated = self.generate_code(&anon.body);
+                let jmp = instruction::byte_size_of(&generated) + 1;
+                let mut instruction = vec![Instruction::AnonFn(out, jmp, anon.args.len() as u8)];
+                instruction.append(&mut generated);
+                instruction
             }
         }
     }

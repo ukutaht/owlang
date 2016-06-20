@@ -525,6 +525,17 @@ void op_to_string(struct vm *vm) {
   vm->ip += 1;
 }
 
+void op_anon_fn(struct vm *vm) {
+  debug_print("%04x OP_ANON_FN\n", vm->ip);
+  uint8_t ret_reg = next_reg(vm);
+  uint8_t jmp = next_reg(vm);
+  next_reg(vm);
+
+  set_reg(vm, ret_reg, owl_function_from(vm->ip + 1));
+
+  vm->ip += jmp;
+}
+
 void opcode_init(vm_t * vm) {
   for (int i = 0; i < 255; i++)
     vm->opcodes[i] = op_unknown;
@@ -564,4 +575,5 @@ void opcode_init(vm_t * vm) {
   vm->opcodes[OP_STRING_COUNT] = op_string_count;
   vm->opcodes[OP_STRING_CONTAINS] = op_string_contains;
   vm->opcodes[OP_TO_STRING] = op_to_string;
+  vm->opcodes[OP_ANON_FN] = op_anon_fn;
 }

@@ -481,3 +481,22 @@ fn does_not_insert_var_in_env_during_binding() {
 
     bytecode::generate_function(&main);
 }
+
+
+#[test]
+fn generates_anonymous_function() {
+    let main = mk_function("main", Vec::new(), vec![
+        mk_anon_fn(vec![mk_argument("a")], vec![mk_apply(None, "+", vec![mk_int("1"), mk_int("1")])])
+    ]);
+
+    let res = bytecode::generate_function(&main);
+
+    assert_eq!(res.code, vec![
+        bytecode::Instruction::AnonFn(0, 13, 1),
+        bytecode::Instruction::StoreInt(1, 1),
+        bytecode::Instruction::StoreInt(2, 1),
+        bytecode::Instruction::Add(0, 1, 2),
+        bytecode::Instruction::Return,
+        bytecode::Instruction::Return
+    ])
+}

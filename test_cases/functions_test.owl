@@ -70,4 +70,10 @@ module FunctionsTest {
     let captured_add_five = add_five\1
     OwlUnit:assert_eq(apply_to_six(captured_add_five), 11)
   }
+
+  fn test_anonymous_functions() {
+    let gimme_three = () -> { 1 + 2 }
+
+    OwlUnit:assert_eq(gimme_three(), 3)
+  }
 }

@@ -34,3 +34,4 @@ pub const CALL_BY_NAME: u8    = 0x20;
 pub const STRING_COUNT: u8    = 0x21;
 pub const STRING_CONTAINS: u8 = 0x22;
 pub const TO_STRING: u8       = 0x23;
+pub const ANON_FN: u8         = 0x24;

@@ -92,6 +92,7 @@ owl_term owl_load_module(vm_t *vm, uint8_t *bytecode, size_t size) {
       case OP_CONCAT:
       case OP_STRING_CONTAINS:
       case OP_CALL_BY_NAME:
+      case OP_ANON_FN:
         *code_ptr++ = ch;
         *code_ptr++ = scanner_next(scanner);
         *code_ptr++ = scanner_next(scanner);

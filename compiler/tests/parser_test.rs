@@ -237,3 +237,20 @@ fn parses_function_capture() {
     let res = parser::parse_expr(b"some_function\\0");
     assert_eq!(res, Ok(mk_capture(None, "some_function", 0)));
 }
+
+#[test]
+fn parses_anonymous_function_no_args() {
+    let res = parser::parse_expr(b"() -> { 1 + 2 }");
+    assert_eq!(res, Ok(mk_anon_fn(Vec::new(), vec![
+        mk_apply(None, "+", vec![
+            mk_int("1"),
+            mk_int("2")
+        ])
+    ])));
+}
+
+#[test]
+fn parses_anonymous_function_with_args() {
+    let res = parser::parse_expr(b"(a, b) -> { }");
+    assert_eq!(res, Ok(mk_anon_fn(vec![mk_argument("a"), mk_argument("b")], Vec::new())));
+}

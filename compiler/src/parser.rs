@@ -37,7 +37,23 @@ pub fn parse_module(input: &[u8]) -> Result<Module, ParseError<u8, Error<u8>>> {
 
 fn expr(i: Input<u8>) -> U8Result<Expr> {
     parse!{i;
-        _if() <|> _let() <|> infix() <|> str() <|> apply() <|> capture() <|> unary() <|> tuple() <|> list() <|> nil() <|> _bool() <|> ident() <|> int()
+        _if() <|> _let() <|> infix() <|> anon_fn() <|> str() <|> apply() <|> capture() <|> unary() <|> tuple() <|> list() <|> nil() <|> _bool() <|> ident() <|> int()
+    }
+}
+
+fn anon_fn(i: Input<u8>) -> U8Result<Expr> {
+    parse!{i;
+        token(b'(');
+        let args: Vec<_> = sep_by(argument, comma);
+        token(b')');
+        satisfy(|i| is_whitespace(i));
+        skip_whitespace();
+        string(b"->");
+        skip_whitespace();
+
+        let body = block();
+
+        ret mk_anon_fn(args, body)
     }
 }
 
