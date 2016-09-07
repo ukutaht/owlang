@@ -10,5 +10,5 @@ bench = false
 crate-type = ["staticlib", "rlib"]
 
 [dependencies]
-chomp = "0.2.5"
+chomp = "0.2.6"
 getopts = "0.2"
