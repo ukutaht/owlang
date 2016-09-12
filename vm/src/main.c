@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
 
   char *main_module = module_name_from_filename(argv[1]);
   char main_function[strlen(main_module) + 7];
-  sprintf(main_function, "%s:main/0", main_module);
+  sprintf(main_function, "%s.main\\0", main_module);
 
   vm_run_function(vm, main_function);
   free(main_module);

@@ -1,83 +1,83 @@
 module ListsTest {
   fn test_identity() {
-    OwlUnit:assert_eq([1, 2], [1, 2])
-    OwlUnit:refute_eq([1, 2], [9, 10])
+    OwlUnit.assert_eq([1, 2], [1, 2])
+    OwlUnit.refute_eq([1, 2], [9, 10])
 
-    OwlUnit:assert_eq(["one", "two"], ["one", "two"])
-    OwlUnit:refute_eq(["one", "two"], ["one", "not two"])
+    OwlUnit.assert_eq(["one", "two"], ["one", "two"])
+    OwlUnit.refute_eq(["one", "two"], ["one", "not two"])
   }
 
   fn test_nth() {
     let int_list = [1, 2, 3]
-    OwlUnit:assert_eq(List:nth(int_list, 2), 3)
-    OwlUnit:assert_eq(List:nth(int_list, 15), nil)
+    OwlUnit.assert_eq(List.nth(int_list, 2), 3)
+    OwlUnit.assert_eq(List.nth(int_list, 15), nil)
 
     let str_list = ["one", "two", "three"]
-    OwlUnit:assert_eq(List:nth(str_list, 1), "two")
-    OwlUnit:assert_eq(List:nth(str_list, 99), nil)
+    OwlUnit.assert_eq(List.nth(str_list, 1), "two")
+    OwlUnit.assert_eq(List.nth(str_list, 99), nil)
   }
 
   fn test_count() {
     let int_list = [1, 2, 3]
-    OwlUnit:assert_eq(List:count(int_list), 3)
+    OwlUnit.assert_eq(List.count(int_list), 3)
 
     let str_list = ["one"]
-    OwlUnit:assert_eq(List:count(str_list), 1)
+    OwlUnit.assert_eq(List.count(str_list), 1)
   }
 
   fn test_first() {
-    OwlUnit:assert_eq(List:first([1, 2]), 1)
-    OwlUnit:assert_eq(List:first(["one"]), "one")
-    OwlUnit:assert_eq(List:first([]), nil)
+    OwlUnit.assert_eq(List.first([1, 2]), 1)
+    OwlUnit.assert_eq(List.first(["one"]), "one")
+    OwlUnit.assert_eq(List.first([]), nil)
   }
 
   fn test_last() {
-    OwlUnit:assert_eq(List:last([1, 2]), 2)
-    OwlUnit:assert_eq(List:last(["one"]), "one")
-    OwlUnit:assert_eq(List:last([]), nil)
+    OwlUnit.assert_eq(List.last([1, 2]), 2)
+    OwlUnit.assert_eq(List.last(["one"]), "one")
+    OwlUnit.assert_eq(List.last([]), nil)
   }
 
   fn test_rest() {
-    OwlUnit:assert_eq(List:rest([1, 2]), [2])
-    OwlUnit:assert_eq(List:rest(["one"]), [])
-    OwlUnit:assert_eq(List:rest([]), [])
+    OwlUnit.assert_eq(List.rest([1, 2]), [2])
+    OwlUnit.assert_eq(List.rest(["one"]), [])
+    OwlUnit.assert_eq(List.rest([]), [])
   }
 
   fn test_slice() {
     let list = [1, 2, 3]
-    OwlUnit:assert_eq(List:slice(list, 0, 3), list)
-    OwlUnit:assert_eq(List:slice(list, 0, 10), list)
+    OwlUnit.assert_eq(List.slice(list, 0, 3), list)
+    OwlUnit.assert_eq(List.slice(list, 0, 10), list)
 
-    OwlUnit:assert_eq(List:slice(list, 0, 2), [1, 2])
-    OwlUnit:assert_eq(List:slice(list, 0, 1), [1])
-    OwlUnit:assert_eq(List:slice(list, 0, 0), [])
+    OwlUnit.assert_eq(List.slice(list, 0, 2), [1, 2])
+    OwlUnit.assert_eq(List.slice(list, 0, 1), [1])
+    OwlUnit.assert_eq(List.slice(list, 0, 0), [])
 
-    OwlUnit:assert_eq(List:slice(list, 1, 3), [2, 3])
-    OwlUnit:assert_eq(List:slice(list, 2, 3), [3])
-    OwlUnit:assert_eq(List:slice(list, 3, 3), [])
+    OwlUnit.assert_eq(List.slice(list, 1, 3), [2, 3])
+    OwlUnit.assert_eq(List.slice(list, 2, 3), [3])
+    OwlUnit.assert_eq(List.slice(list, 3, 3), [])
   }
 
   fn test_empty() {
-    OwlUnit:assert(List:empty?([]))
-    OwlUnit:refute(List:empty?([1]))
+    OwlUnit.assert(List.empty?([]))
+    OwlUnit.refute(List.empty?([1]))
   }
 
   fn test_concat() {
-    OwlUnit:assert_eq([] ++ [], [])
-    OwlUnit:assert_eq([1, 2] ++ [3, 4], [1, 2, 3, 4])
+    OwlUnit.assert_eq([] ++ [], [])
+    OwlUnit.assert_eq([1, 2] ++ [3, 4], [1, 2, 3, 4])
   }
 
   fn test_filter() {
     let list = [1, 2, 3]
 
-    let result = List:filter(list, (el) -> { el > 1 })
+    let result = List.filter(list, (el) -> { el > 1 })
 
-    OwlUnit:assert_eq(result, [2, 3])
+    OwlUnit.assert_eq(result, [2, 3])
   }
 
   fn test_contains() {
-    OwlUnit:refute(List:contains?([], 1))
-    OwlUnit:assert(List:contains?([1, 2, 3], 1))
-    OwlUnit:refute(List:contains?([1, 2, 3], 4))
+    OwlUnit.refute(List.contains?([], 1))
+    OwlUnit.assert(List.contains?([1, 2, 3], 1))
+    OwlUnit.refute(List.contains?([1, 2, 3], 4))
   }
 }

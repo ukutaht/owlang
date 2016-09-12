@@ -47,11 +47,11 @@ module ControlFlowTest {
   }
 
   fn test_control_flow() {
-    OwlUnit:assert_eq(gimme_one(), 1)
-    OwlUnit:assert_eq(two_in_else(), 2)
-    OwlUnit:assert_eq(nested_three(), 3)
-    OwlUnit:assert_eq(nil_is_falsey(), 2)
-    OwlUnit:assert_eq(nil_is_returned_in_empty_else(), nil)
-    OwlUnit:assert_eq(nil_is_returned_in_empty_if_body(), nil)
+    OwlUnit.assert_eq(gimme_one(), 1)
+    OwlUnit.assert_eq(two_in_else(), 2)
+    OwlUnit.assert_eq(nested_three(), 3)
+    OwlUnit.assert_eq(nil_is_falsey(), 2)
+    OwlUnit.assert_eq(nil_is_returned_in_empty_else(), nil)
+    OwlUnit.assert_eq(nil_is_returned_in_empty_if_body(), nil)
   }
 }

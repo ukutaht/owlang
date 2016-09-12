@@ -1,34 +1,34 @@
 module OwlUnit {
   fn assert(value) {
     if !value {
-      IO:println("Assertion failed!")
-      IO:println("Expected truthy value, got " ++ term_to_string(value))
+      IO.println("Assertion failed!")
+      IO.println("Expected truthy value, got " ++ term_to_string(value))
       exit(1)
     }
   }
 
   fn refute(value) {
     if value {
-      IO:println("Assertion failed!")
-      IO:println("Expected falsey value, got " ++ term_to_string(value))
+      IO.println("Assertion failed!")
+      IO.println("Expected falsey value, got " ++ term_to_string(value))
       exit(1)
     }
   }
 
   fn assert_eq(left, right) {
     if left != right {
-      IO:println("Assertion failed!")
-      IO:println("Left:  " ++ term_to_string(left))
-      IO:println("Right: " ++ term_to_string(right))
+      IO.println("Assertion failed!")
+      IO.println("Left:  " ++ term_to_string(left))
+      IO.println("Right: " ++ term_to_string(right))
       exit(1)
     }
   }
 
   fn refute_eq(left, right) {
     if left == right {
-      IO:println("Assertion failed!")
-      IO:println("Left:  " ++ term_to_string(left))
-      IO:println("Right: " ++ term_to_string(right))
+      IO.println("Assertion failed!")
+      IO.println("Left:  " ++ term_to_string(left))
+      IO.println("Right: " ++ term_to_string(right))
       exit(1)
     }
   }

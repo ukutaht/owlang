@@ -42,7 +42,7 @@ impl<'a> FnGenerator<'a> {
 
     fn generate(&mut self) -> Function {
         let code = self.generate_code();
-        let name = format!("{}:{}", self.module_name, self.function_name);
+        let name = format!("{}.{}", self.module_name, self.function_name);
 
         Function {
             name: name,
@@ -135,7 +135,7 @@ impl<'a> FnGenerator<'a> {
             }
             &ast::Expr::Capture(ref capture) => {
                 let module = capture.module.unwrap_or(self.module_name);
-                let name = format!("{}:{}", module, capture.name);
+                let name = format!("{}.{}", module, capture.name);
                 vec![Instruction::Capture(out, name, capture.arity)]
             }
             &ast::Expr::Let(ref l) => {
@@ -194,7 +194,7 @@ impl<'a> FnGenerator<'a> {
             },
             _ => {
                 let module = ap.module.unwrap_or(self.module_name);
-                let name = format!("{}:{}", module, ap.name);
+                let name = format!("{}.{}", module, ap.name);
                 vec![Instruction::Call(ret_loc, name, ap.arity(), args)]
             }
         }

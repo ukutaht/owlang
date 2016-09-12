@@ -1,7 +1,7 @@
 module PathTest {
   fn test_join() {
-    OwlUnit:assert_eq(Path:join("foo", "bar"), "foo/bar")
-    OwlUnit:assert_eq(Path:join("foo/", "bar"), "foo/bar")
-    OwlUnit:assert_eq(Path:join("foo", "/bar"), "foo/bar")
+    OwlUnit.assert_eq(Path.join("foo", "bar"), "foo/bar")
+    OwlUnit.assert_eq(Path.join("foo/", "bar"), "foo/bar")
+    OwlUnit.assert_eq(Path.join("foo", "/bar"), "foo/bar")
   }
 }

@@ -11,7 +11,7 @@ pub struct Function {
 
 impl Function {
     pub fn emit<T: Write>(&self, out: &mut T) {
-        let full_name = format!("{}/{}", self.name, self.arity);
+        let full_name = format!("{}\\{}", self.name, self.arity);
         let name_size = full_name.len() as u8;
         out.write(&[opcodes::PUB_FN, name_size + 1]).unwrap(); // +1 accounts for null termination
         out.write(&full_name.as_bytes()).unwrap();
@@ -23,7 +23,7 @@ impl Function {
     }
 
     pub fn emit_human_readable<T: Write>(&self, out: &mut T) {
-        let header = format!("{}/{}:\n", self.name, self.arity);
+        let header = format!("{}\\{}:\n", self.name, self.arity);
         out.write(&header.as_bytes()).unwrap();
 
         for instr in self.code.iter() {

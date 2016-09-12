@@ -2,7 +2,6 @@
 
 * Ensure that captured functions are called with correct arity (at runtime)
 * Function attributes (testing for example)
-* Use \ for arity everywhere
 * A graceful way to fatally quit the VM with a message (for example, when function is not found)
 * Ensure that infix operations work for everything in the first argument
 * Report parsing errors (depends on next chomp release)

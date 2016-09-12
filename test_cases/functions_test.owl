@@ -40,7 +40,7 @@ module FunctionsTest {
   }
 
   fn capture_gimme_six() {
-    Functions:gimme_six\0
+    Functions.gimme_six\0
   }
 
   fn apply_to_six(fn) {
@@ -48,27 +48,27 @@ module FunctionsTest {
   }
 
   fn test_functions() {
-    OwlUnit:assert_eq(gimme_five(), 5)
-    OwlUnit:assert_eq(add_five(5), 10)
-    OwlUnit:assert_eq(add_together(7, 11), 18)
-    OwlUnit:assert_eq(Functions:gimme_six(), 6)
-    OwlUnit:assert_eq(empty_function(), nil)
+    OwlUnit.assert_eq(gimme_five(), 5)
+    OwlUnit.assert_eq(add_five(5), 10)
+    OwlUnit.assert_eq(add_together(7, 11), 18)
+    OwlUnit.assert_eq(Functions.gimme_six(), 6)
+    OwlUnit.assert_eq(empty_function(), nil)
 
-    OwlUnit:assert_eq(mccarthy(5), 91)
-    OwlUnit:assert_eq(mccarthy(103), 93)
+    OwlUnit.assert_eq(mccarthy(5), 91)
+    OwlUnit.assert_eq(mccarthy(103), 93)
 
-    OwlUnit:assert_eq(arity_test(), 0)
-    OwlUnit:assert_eq(arity_test(1), 1)
-    OwlUnit:assert_eq(arity_test(1, 2), 2)
+    OwlUnit.assert_eq(arity_test(), 0)
+    OwlUnit.assert_eq(arity_test(1), 1)
+    OwlUnit.assert_eq(arity_test(1, 2), 2)
 
     let captured_gimme_five = gimme_five\0
-    OwlUnit:assert_eq(captured_gimme_five(), 5)
+    OwlUnit.assert_eq(captured_gimme_five(), 5)
 
     let captured_gimme_six = capture_gimme_six()
-    OwlUnit:assert_eq(captured_gimme_six(), 6)
+    OwlUnit.assert_eq(captured_gimme_six(), 6)
 
     let captured_add_five = add_five\1
-    OwlUnit:assert_eq(apply_to_six(captured_add_five), 11)
+    OwlUnit.assert_eq(apply_to_six(captured_add_five), 11)
   }
 
   fn return_adder() {
@@ -77,12 +77,12 @@ module FunctionsTest {
 
   fn test_anonymous_functions() {
     let gimme_three = () -> { 1 + 2 }
-    OwlUnit:assert_eq(gimme_three(), 3)
+    OwlUnit.assert_eq(gimme_three(), 3)
 
     let adder = (a, b) -> { a + b }
-    OwlUnit:assert_eq(adder(2, 3), 5)
+    OwlUnit.assert_eq(adder(2, 3), 5)
 
     let returned_adder = return_adder()
-    OwlUnit:assert_eq(returned_adder(2, 3), 5)
+    OwlUnit.assert_eq(returned_adder(2, 3), 5)
   }
 }

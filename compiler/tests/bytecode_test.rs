@@ -12,7 +12,7 @@ fn generates_simple_addition() {
     let res = bytecode::generate_function(&ast);
 
     assert_eq!(res, bytecode::Function {
-        name: "unknown:main".to_string(),
+        name: "unknown.main".to_string(),
         arity: 0,
         code: vec![
             bytecode::Instruction::StoreInt(1, 1),
@@ -169,7 +169,7 @@ fn generates_nested_arithmetic() {
     let res = bytecode::generate_function(&ast);
 
     assert_eq!(res, bytecode::Function {
-        name: "unknown:main".to_string(),
+        name: "unknown.main".to_string(),
         arity: 0,
         code: vec![
             bytecode::Instruction::StoreInt(1, 1),
@@ -245,7 +245,7 @@ fn generates_function_call_in_same_module() {
     let res = bytecode::generate(&module);
 
     assert_eq!(res.functions[0].code, vec![
-        bytecode::Instruction::Call(0, "mod:wut".to_string(), 0, Vec::new()),
+        bytecode::Instruction::Call(0, "mod.wut".to_string(), 0, Vec::new()),
         bytecode::Instruction::Return,
     ])
 }
@@ -261,7 +261,7 @@ fn generates_function_call_in_different_module() {
     let res = bytecode::generate(&module);
 
     assert_eq!(res.functions[0].code, vec![
-        bytecode::Instruction::Call(0, "other_module:wut".to_string(), 0, Vec::new()),
+        bytecode::Instruction::Call(0, "other_module.wut".to_string(), 0, Vec::new()),
         bytecode::Instruction::Return,
     ])
 }
@@ -435,7 +435,7 @@ fn generates_function_capture() {
     let res = bytecode::generate_function(&main);
 
     assert_eq!(res.code, vec![
-        bytecode::Instruction::Capture(0, "unknown:some_function".to_string(), 0),
+        bytecode::Instruction::Capture(0, "unknown.some_function".to_string(), 0),
         bytecode::Instruction::Return,
     ])
 }
@@ -450,7 +450,7 @@ fn generates_calling_function_indirectly() {
     let res = bytecode::generate_function(&main);
 
     assert_eq!(res.code, vec![
-        bytecode::Instruction::Capture(1, "unknown:some_function".to_string(), 0),
+        bytecode::Instruction::Capture(1, "unknown.some_function".to_string(), 0),
         bytecode::Instruction::CallLocal(0, 1, Vec::new()),
         bytecode::Instruction::Return,
     ])
@@ -466,8 +466,8 @@ fn does_not_call_locally_when_module_is_provided() {
     let res = bytecode::generate_function(&main);
 
     assert_eq!(res.code, vec![
-        bytecode::Instruction::Capture(1, "unknown:some_function".to_string(), 0),
-        bytecode::Instruction::Call(0, "Module:captured".to_string(), 0, Vec::new()),
+        bytecode::Instruction::Capture(1, "unknown.some_function".to_string(), 0),
+        bytecode::Instruction::Call(0, "Module.captured".to_string(), 0, Vec::new()),
         bytecode::Instruction::Return,
     ])
 }

@@ -227,7 +227,7 @@ fn apply(i: Input<u8>) -> U8Result<Expr> {
 fn module_prefix(i: Input<u8>) -> U8Result<Option<&str>> {
     parse!{i;
         let name = capitalized_ident();
-        string(b":");
+        string(b".");
         ret Some(name)
     }
 }

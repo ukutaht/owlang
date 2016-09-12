@@ -57,7 +57,7 @@ uint64_t load_function(vm_t *vm, uint8_t function_id) {
     char fname_buf[255];
     char *fname_copy = fname_buf;
     strcpy(fname_copy, strings_lookup_id(vm->function_names, function_id));
-    char *module_name = strsep(&fname_copy, ":");
+    char *module_name = strsep(&fname_copy, ".");
     debug_print("Attempting to load module: %s\n", module_name);
     vm_load_module(vm, module_name);
     location = vm->functions[function_id];

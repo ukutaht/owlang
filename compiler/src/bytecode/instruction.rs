@@ -86,7 +86,7 @@ impl Instruction {
                 out.write(&[opcodes::FILE_LS, reg, path]).unwrap();
             },
             &Instruction::Call(ret_loc, ref name, arity, ref regs) => {
-                let full_name = format!("{}/{}", name, arity);
+                let full_name = format!("{}\\{}", name, arity);
                 let name_size = full_name.len() as u8;
                 out.write(&[opcodes::CALL, ret_loc, name_size + 1]).unwrap(); // +1 accounts for null termination
                 out.write(&full_name.as_bytes()).unwrap();
@@ -104,7 +104,7 @@ impl Instruction {
                 out.write(&copied_regs).unwrap();
             }
             &Instruction::Capture(ret_loc, ref name, arity) => {
-                let full_name = format!("{}/{}", name, arity);
+                let full_name = format!("{}\\{}", name, arity);
                 let name_size = full_name.len() as u8;
                 out.write(&[opcodes::CAPTURE, ret_loc, name_size + 1]).unwrap(); // +1 accounts for null termination
                 out.write(&full_name.as_bytes()).unwrap();

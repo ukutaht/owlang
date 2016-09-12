@@ -8,15 +8,15 @@ module TuplesTest {
   }
 
   fn test_tuples() {
-    OwlUnit:assert_eq((1, 2), (1, 2))
-    OwlUnit:assert_eq((1, (2, (3, 4))), (1, (2, (3, 4))))
+    OwlUnit.assert_eq((1, 2), (1, 2))
+    OwlUnit.assert_eq((1, (2, (3, 4))), (1, (2, (3, 4))))
 
-    OwlUnit:assert_eq(Tuple:nth(two_and_four(), 0), 2)
-    OwlUnit:assert_eq(Tuple:nth(two_and_four(), 1), 4)
-    OwlUnit:assert_eq(Tuple:nth(Tuple:nth(nested(), 1), 0), 3)
+    OwlUnit.assert_eq(Tuple.nth(two_and_four(), 0), 2)
+    OwlUnit.assert_eq(Tuple.nth(two_and_four(), 1), 4)
+    OwlUnit.assert_eq(Tuple.nth(Tuple.nth(nested(), 1), 0), 3)
 
-    OwlUnit:assert_eq(Tuple:nth((1, 2), 2), nil)
+    OwlUnit.assert_eq(Tuple.nth((1, 2), 2), nil)
     let negative = 0 - 1
-    OwlUnit:assert_eq(Tuple:nth((1, 2), negative), nil)
+    OwlUnit.assert_eq(Tuple.nth((1, 2), negative), nil)
   }
 }

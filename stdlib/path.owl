@@ -5,16 +5,16 @@ module Path {
   }
 
   fn remove_dirsep_end(path) {
-    if String:last(path) == "/" {
-      String:drop_last(path, 1)
+    if String.last(path) == "/" {
+      String.drop_last(path, 1)
     } else {
       path
     }
   }
 
   fn remove_dirsep_start(path) {
-    if String:first(path) == "/" {
-      String:drop(path, 1)
+    if String.first(path) == "/" {
+      String.drop(path, 1)
     } else {
       path
     }

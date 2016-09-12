@@ -1,31 +1,31 @@
 module BooleansTest {
   fn test_and_and() {
     let test1 = true && false
-    OwlUnit:assert_eq(test1, false)
+    OwlUnit.assert_eq(test1, false)
 
     let test2 = false && true
-    OwlUnit:assert_eq(test2, false)
+    OwlUnit.assert_eq(test2, false)
 
     let test3 = nil && true
-    OwlUnit:assert_eq(test3, nil)
+    OwlUnit.assert_eq(test3, nil)
   }
 
   fn test_or_or() {
     let test1 = true || false
-    OwlUnit:assert_eq(test1, true)
+    OwlUnit.assert_eq(test1, true)
 
     let test2 = false || true
-    OwlUnit:assert_eq(test2, true)
+    OwlUnit.assert_eq(test2, true)
 
     let test3 = nil || true
-    OwlUnit:assert_eq(test3, true)
+    OwlUnit.assert_eq(test3, true)
   }
 
   fn test_equalities() {
-    OwlUnit:assert_eq(true, true)
-    OwlUnit:assert_eq(false, false)
-    OwlUnit:assert_eq(false, !true)
-    OwlUnit:assert_eq(true, !false)
-    OwlUnit:assert_eq(true, !!true)
+    OwlUnit.assert_eq(true, true)
+    OwlUnit.assert_eq(false, false)
+    OwlUnit.assert_eq(false, !true)
+    OwlUnit.assert_eq(true, !false)
+    OwlUnit.assert_eq(true, !!true)
   }
 }

@@ -57,7 +57,7 @@ fn parses_simple_function_application() {
 
 #[test]
 fn parses_simple_function_application_with_module() {
-    let res = parser::parse_expr(b"Module:function()");
+    let res = parser::parse_expr(b"Module.function()");
     assert_eq!(res, Ok(mk_apply(Some("Module"), "function", Vec::new())));
 }
 

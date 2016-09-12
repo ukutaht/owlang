@@ -1,62 +1,62 @@
 module StringTest {
   fn test_equality() {
-    OwlUnit:assert_eq("ab", "ab")
-    OwlUnit:refute_eq("one", "two")
+    OwlUnit.assert_eq("ab", "ab")
+    OwlUnit.refute_eq("one", "two")
   }
 
   fn test_concat() {
     let res = "Hello " ++ "World!"
-    OwlUnit:assert_eq(res, "Hello World!")
-    OwlUnit:refute_eq(res, "something else")
+    OwlUnit.assert_eq(res, "Hello World!")
+    OwlUnit.refute_eq(res, "something else")
 
     let many_res = "One " ++ "and " ++ "Two"
-    OwlUnit:assert_eq(many_res, "One and Two")
+    OwlUnit.assert_eq(many_res, "One and Two")
   }
 
   fn test_slice() {
     let string = "Hello world!"
 
-    OwlUnit:assert_eq(String:slice(string, 0, 12), "Hello world!")
-    OwlUnit:assert_eq(String:slice(string, 0, 15), "Hello world!")
-    OwlUnit:assert_eq(String:slice(string, 0, 1), "H")
-    OwlUnit:assert_eq(String:slice(string, 11, 12), "!")
-    OwlUnit:assert_eq(String:slice(string, 10, 12), "d!")
+    OwlUnit.assert_eq(String.slice(string, 0, 12), "Hello world!")
+    OwlUnit.assert_eq(String.slice(string, 0, 15), "Hello world!")
+    OwlUnit.assert_eq(String.slice(string, 0, 1), "H")
+    OwlUnit.assert_eq(String.slice(string, 11, 12), "!")
+    OwlUnit.assert_eq(String.slice(string, 10, 12), "d!")
   }
 
   fn test_count() {
-    OwlUnit:assert_eq(String:count(""), 0)
-    OwlUnit:assert_eq(String:count("Hello"), 5)
+    OwlUnit.assert_eq(String.count(""), 0)
+    OwlUnit.assert_eq(String.count("Hello"), 5)
   }
 
   fn test_starts_with() {
-    OwlUnit:assert(String:starts_with?("a", "a"))
-    OwlUnit:refute(String:starts_with?("a", "b"))
+    OwlUnit.assert(String.starts_with?("a", "a"))
+    OwlUnit.refute(String.starts_with?("a", "b"))
 
-    OwlUnit:assert(String:starts_with?("asd", "as"))
-    OwlUnit:refute(String:starts_with?("asd", "de"))
+    OwlUnit.assert(String.starts_with?("asd", "as"))
+    OwlUnit.refute(String.starts_with?("asd", "de"))
   }
 
   fn test_contains() {
-    OwlUnit:assert(String:contains?("a", "a"))
-    OwlUnit:refute(String:contains?("a", "b"))
+    OwlUnit.assert(String.contains?("a", "a"))
+    OwlUnit.refute(String.contains?("a", "b"))
 
-    OwlUnit:assert(String:contains?("asdfghjkl", "fgh"))
-    OwlUnit:refute(String:contains?("asdfghjkl", "lkjh"))
+    OwlUnit.assert(String.contains?("asdfghjkl", "fgh"))
+    OwlUnit.refute(String.contains?("asdfghjkl", "lkjh"))
   }
 
   fn test_last() {
-    OwlUnit:assert_eq(String:last(""), "")
-    OwlUnit:assert_eq(String:last("a"), "a")
-    OwlUnit:assert_eq(String:last("asd"), "d")
+    OwlUnit.assert_eq(String.last(""), "")
+    OwlUnit.assert_eq(String.last("a"), "a")
+    OwlUnit.assert_eq(String.last("asd"), "d")
   }
 
   fn test_drop_last() {
-    OwlUnit:assert_eq(String:drop_last("asd", 1), "as")
-    OwlUnit:assert_eq(String:drop_last("asd", 2), "a")
+    OwlUnit.assert_eq(String.drop_last("asd", 1), "as")
+    OwlUnit.assert_eq(String.drop_last("asd", 2), "a")
   }
 
   fn test_drop() {
-    OwlUnit:assert_eq(String:drop("asd", 1), "sd")
-    OwlUnit:assert_eq(String:drop("asd", 2), "d")
+    OwlUnit.assert_eq(String.drop("asd", 1), "sd")
+    OwlUnit.assert_eq(String.drop("asd", 2), "d")
   }
 }
