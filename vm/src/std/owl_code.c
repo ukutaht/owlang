@@ -4,12 +4,13 @@
 
 #include "opcodes.h"
 #include "vm.h"
+#include "term.h"
 #include "alloc.h"
 #include "std/owl_code.h"
+#include "std/owl_function.h"
 #include "std/owl_list.h"
 #include "std/owl_string.h"
 #include "util/file.h"
-
 
 typedef struct scanner_t {
     uintptr_t index;
@@ -74,6 +75,7 @@ owl_term owl_load_module(vm_t *vm, uint8_t *bytecode, size_t size) {
       case OP_STRING_COUNT:
       case OP_CODE_LOAD:
       case OP_TEST:
+      case OP_FUNCTION_NAME:
       case OP_TO_STRING:
         *code_ptr++ = ch;
         *code_ptr++ = scanner_next(scanner);
@@ -90,7 +92,6 @@ owl_term owl_load_module(vm_t *vm, uint8_t *bytecode, size_t size) {
       case OP_LIST_NTH:
       case OP_CONCAT:
       case OP_STRING_CONTAINS:
-      case OP_CALL_BY_NAME:
       case OP_ANON_FN:
         *code_ptr++ = ch;
         *code_ptr++ = scanner_next(scanner);
@@ -137,14 +138,14 @@ owl_term owl_load_module(vm_t *vm, uint8_t *bytecode, size_t size) {
         char name[name_size];
         scanner_read(name, name_size, scanner);
         uint64_t id = strings_intern(vm->function_names, name);
-        uint64_t instruction = (uint64_t) (code_ptr - vm->code);
-
-        const char *function_name = strings_lookup_id(vm->function_names, id);
-        owl_term owl_name = owl_string_from(function_name);
-        function_list = owl_list_push(function_list, owl_name);
-
         assert(id < MAX_FUNCTIONS);
-        vm->functions[id] = instruction;
+
+        uint64_t instruction = (uint64_t) (code_ptr - vm->code);
+        const char *function_name = strings_lookup_id(vm->function_names, id);
+
+        Function* fun = owl_function_init(function_name, instruction);
+        function_list = owl_list_push(function_list, owl_function_from(fun));
+        vm->functions[id] = fun;
         break;
         }
       case OP_LOAD_STRING: {

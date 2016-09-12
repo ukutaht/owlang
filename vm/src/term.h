@@ -5,13 +5,11 @@
 #define TERM_H 1
 
 #define owl_extract_ptr(term) ((void*) (term >> 3))
-#define int_from_owl_int(term) (term >> 3)
-#define instruction_from_function(term) (term >> 3)
 #define owl_tag_of(term) ((owl_tag) (term & 0x7))
 #define owl_tag_as(term, tag) ((((owl_term) term) << 3) | tag)
 
 #define owl_int_from(val) owl_tag_as(val, INT)
-#define owl_function_from(val) owl_tag_as(val, FUNCTION)
+#define int_from_owl_int(term) (term >> 3)
 
 #define owl_term_falsey(term) (term == OWL_FALSE || term == OWL_NIL)
 #define owl_term_truthy(term) (!owl_term_falsey(term))

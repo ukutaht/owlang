@@ -3,6 +3,7 @@
 #include <intern/strings.h>
 
 #include "term.h"
+#include "std/owl_function.h"
 
 #ifndef VM_H
 #define VM_H 1
@@ -15,6 +16,7 @@
 #define DEBUG false
 #define debug_print(fmt, ...) \
             do { if (DEBUG) fprintf(stderr, fmt, __VA_ARGS__); } while (0)
+
 typedef struct frame_t {
     unsigned int ret_address;
     unsigned int ret_register;
@@ -33,7 +35,7 @@ typedef struct vm {
     opcode_impl *opcodes[255];           // Opcode lookup table
     struct strings *function_names;      // Interned function names
     struct strings *intern_pool;         // General intern pool
-    uint64_t functions[MAX_FUNCTIONS];   // Function lookup table
+    Function* functions[MAX_FUNCTIONS];   // Function lookup table
 } vm_t;
 
 

@@ -1,7 +1,6 @@
 #include <rrb/rrb.h>
 
 #include "term.h"
-#include "vm.h"
 
 #define rrb_to_list(rrb) owl_tag_as(rrb, LIST)
 #define list_to_rrb(list) ((RRB*) owl_extract_ptr(list))

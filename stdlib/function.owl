@@ -1,5 +1,9 @@
 module Function {
-  fn apply(fname, args) {
-    call_by_name(fname, args)
+  fn apply(function, args) {
+    call_by_name(function, args)
+  }
+
+  fn name(function) {
+    function_name(function)
   }
 }

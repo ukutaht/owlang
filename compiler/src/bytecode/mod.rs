@@ -178,7 +178,7 @@ impl<'a> FnGenerator<'a> {
             "string_slice" => vec![Instruction::StringSlice(ret_loc, args[0], args[1], args[2])],
             "string_count" => vec![Instruction::StringCount(ret_loc, args[0])],
             "code_load" => vec![Instruction::CodeLoad(ret_loc, args[0])],
-            "call_by_name" => vec![Instruction::CallByName(ret_loc, args[0], args[1])],
+            "function_name" => vec![Instruction::FunctionName(ret_loc, args[0])],
             "string_contains" => vec![Instruction::StringContains(ret_loc, args[0], args[1])],
             "term_to_string" => vec![Instruction::ToString(ret_loc, args[0])],
             _   => {

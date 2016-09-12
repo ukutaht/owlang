@@ -71,7 +71,6 @@ bool find_module_from_dir(char *buffer, char *dirname, const char *module_name) 
   }
 
   return false;
-
 }
 
 bool find_file_for_module(char *buffer, const char *module_name) {

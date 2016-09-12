@@ -19,12 +19,12 @@ module OwlUnitRunner {
   }
 
   fn test_function?(fun) {
-    String.contains?(fun, "test_")
+    String.contains?(Function.name(fun), "test_")
   }
 
   fn apply_test_fn(test_fn) {
-    IO.println("Running " ++ test_fn)
-    Function.apply(test_fn, ())
+    IO.println("Running " ++ Function.name(test_fn))
+    test_fn()
   }
 
   fn test_path() {

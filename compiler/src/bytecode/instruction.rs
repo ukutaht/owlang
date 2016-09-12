@@ -40,7 +40,7 @@ pub enum Instruction {
     ListSlice(Reg, Reg, Reg, Reg),
     StringSlice(Reg, Reg, Reg, Reg),
     CodeLoad(Reg, Reg),
-    CallByName(Reg, Reg, Reg),
+    FunctionName(Reg, Reg),
     StringCount(Reg, Reg),
     StringContains(Reg, Reg, Reg),
     ToString(Reg, Reg),
@@ -67,8 +67,8 @@ impl Instruction {
             &Instruction::Concat(to, left, right) => {
                 out.write(&[opcodes::CONCAT, to, left, right]).unwrap();
             },
-            &Instruction::CallByName(result, name, args) => {
-                out.write(&[opcodes::CALL_BY_NAME, result, name, args]).unwrap();
+            &Instruction::FunctionName(result, arg) => {
+                out.write(&[opcodes::FUNCTION_NAME, result, arg]).unwrap();
             },
             &Instruction::Print(reg) => {
                 out.write(&[opcodes::PRINT, reg]).unwrap();
@@ -210,8 +210,8 @@ impl Instruction {
                 let string = format!("concat %{}, %{}, %{}\n", to, left, right);
                 out.write(&string.as_bytes()).unwrap();
             }
-            &Instruction::CallByName(to, name, args) => {
-                let string = format!("call_by_name %{}, %{}, %{}\n", to, name, args);
+            &Instruction::FunctionName(to, arg) => {
+                let string = format!("function_name %{}, %{}\n", to, arg);
                 out.write(&string.as_bytes()).unwrap();
             }
             &Instruction::StringContains(to, string, substr) => {
@@ -373,7 +373,7 @@ impl Instruction {
             &Instruction::Add(_, _, _)          => 4,
             &Instruction::Sub(_, _, _)          => 4,
             &Instruction::Concat(_, _, _)       => 4,
-            &Instruction::CallByName(_, _, _)   => 4,
+            &Instruction::FunctionName(_, _)    => 3,
             &Instruction::StoreInt(_, _)        => 4,
             &Instruction::Mov(_, _)             => 3,
             &Instruction::Print(_)              => 2,

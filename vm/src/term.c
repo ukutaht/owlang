@@ -7,6 +7,7 @@
 #include "term.h"
 #include "std/owl_list.h"
 #include "std/owl_string.h"
+#include "std/owl_function.h"
 
 #define INT_MAX_DIGITS 20
 
@@ -89,15 +90,23 @@ owl_term owl_term_to_string(owl_term term) {
     }
     case LIST:
     {
-      owl_term buffer = owl_string_from("");
+      owl_term buffer = owl_string_from("[");
       uint64_t count = int_from_owl_int(owl_list_count(term));
       for(uint64_t i = 0; i < count; i++) {
         buffer = owl_string_concat(buffer, owl_term_to_string(owl_list_nth(term, owl_int_from(i))));
+        if (i != count - 1) {
+          buffer = owl_string_concat(buffer, owl_string_from(", "));
+        }
       }
+      buffer = owl_string_concat(buffer, owl_string_from("]"));
       return buffer;
     }
     case STRING:
       return term;
+    case FUNCTION:
+    {
+      return owl_function_name(term);
+    }
     default:
       puts("Unable to convert to string");
       exit(1);
