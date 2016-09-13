@@ -4,9 +4,18 @@
 #include "std/owl_string.h"
 
 Function* owl_function_init(const char* name, uint64_t location) {
-  Function* function = owl_alloc(sizeof(Function));
+  Function* function = malloc(sizeof(Function));
   function->location = location;
   function->name = name;
+
+  return function;
+}
+
+Function* owl_anon_function_init(uint64_t location) {
+  // Anonymous functions are subject to garbage collection, hence using `owl_alloc`
+  Function* function = owl_alloc(sizeof(Function));
+  function->location = location;
+  function->name = "Anonymous";
 
   return function;
 }

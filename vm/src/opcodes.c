@@ -518,7 +518,7 @@ void op_anon_fn(struct vm *vm) {
   uint8_t jmp = next_reg(vm);
   next_reg(vm);
 
-  Function* fun = owl_function_init("Anonymous", vm->ip + 1);
+  Function* fun = owl_anon_function_init(vm->ip + 1);
   set_reg(vm, ret_reg, owl_function_from(fun));
 
   vm->ip += jmp;
