@@ -85,4 +85,26 @@ module FunctionsTest {
     let returned_adder = return_adder()
     OwlUnit.assert_eq(returned_adder(2, 3), 5)
   }
+
+  fn curried_adder(x) {
+    (y) -> {
+      x + y
+    }
+  }
+
+  fn list_giver() {
+    let list = [1, 2]
+
+    () -> {
+      list
+    }
+  }
+
+  fn test_closures() {
+    let add5 = curried_adder(5)
+    let getlist = list_giver()
+
+    OwlUnit.assert_eq(add5(6), 11)
+    OwlUnit.assert_eq(getlist(), [1, 2])
+  }
 }

@@ -492,7 +492,7 @@ fn generates_anonymous_function() {
     let res = bytecode::generate_function(&main);
 
     assert_eq!(res.code, vec![
-        bytecode::Instruction::AnonFn(0, 14, 0),
+        bytecode::Instruction::AnonFn(0, 14, 0, vec![]),
         bytecode::Instruction::StoreInt(1, 1),
         bytecode::Instruction::StoreInt(2, 1),
         bytecode::Instruction::Add(0, 1, 2),
@@ -510,10 +510,30 @@ fn generates_anonymous_function_with_arguments() {
     let res = bytecode::generate_function(&main);
 
     assert_eq!(res.code, vec![
-        bytecode::Instruction::AnonFn(0, 12, 2),
+        bytecode::Instruction::AnonFn(0, 12, 2, vec![]),
         bytecode::Instruction::Mov(3, 1),
         bytecode::Instruction::Mov(4, 2),
         bytecode::Instruction::Add(0, 3, 4),
+        bytecode::Instruction::Return,
+        bytecode::Instruction::Return
+    ])
+}
+
+#[test]
+fn generates_anonymous_function_with_upvalues() {
+    let main = mk_function("main", vec![mk_argument("a")], vec![
+        mk_let(mk_ident("b"), mk_int("1")),
+        mk_anon_fn(vec![], vec![mk_apply(None, "+", vec![mk_ident("a"), mk_ident("b")])])
+    ]);
+
+    let res = bytecode::generate_function(&main);
+
+    assert_eq!(res.code, vec![
+        bytecode::Instruction::StoreInt(2, 1),
+        bytecode::Instruction::AnonFn(0, 12, 0, vec![1, 2]),
+        bytecode::Instruction::GetUpval(1, 1),
+        bytecode::Instruction::GetUpval(2, 2),
+        bytecode::Instruction::Add(0, 1, 2),
         bytecode::Instruction::Return,
         bytecode::Instruction::Return
     ])

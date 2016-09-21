@@ -44,7 +44,8 @@ pub enum Instruction {
     StringCount(Reg, Reg),
     StringContains(Reg, Reg, Reg),
     ToString(Reg, Reg),
-    AnonFn(Reg, Jump, Arity),
+    GetUpval(Reg, Reg),
+    AnonFn(Reg, Jump, Arity, Vec<Reg>),
 }
 
 impl Instruction {
@@ -63,6 +64,9 @@ impl Instruction {
             }
             &Instruction::Mov(to, from) => {
                 out.write(&[opcodes::MOV, to, from]).unwrap();
+            },
+            &Instruction::GetUpval(to, address) => {
+                out.write(&[opcodes::GET_UPVAL, to, address]).unwrap();
             },
             &Instruction::Concat(to, left, right) => {
                 out.write(&[opcodes::CONCAT, to, left, right]).unwrap();
@@ -182,8 +186,12 @@ impl Instruction {
             &Instruction::ToString(to, reg) => {
                 out.write(&[opcodes::TO_STRING, to, reg]).unwrap();
             }
-            &Instruction::AnonFn(to, jmp, arity) => {
+            &Instruction::AnonFn(to, jmp, arity, ref upvals) => {
                 out.write(&[opcodes::ANON_FN, to, jmp, arity]).unwrap();
+
+                out.write(&[upvals.len() as u8]).unwrap();
+                let copied_upvals = upvals.clone();
+                out.write(&copied_upvals).unwrap();
             }
         }
     }
@@ -204,6 +212,10 @@ impl Instruction {
             }
             &Instruction::Mov(to, from) => {
                 let string = format!("mov %{}, %{}\n", to, from);
+                out.write(&string.as_bytes()).unwrap();
+            }
+            &Instruction::GetUpval(to, address) => {
+                let string = format!("get_upval %{}, {}\n", to, address);
                 out.write(&string.as_bytes()).unwrap();
             }
             &Instruction::Concat(to, left, right) => {
@@ -251,14 +263,8 @@ impl Instruction {
                 out.write(&string.as_bytes()).unwrap();
             }
             &Instruction::CallLocal(ret_loc, func_loc, ref regs) => {
-                let string;
-
-                if regs.len() > 0 {
-                    let args: Vec<_> = regs.iter().map(|int| format!("%{}", int)).collect();
-                    string = format!("call_local %{}, %{}, {}\n", ret_loc, func_loc, args.join(", "));
-                } else {
-                    string = format!("call_local %{}, %{}\n", ret_loc, func_loc);
-                }
+                let args: Vec<_> = regs.iter().map(|int| format!("%{}", int)).collect();
+                let string = format!("call_local %{}, %{}, [{}]\n", ret_loc, func_loc, args.join(", "));
 
                 out.write(&string.as_bytes()).unwrap();
             }
@@ -274,14 +280,8 @@ impl Instruction {
                 out.write(b"return\n").unwrap();
             }
             &Instruction::Tuple(reg, size, ref regs) => {
-                let string;
-
-                if regs.len() > 0 {
-                    let elems: Vec<_> = regs.iter().map(|int| format!("%{}", int)).collect();
-                    string = format!("tuple %{}, {}, {}\n", reg, size, elems.join(", "));
-                } else {
-                    string = format!("tuple %{}, {}\n", reg, size);
-                }
+                let elems: Vec<_> = regs.iter().map(|int| format!("%{}", int)).collect();
+                let string = format!("tuple %{}, [{}; {}]\n", reg, size, elems.join(", "));
 
                 out.write(&string.as_bytes()).unwrap();
             }
@@ -294,15 +294,8 @@ impl Instruction {
                 out.write(&string.as_bytes()).unwrap();
             },
             &Instruction::List(reg, size, ref regs) => {
-                let string;
-
-                if regs.len() > 0 {
-                    let elems: Vec<_> = regs.iter().map(|int| format!("%{}", int)).collect();
-                    string = format!("list %{}, {}, {}\n", reg, size, elems.join(", "));
-                } else {
-                    string = format!("list %{}, {}\n", reg, size);
-                }
-
+                let elems: Vec<_> = regs.iter().map(|int| format!("%{}", int)).collect();
+                let string = format!("list %{}, [{}; {}]\n", reg, size, elems.join(", "));
                 out.write(&string.as_bytes()).unwrap();
             },
             &Instruction::StoreTrue(reg) => {
@@ -361,8 +354,9 @@ impl Instruction {
                 let string = format!("to_string %{}, %{}\n", to, reg);
                 out.write(&string.as_bytes()).unwrap();
             }
-            &Instruction::AnonFn(to, jmp, arity) => {
-                let string = format!("anon_fn %{}, {}, {}\n", to, jmp, arity);
+            &Instruction::AnonFn(to, jmp, arity, ref upvals) => {
+                let formatted_upvals: Vec<_> = upvals.iter().map(|int| format!("%{}", int)).collect();
+                let string = format!("anon_fn %{}, {}, {}, [{}; {}]\n", to, jmp, arity, upvals.len(), formatted_upvals.join(", "));
                 out.write(&string.as_bytes()).unwrap();
             }
         }
@@ -405,7 +399,8 @@ impl Instruction {
             &Instruction::GreaterThan(_, _, _)  => 4,
             &Instruction::LoadString(_, _)      => 3, // Content only counts for 1 byte because it is interned at load-time
             &Instruction::ToString(_, _)        => 3,
-            &Instruction::AnonFn(_, _, _)       => 4,
+            &Instruction::AnonFn(_, _, _, ref upvals) => 5 + (upvals.len() as u8),
+            &Instruction::GetUpval(_, _)        => 3,
         }
     }
 }

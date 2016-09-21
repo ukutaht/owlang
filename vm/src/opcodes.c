@@ -12,6 +12,7 @@
 #include "std/owl_file.h"
 #include "std/owl_string.h"
 #include "std/owl_code.h"
+#include "std/owl_function.h"
 
 // Read and return the next byte from the current instruction-pointer.
 uint8_t next_byte(vm_t *vm) {
@@ -174,6 +175,7 @@ void op_call(struct vm *vm) {
   #endif
 
   Function* fun = load_function(vm, function_id);
+  vm->current_function = fun;
 
   setup_next_stackframe(vm, arity, ret_reg);
 
@@ -401,6 +403,7 @@ void op_call_local(struct vm *vm) {
 
   setup_next_stackframe(vm, arity, ret_reg);
   Function* fun = owl_term_to_function(function);
+  vm->current_function = fun;
 
   vm->ip = fun->location;
 }
@@ -516,12 +519,30 @@ void op_anon_fn(struct vm *vm) {
   debug_print("%04x OP_ANON_FN\n", vm->ip);
   uint8_t ret_reg = next_reg(vm);
   uint8_t jmp = next_reg(vm);
-  next_reg(vm);
+  next_reg(vm); // arity
+  uint8_t n_upvals = next_reg(vm);
 
-  Function* fun = owl_anon_function_init(vm->ip + 1);
+  Function* fun = owl_anon_function_init(vm->ip + n_upvals + 1);
+
+  for (int i = 0; i < n_upvals; i++) {
+    owl_term value = get_reg(vm, next_reg(vm));
+    owl_function_set_upvalue(fun, i + 1, value);
+  }
+
   set_reg(vm, ret_reg, owl_function_from(fun));
 
   vm->ip += jmp;
+}
+
+void op_get_upvalue(struct vm *vm) {
+  debug_print("%04x OP_GETUPVAL\n", vm->ip);
+  uint8_t ret_reg = next_reg(vm);
+  uint8_t upval_index = next_byte(vm);
+  owl_term value = owl_function_get_upvalue(vm->current_function, upval_index);
+
+  set_reg(vm, ret_reg, value);
+
+  vm->ip += 1;
 }
 
 void opcode_init(vm_t * vm) {
@@ -564,4 +585,5 @@ void opcode_init(vm_t * vm) {
   vm->opcodes[OP_STRING_CONTAINS] = op_string_contains;
   vm->opcodes[OP_TO_STRING] = op_to_string;
   vm->opcodes[OP_ANON_FN] = op_anon_fn;
+  vm->opcodes[OP_GETUPVAL] = op_get_upvalue;
 }

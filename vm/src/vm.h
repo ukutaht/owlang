@@ -29,13 +29,14 @@ typedef void opcode_impl(struct vm *in);
 typedef struct vm {
     frame_t frames[STACK_DEPTH];
     unsigned int current_frame;
-    unsigned int ip;                     // Instruction pointer
-    uint8_t *code;                       // Loaded code
-    uint64_t code_size;                  // Loaded code size
-    opcode_impl *opcodes[255];           // Opcode lookup table
-    struct strings *function_names;      // Interned function names
-    struct strings *intern_pool;         // General intern pool
-    Function* functions[MAX_FUNCTIONS];   // Function lookup table
+    unsigned int ip;                    // Instruction pointer
+    uint8_t *code;                      // Loaded code
+    uint64_t code_size;                 // Loaded code size
+    opcode_impl *opcodes[255];          // Opcode lookup table
+    struct strings *function_names;     // Interned function names
+    struct strings *intern_pool;        // General intern pool
+    Function* functions[MAX_FUNCTIONS]; // Function lookup table
+    Function* current_function;
 } vm_t;
 
 

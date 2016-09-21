@@ -1,6 +1,7 @@
 use ast;
 
 use std::collections::HashMap;
+use std::cell::RefCell;
 
 mod opcodes;
 mod function;
@@ -11,17 +12,26 @@ pub use self::instruction::{Bytecode, Instruction, Reg};
 pub use self::function::Function;
 pub use self::module::Module;
 
+enum IdentLocation {
+    Local(Reg),
+    Upval(Reg),
+    NotFound
+}
+
 struct FnGenerator<'a> {
     var_count: u8,
     module_name: &'a str,
     function_name: &'a str,
     env: HashMap<String, Reg>,
     args: &'a Vec<ast::Argument<'a>>,
-    body: &'a Vec<ast::Expr<'a>>
+    body: &'a Vec<ast::Expr<'a>>,
+    parent: Option<&'a FnGenerator<'a>>,
+    // Use Set
+    upvals: RefCell<Vec<Reg>>
 }
 
 impl<'a> FnGenerator<'a> {
-    fn new<'b>(module_name: &'b str, function_name: &'b str, args: &'b Vec<ast::Argument>, body: &'b Vec<ast::Expr>) -> FnGenerator<'b> {
+    fn new<'b>(module_name: &'b str, function_name: &'b str, args: &'b Vec<ast::Argument>, body: &'b Vec<ast::Expr>, parent: Option<&'b FnGenerator<'b>>) -> FnGenerator<'b> {
         let mut env = HashMap::new();
         let mut var_count: u8 = 0;
 
@@ -36,7 +46,9 @@ impl<'a> FnGenerator<'a> {
             function_name: function_name,
             env: env,
             args: args,
-            body: body
+            body: body,
+            parent: parent,
+            upvals: RefCell::new(Vec::new())
         }
     }
 
@@ -56,6 +68,42 @@ impl<'a> FnGenerator<'a> {
 
         code.push(Instruction::Return);
         code
+    }
+
+    fn search_parent_env(&self, identifier: &str) -> IdentLocation {
+      self.parent
+          .map(|parent_fun| parent_fun.search_env(identifier))
+          .unwrap_or(IdentLocation::NotFound)
+    }
+
+    fn search_env(&self, identifier: &str) -> IdentLocation {
+        match self.env.get(identifier) {
+            Some(reg) => IdentLocation::Local(*reg),
+            None => {
+                match self.search_parent_env(identifier) {
+                    IdentLocation::Local(reg) => {
+                        self.upvals.borrow_mut().push(reg);
+                        IdentLocation::Upval(reg)
+                    },
+                    IdentLocation::Upval(reg) => {
+                        self.upvals.borrow_mut().push(reg);
+                        IdentLocation::Upval(reg)
+                    }
+                    loc => loc
+                }
+            }
+        }
+    }
+
+    fn identifier_exists_in_scope(&self, identifier: &str) -> bool {
+        match self.env.get(identifier) {
+            Some(_) => true,
+            None => self.parent.map(|p| p.identifier_exists_in_scope(identifier)).unwrap_or(false)
+        }
+    }
+
+    fn insert_env(&mut self, identifier: String, reg: Reg) {
+        self.env.insert(identifier, reg);
     }
 
     fn generate_expr(&mut self, out: Reg, expr: &'a ast::Expr) -> Bytecode {
@@ -119,7 +167,11 @@ impl<'a> FnGenerator<'a> {
                 res
             },
             &ast::Expr::Ident(ref i) => {
-                vec![Instruction::Mov(out, *self.env.get(i.name).unwrap())]
+                match self.search_env(i.name) {
+                    IdentLocation::Local(reg) => vec![Instruction::Mov(out, reg)],
+                    IdentLocation::Upval(address) => vec![Instruction::GetUpval(out, address)],
+                    IdentLocation::NotFound => panic!("Undefined variable `{}`", i.name),
+                }
             }
             &ast::Expr::True => {
                 vec![Instruction::StoreTrue(out)]
@@ -139,26 +191,28 @@ impl<'a> FnGenerator<'a> {
                 vec![Instruction::Capture(out, name, capture.arity)]
             }
             &ast::Expr::Let(ref l) => {
-                if self.env.contains_key(l.left.name) {
+                if self.identifier_exists_in_scope(l.left.name) {
                     panic!("Not allowed to rebind variable: {}", l.left.name);
                 } else {
                     let var = self.push();
                     let generated = self.generate_expr(var, &(*l.right));
-                    self.env.insert(l.left.name.to_string(), var);
+                    self.insert_env(l.left.name.to_string(), var);
                     generated
                 }
             }
             &ast::Expr::AnonFn(ref anon) => {
-                let mut generated = FnGenerator::new(self.module_name, "anon", &anon.args, &anon.body).generate_code();
-                let jmp = instruction::byte_size_of(&generated) + 1;
-                let mut instruction = vec![Instruction::AnonFn(out, jmp, anon.args.len() as u8)];
-                instruction.append(&mut generated);
+                let mut function = FnGenerator::new(self.module_name, "anon", &anon.args, &anon.body, Some(self));
+                let mut code = function.generate_code();
+
+                let jmp = instruction::byte_size_of(&code) + 1;
+                let mut instruction = vec![Instruction::AnonFn(out, jmp, anon.args.len() as u8, function.upvals.into_inner())];
+                instruction.append(&mut code);
                 instruction
             }
         }
     }
 
-    fn apply_op(&self, ap: &ast::Apply, ret_loc: Reg, args: Vec<Reg>) -> Bytecode {
+    fn apply_op(&mut self, ap: &ast::Apply, ret_loc: Reg, args: Vec<Reg>) -> Bytecode {
         match ap.name {
             "+" => vec![Instruction::Add(ret_loc, args[0], args[1])],
             "++" => vec![Instruction::Concat(ret_loc, args[0], args[1])],
@@ -187,10 +241,17 @@ impl<'a> FnGenerator<'a> {
         }
     }
 
-    fn generic_apply(&self, ap: &ast::Apply, ret_loc: Reg, args: Vec<Reg>) -> Bytecode {
-        match (ap.module, self.env.get(ap.name)) {
-            (None, Some(reg)) => {
-                vec![Instruction::CallLocal(ret_loc, *reg, args)]
+    fn generic_apply(&mut self, ap: &ast::Apply, ret_loc: Reg, args: Vec<Reg>) -> Bytecode {
+        match (ap.module, self.search_env(ap.name)) {
+            (None, IdentLocation::Local(reg)) => {
+                vec![Instruction::CallLocal(ret_loc, reg, args)]
+            },
+            (None, IdentLocation::Upval(address)) => {
+                let function_reg = self.push();
+                vec![
+                    Instruction::GetUpval(function_reg, address),
+                    Instruction::CallLocal(ret_loc, function_reg, args)
+                ]
             },
             _ => {
                 let module = ap.module.unwrap_or(self.module_name);
@@ -264,14 +325,14 @@ impl<'a> FnGenerator<'a> {
 }
 
 pub fn generate_function(f: &ast::Function) -> Function {
-    FnGenerator::new("unknown", f.name, &f.args, &f.body).generate()
+    FnGenerator::new("unknown", f.name, &f.args, &f.body, None).generate()
 }
 
 pub fn generate(module: &ast::Module) -> Module {
     let mut functions = Vec::new();
 
     for f in module.functions.iter() {
-        let generated = FnGenerator::new(module.name, f.name, &f.args, &f.body).generate();
+        let generated = FnGenerator::new(module.name, f.name, &f.args, &f.body, None).generate();
 
         functions.push(generated);
     }
