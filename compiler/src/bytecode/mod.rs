@@ -82,12 +82,14 @@ impl<'a> FnGenerator<'a> {
             None => {
                 match self.search_parent_env(identifier) {
                     IdentLocation::Local(reg) => {
+                        let upval_index = (self.upvals.borrow().len() + 1) as u8;
                         self.upvals.borrow_mut().push(reg);
-                        IdentLocation::Upval(reg)
+                        IdentLocation::Upval(upval_index)
                     },
                     IdentLocation::Upval(reg) => {
+                        let upval_index = (self.upvals.borrow().len() + 1) as u8;
                         self.upvals.borrow_mut().push(reg);
-                        IdentLocation::Upval(reg)
+                        IdentLocation::Upval(upval_index)
                     }
                     loc => loc
                 }
