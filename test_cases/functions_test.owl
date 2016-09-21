@@ -100,11 +100,22 @@ module FunctionsTest {
     }
   }
 
+  fn nested_curried_adder(a) {
+    (b, c) -> {
+      (d) -> {
+        a + b + c + d
+      }
+    }
+  }
+
   fn test_closures() {
     let add5 = curried_adder(5)
     let getlist = list_giver()
 
     OwlUnit.assert_eq(add5(6), 11)
     OwlUnit.assert_eq(getlist(), [1, 2])
+    let add3 = nested_curried_adder(3)
+    let add10 = add3(4, 3)
+    OwlUnit.assert_eq(add10(3), 13)
   }
 }

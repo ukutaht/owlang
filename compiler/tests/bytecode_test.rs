@@ -1,6 +1,7 @@
 extern crate owlc;
 
 use owlc::ast::*;
+use owlc::bytecode::{Instruction, VarRef};
 use owlc::bytecode;
 
 #[test]
@@ -15,10 +16,10 @@ fn generates_simple_addition() {
         name: "unknown.main".to_string(),
         arity: 0,
         code: vec![
-            bytecode::Instruction::StoreInt(1, 1),
-            bytecode::Instruction::StoreInt(2, 2),
-            bytecode::Instruction::Add(0, 1, 2),
-            bytecode::Instruction::Return
+            Instruction::StoreInt(VarRef::Register(1), 1),
+            Instruction::StoreInt(VarRef::Register(2), 2),
+            Instruction::Add(VarRef::Register(0), VarRef::Register(1), VarRef::Register(2)),
+            Instruction::Return
         ]
     })
 }
@@ -32,10 +33,10 @@ fn generates_equality_test() {
     let res = bytecode::generate_function(&ast);
 
     assert_eq!(res.code, vec![
-            bytecode::Instruction::StoreInt(1, 1),
-            bytecode::Instruction::StoreInt(2, 2),
-            bytecode::Instruction::Eq(0, 1, 2),
-            bytecode::Instruction::Return
+            Instruction::StoreInt(VarRef::Register(1), 1),
+            Instruction::StoreInt(VarRef::Register(2), 2),
+            Instruction::Eq(VarRef::Register(0), VarRef::Register(1), VarRef::Register(2)),
+            Instruction::Return
         ]
     )
 }
@@ -49,10 +50,10 @@ fn generates_non_equality_test() {
     let res = bytecode::generate_function(&ast);
 
     assert_eq!(res.code, vec![
-            bytecode::Instruction::StoreInt(1, 1),
-            bytecode::Instruction::StoreInt(2, 2),
-            bytecode::Instruction::NotEq(0, 1, 2),
-            bytecode::Instruction::Return
+            Instruction::StoreInt(VarRef::Register(1), 1),
+            Instruction::StoreInt(VarRef::Register(2), 2),
+            Instruction::NotEq(VarRef::Register(0), VarRef::Register(1), VarRef::Register(2)),
+            Instruction::Return
         ]
     )
 }
@@ -66,9 +67,9 @@ fn generates_not_op() {
     let res = bytecode::generate_function(&ast);
 
     assert_eq!(res.code, vec![
-            bytecode::Instruction::StoreTrue(1),
-            bytecode::Instruction::Not(0, 1),
-            bytecode::Instruction::Return
+            Instruction::StoreTrue(VarRef::Register(1)),
+            Instruction::Not(VarRef::Register(0), VarRef::Register(1)),
+            Instruction::Return
         ]
     )
 }
@@ -82,10 +83,10 @@ fn generates_greater_than_op() {
     let res = bytecode::generate_function(&ast);
 
     assert_eq!(res.code, vec![
-            bytecode::Instruction::StoreInt(1, 1),
-            bytecode::Instruction::StoreInt(2, 2),
-            bytecode::Instruction::GreaterThan(0, 1, 2),
-            bytecode::Instruction::Return
+            Instruction::StoreInt(VarRef::Register(1), 1),
+            Instruction::StoreInt(VarRef::Register(2), 2),
+            Instruction::GreaterThan(VarRef::Register(0), VarRef::Register(1), VarRef::Register(2)),
+            Instruction::Return
         ]
     )
 }
@@ -99,9 +100,9 @@ fn generates_system_exit_with_value() {
     let res = bytecode::generate_function(&ast);
 
     assert_eq!(res.code, vec![
-            bytecode::Instruction::StoreInt(1, 1),
-            bytecode::Instruction::Exit(1),
-            bytecode::Instruction::Return
+            Instruction::StoreInt(VarRef::Register(1), 1),
+            Instruction::Exit(VarRef::Register(1)),
+            Instruction::Return
         ]
     )
 }
@@ -115,8 +116,8 @@ fn generates_file_pwd() {
     let res = bytecode::generate_function(&ast);
 
     assert_eq!(res.code, vec![
-            bytecode::Instruction::FilePwd(0),
-            bytecode::Instruction::Return
+            Instruction::FilePwd(VarRef::Register(0)),
+            Instruction::Return
         ]
     )
 }
@@ -130,9 +131,9 @@ fn generates_file_ls() {
     let res = bytecode::generate_function(&ast);
 
     assert_eq!(res.code, vec![
-            bytecode::Instruction::LoadString(1, ".".to_string()),
-            bytecode::Instruction::FileLs(0, 1),
-            bytecode::Instruction::Return
+            Instruction::LoadString(VarRef::Register(1), ".".to_string()),
+            Instruction::FileLs(VarRef::Register(0), VarRef::Register(1)),
+            Instruction::Return
         ]
     )
 }
@@ -146,10 +147,10 @@ fn generates_concat() {
     let res = bytecode::generate_function(&ast);
 
     assert_eq!(res.code, vec![
-            bytecode::Instruction::LoadString(1, "a".to_string()),
-            bytecode::Instruction::LoadString(2, "b".to_string()),
-            bytecode::Instruction::Concat(0, 1, 2),
-            bytecode::Instruction::Return
+            Instruction::LoadString(VarRef::Register(1), "a".to_string()),
+            Instruction::LoadString(VarRef::Register(2), "b".to_string()),
+            Instruction::Concat(VarRef::Register(0), VarRef::Register(1), VarRef::Register(2)),
+            Instruction::Return
         ]
     )
 }
@@ -172,12 +173,12 @@ fn generates_nested_arithmetic() {
         name: "unknown.main".to_string(),
         arity: 0,
         code: vec![
-            bytecode::Instruction::StoreInt(1, 1),
-            bytecode::Instruction::StoreInt(3, 2),
-            bytecode::Instruction::StoreInt(4, 3),
-            bytecode::Instruction::Sub(2, 3, 4),
-            bytecode::Instruction::Add(0, 1, 2),
-            bytecode::Instruction::Return,
+            Instruction::StoreInt(VarRef::Register(1), 1),
+            Instruction::StoreInt(VarRef::Register(3), 2),
+            Instruction::StoreInt(VarRef::Register(4), 3),
+            Instruction::Sub(VarRef::Register(2), VarRef::Register(3), VarRef::Register(4)),
+            Instruction::Add(VarRef::Register(0), VarRef::Register(1), VarRef::Register(2)),
+            Instruction::Return,
         ]
     })
 }
@@ -191,9 +192,9 @@ fn generates_print_op() {
     let res = bytecode::generate_function(&ast);
 
     assert_eq!(res.code, vec![
-            bytecode::Instruction::StoreInt(1, 1),
-            bytecode::Instruction::Print(1),
-            bytecode::Instruction::Return,
+            Instruction::StoreInt(VarRef::Register(1), 1),
+            Instruction::Print(VarRef::Register(1)),
+            Instruction::Return,
         ]
     )
 }
@@ -211,13 +212,13 @@ fn generates_simple_if_statement() {
     let res = bytecode::generate_function(&ast);
 
     assert_eq!(res.code, vec![
-            bytecode::Instruction::StoreTrue(1),
-            bytecode::Instruction::Test(1, 5),
-            bytecode::Instruction::StoreNil(0),
-            bytecode::Instruction::Jmp(7),
-            bytecode::Instruction::StoreInt(1, 1),
-            bytecode::Instruction::Print(1),
-            bytecode::Instruction::Return
+            Instruction::StoreTrue(VarRef::Register(1)),
+            Instruction::Test(VarRef::Register(1), 5),
+            Instruction::StoreNil(VarRef::Register(0)),
+            Instruction::Jmp(7),
+            Instruction::StoreInt(VarRef::Register(1), 1),
+            Instruction::Print(VarRef::Register(1)),
+            Instruction::Return
         ]
     )
 }
@@ -245,8 +246,8 @@ fn generates_function_call_in_same_module() {
     let res = bytecode::generate(&module);
 
     assert_eq!(res.functions[0].code, vec![
-        bytecode::Instruction::Call(0, "mod.wut".to_string(), 0, Vec::new()),
-        bytecode::Instruction::Return,
+        Instruction::Call(VarRef::Register(0), "mod.wut".to_string(), 0, Vec::new()),
+        Instruction::Return,
     ])
 }
 
@@ -261,8 +262,8 @@ fn generates_function_call_in_different_module() {
     let res = bytecode::generate(&module);
 
     assert_eq!(res.functions[0].code, vec![
-        bytecode::Instruction::Call(0, "other_module.wut".to_string(), 0, Vec::new()),
-        bytecode::Instruction::Return,
+        Instruction::Call(VarRef::Register(0), "other_module.wut".to_string(), 0, Vec::new()),
+        Instruction::Return,
     ])
 }
 
@@ -275,10 +276,13 @@ fn generates_tuple() {
     let res = bytecode::generate_function(&main);
 
     assert_eq!(res.code, vec![
-        bytecode::Instruction::StoreInt(1, 1),
-        bytecode::Instruction::StoreInt(2, 2),
-        bytecode::Instruction::Tuple(0, 2, vec![1, 2]),
-        bytecode::Instruction::Return,
+        Instruction::StoreInt(VarRef::Register(1), 1),
+        Instruction::StoreInt(VarRef::Register(2), 2),
+        Instruction::Tuple(VarRef::Register(0), 2, vec![
+             VarRef::Register(1),
+             VarRef::Register(2)
+        ]),
+        Instruction::Return,
     ])
 }
 
@@ -291,10 +295,13 @@ fn generates_list() {
     let res = bytecode::generate_function(&main);
 
     assert_eq!(res.code, vec![
-        bytecode::Instruction::StoreInt(1, 1),
-        bytecode::Instruction::StoreInt(2, 2),
-        bytecode::Instruction::List(0, 2, vec![1, 2]),
-        bytecode::Instruction::Return,
+        Instruction::StoreInt(VarRef::Register(1), 1),
+        Instruction::StoreInt(VarRef::Register(2), 2),
+        Instruction::List(VarRef::Register(0), 2, vec![
+             VarRef::Register(1),
+             VarRef::Register(2)
+        ]),
+        Instruction::Return,
     ])
 }
 
@@ -307,8 +314,8 @@ fn generates_true() {
     let res = bytecode::generate_function(&main);
 
     assert_eq!(res.code, vec![
-        bytecode::Instruction::StoreTrue(0),
-        bytecode::Instruction::Return,
+        Instruction::StoreTrue(VarRef::Register(0)),
+        Instruction::Return,
     ])
 }
 
@@ -321,8 +328,8 @@ fn generates_false() {
     let res = bytecode::generate_function(&main);
 
     assert_eq!(res.code, vec![
-        bytecode::Instruction::StoreFalse(0),
-        bytecode::Instruction::Return,
+        Instruction::StoreFalse(VarRef::Register(0)),
+        Instruction::Return,
     ])
 }
 
@@ -335,8 +342,8 @@ fn generates_nil() {
     let res = bytecode::generate_function(&main);
 
     assert_eq!(res.code, vec![
-        bytecode::Instruction::StoreNil(0),
-        bytecode::Instruction::Return,
+        Instruction::StoreNil(VarRef::Register(0)),
+        Instruction::Return,
     ])
 }
 
@@ -350,9 +357,9 @@ fn generates_local_variable() {
     let res = bytecode::generate_function(&main);
 
     assert_eq!(res.code, vec![
-        bytecode::Instruction::StoreInt(1, 1),
-        bytecode::Instruction::Mov(0, 1),
-        bytecode::Instruction::Return,
+        Instruction::StoreInt(VarRef::Register(1), 1),
+        Instruction::Mov(VarRef::Register(0), VarRef::Register(1)),
+        Instruction::Return,
     ])
 }
 
@@ -374,8 +381,8 @@ fn empty_function_returns_nil() {
     let res = bytecode::generate_function(&main);
 
     assert_eq!(res.code, vec![
-        bytecode::Instruction::StoreNil(0),
-        bytecode::Instruction::Return,
+        Instruction::StoreNil(VarRef::Register(0)),
+        Instruction::Return,
     ])
 }
 
@@ -388,11 +395,11 @@ fn generates_and_and() {
     let res = bytecode::generate_function(&main);
 
     assert_eq!(res.code, vec![
-        bytecode::Instruction::StoreTrue(0),
-        bytecode::Instruction::Test(0, 3),
-        bytecode::Instruction::Jmp(3),
-        bytecode::Instruction::StoreFalse(0),
-        bytecode::Instruction::Return,
+        Instruction::StoreTrue(VarRef::Register(0)),
+        Instruction::Test(VarRef::Register(0), 3),
+        Instruction::Jmp(3),
+        Instruction::StoreFalse(VarRef::Register(0)),
+        Instruction::Return,
     ])
 }
 
@@ -405,10 +412,10 @@ fn generates_or_or() {
     let res = bytecode::generate_function(&main);
 
     assert_eq!(res.code, vec![
-        bytecode::Instruction::StoreTrue(0),
-        bytecode::Instruction::Test(0, 3),
-        bytecode::Instruction::StoreFalse(0),
-        bytecode::Instruction::Return,
+        Instruction::StoreTrue(VarRef::Register(0)),
+        Instruction::Test(VarRef::Register(0), 3),
+        Instruction::StoreFalse(VarRef::Register(0)),
+        Instruction::Return,
     ])
 }
 
@@ -421,8 +428,8 @@ fn generates_interned_string() {
     let res = bytecode::generate_function(&main);
 
     assert_eq!(res.code, vec![
-        bytecode::Instruction::LoadString(0, "Hello".to_string()),
-        bytecode::Instruction::Return,
+        Instruction::LoadString(VarRef::Register(0), "Hello".to_string()),
+        Instruction::Return,
     ])
 }
 
@@ -435,8 +442,8 @@ fn generates_function_capture() {
     let res = bytecode::generate_function(&main);
 
     assert_eq!(res.code, vec![
-        bytecode::Instruction::Capture(0, "unknown.some_function".to_string(), 0),
-        bytecode::Instruction::Return,
+        Instruction::Capture(VarRef::Register(0), "unknown.some_function".to_string(), 0),
+        Instruction::Return,
     ])
 }
 
@@ -450,9 +457,9 @@ fn generates_calling_function_indirectly() {
     let res = bytecode::generate_function(&main);
 
     assert_eq!(res.code, vec![
-        bytecode::Instruction::Capture(1, "unknown.some_function".to_string(), 0),
-        bytecode::Instruction::CallLocal(0, 1, Vec::new()),
-        bytecode::Instruction::Return,
+        Instruction::Capture(VarRef::Register(1), "unknown.some_function".to_string(), 0),
+        Instruction::CallLocal(VarRef::Register(0), VarRef::Register(1), Vec::new()),
+        Instruction::Return,
     ])
 }
 
@@ -466,9 +473,9 @@ fn does_not_call_locally_when_module_is_provided() {
     let res = bytecode::generate_function(&main);
 
     assert_eq!(res.code, vec![
-        bytecode::Instruction::Capture(1, "unknown.some_function".to_string(), 0),
-        bytecode::Instruction::Call(0, "Module.captured".to_string(), 0, Vec::new()),
-        bytecode::Instruction::Return,
+        Instruction::Capture(VarRef::Register(1), "unknown.some_function".to_string(), 0),
+        Instruction::Call(VarRef::Register(0), "Module.captured".to_string(), 0, Vec::new()),
+        Instruction::Return,
     ])
 }
 
@@ -492,12 +499,12 @@ fn generates_anonymous_function() {
     let res = bytecode::generate_function(&main);
 
     assert_eq!(res.code, vec![
-        bytecode::Instruction::AnonFn(0, 14, 0, vec![]),
-        bytecode::Instruction::StoreInt(1, 1),
-        bytecode::Instruction::StoreInt(2, 1),
-        bytecode::Instruction::Add(0, 1, 2),
-        bytecode::Instruction::Return,
-        bytecode::Instruction::Return
+        Instruction::AnonFn(VarRef::Register(0), 14, 0, vec![]),
+        Instruction::StoreInt(VarRef::Register(1), 1),
+        Instruction::StoreInt(VarRef::Register(2), 1),
+        Instruction::Add(VarRef::Register(0), VarRef::Register(1), VarRef::Register(2)),
+        Instruction::Return,
+        Instruction::Return
     ])
 }
 
@@ -510,12 +517,12 @@ fn generates_anonymous_function_with_arguments() {
     let res = bytecode::generate_function(&main);
 
     assert_eq!(res.code, vec![
-        bytecode::Instruction::AnonFn(0, 12, 2, vec![]),
-        bytecode::Instruction::Mov(3, 1),
-        bytecode::Instruction::Mov(4, 2),
-        bytecode::Instruction::Add(0, 3, 4),
-        bytecode::Instruction::Return,
-        bytecode::Instruction::Return
+        Instruction::AnonFn(VarRef::Register(0), 12, 2, vec![]),
+        Instruction::Mov(VarRef::Register(3), VarRef::Register(1)),
+        Instruction::Mov(VarRef::Register(4), VarRef::Register(2)),
+        Instruction::Add(VarRef::Register(0), VarRef::Register(3), VarRef::Register(4)),
+        Instruction::Return,
+        Instruction::Return
     ])
 }
 
@@ -529,12 +536,12 @@ fn generates_anonymous_function_with_upvalues() {
     let res = bytecode::generate_function(&main);
 
     assert_eq!(res.code, vec![
-        bytecode::Instruction::StoreInt(2, 1),
-        bytecode::Instruction::AnonFn(0, 12, 0, vec![1, 2]),
-        bytecode::Instruction::GetUpval(1, 1),
-        bytecode::Instruction::GetUpval(2, 2),
-        bytecode::Instruction::Add(0, 1, 2),
-        bytecode::Instruction::Return,
-        bytecode::Instruction::Return
+        Instruction::StoreInt(VarRef::Register(2), 1),
+        Instruction::AnonFn(VarRef::Register(0), 12, 0, vec![VarRef::Register(1), VarRef::Register(2)]),
+        Instruction::Mov(VarRef::Register(1), VarRef::Upvalue(1)),
+        Instruction::Mov(VarRef::Register(2), VarRef::Upvalue(2)),
+        Instruction::Add(VarRef::Register(0), VarRef::Register(1), VarRef::Register(2)),
+        Instruction::Return,
+        Instruction::Return
     ])
 }
