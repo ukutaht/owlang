@@ -20,7 +20,6 @@ struct FnGenerator<'a> {
     args: &'a Vec<ast::Argument<'a>>,
     body: &'a Vec<ast::Expr<'a>>,
     parent: Option<&'a FnGenerator<'a>>,
-    // Use Set
     upvals: RefCell<Vec<VarRef>>
 }
 
