@@ -240,7 +240,7 @@ fn parses_function_capture() {
 
 #[test]
 fn parses_anonymous_function_no_args() {
-    let res = parser::parse_expr(b"() -> { 1 + 2 }");
+    let res = parser::parse_expr(b"() => { 1 + 2 }");
     assert_eq!(res, Ok(mk_anon_fn(Vec::new(), vec![
         mk_apply(None, "+", vec![
             mk_int("1"),
@@ -251,6 +251,6 @@ fn parses_anonymous_function_no_args() {
 
 #[test]
 fn parses_anonymous_function_with_args() {
-    let res = parser::parse_expr(b"(a, b) -> { }");
+    let res = parser::parse_expr(b"(a, b) => { }");
     assert_eq!(res, Ok(mk_anon_fn(vec![mk_argument("a"), mk_argument("b")], Vec::new())));
 }

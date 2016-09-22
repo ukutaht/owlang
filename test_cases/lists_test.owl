@@ -70,7 +70,7 @@ module ListsTest {
   fn test_filter() {
     let list = [1, 2, 3]
 
-    let result = List.filter(list, (el) -> { el > 1 })
+    let result = List.filter(list, (el) => { el > 1 })
 
     OwlUnit.assert_eq(result, [2, 3])
   }
@@ -79,5 +79,13 @@ module ListsTest {
     OwlUnit.refute(List.contains?([], 1))
     OwlUnit.assert(List.contains?([1, 2, 3], 1))
     OwlUnit.refute(List.contains?([1, 2, 3], 4))
+  }
+
+  fn test_reduce() {
+    let sum = List.reduce([1, 2, 3], 0, (acc, elem) => {
+      acc + elem
+    })
+
+    OwlUnit.assert_eq(sum, 6)
   }
 }

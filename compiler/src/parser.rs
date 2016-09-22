@@ -48,7 +48,7 @@ fn anon_fn(i: Input<u8>) -> U8Result<Expr> {
         token(b')');
         satisfy(|i| is_whitespace(i));
         skip_whitespace();
-        string(b"->");
+        string(b"=>");
         skip_whitespace();
 
         let body = block();

@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "term.h"
 #include "alloc.h"
 #include "std/owl_function.h"
@@ -18,6 +19,14 @@ Function* owl_anon_function_init(uint64_t location) {
   function->name = "Anonymous";
 
   return function;
+}
+
+void owl_function_set_upvalue(Function* fun, uint8_t index, owl_term value) {
+  fun->upvalues[index] = value;
+}
+
+owl_term owl_function_get_upvalue(Function* fun, uint8_t index) {
+  return fun->upvalues[index];
 }
 
 owl_term owl_function_name(owl_term function) {

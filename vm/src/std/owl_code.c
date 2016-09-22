@@ -69,6 +69,7 @@ owl_term owl_load_module(vm_t *vm, uint8_t *bytecode, size_t size) {
         vm->code_size += 2;
         break;
       case OP_MOV:
+      case OP_GETUPVAL:
       case OP_FILE_LS:
       case OP_NOT:
       case OP_LIST_COUNT:
@@ -92,7 +93,6 @@ owl_term owl_load_module(vm_t *vm, uint8_t *bytecode, size_t size) {
       case OP_LIST_NTH:
       case OP_CONCAT:
       case OP_STRING_CONTAINS:
-      case OP_ANON_FN:
         *code_ptr++ = ch;
         *code_ptr++ = scanner_next(scanner);
         *code_ptr++ = scanner_next(scanner);
@@ -116,6 +116,19 @@ owl_term owl_load_module(vm_t *vm, uint8_t *bytecode, size_t size) {
         *code_ptr++ = size;
         vm->code_size += 3;
         for (int i = 0; i < size; i++) {
+          *code_ptr++ = scanner_next(scanner);
+          vm->code_size += 1;
+        }
+        break;
+      case OP_ANON_FN:
+        *code_ptr++ = ch;
+        *code_ptr++ = scanner_next(scanner);
+        *code_ptr++ = scanner_next(scanner);
+        *code_ptr++ = scanner_next(scanner);
+        uint8_t n_upvals = scanner_next(scanner);
+        *code_ptr++ = n_upvals;
+        vm->code_size += 5;
+        for (int i = 0; i < n_upvals; i++) {
           *code_ptr++ = scanner_next(scanner);
           vm->code_size += 1;
         }
