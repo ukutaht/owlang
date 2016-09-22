@@ -70,7 +70,7 @@ module ListsTest {
   fn test_filter() {
     let list = [1, 2, 3]
 
-    let result = List.filter(list, (el) -> { el > 1 })
+    let result = List.filter(list, (el) => { el > 1 })
 
     OwlUnit.assert_eq(result, [2, 3])
   }

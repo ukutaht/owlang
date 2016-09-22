@@ -76,6 +76,7 @@ pub enum Instruction {
 }
 
 impl Instruction {
+    #[allow(unused_must_use)]
     pub fn emit<'a, T: Write>(&self, out: &'a mut T) {
         match self {
             &Instruction::Add(to, arg1, arg2) => {

@@ -72,14 +72,14 @@ module FunctionsTest {
   }
 
   fn return_adder() {
-    (a, b) -> { a + b }
+    (a, b) => { a + b }
   }
 
   fn test_anonymous_functions() {
-    let gimme_three = () -> { 1 + 2 }
+    let gimme_three = () => { 1 + 2 }
     OwlUnit.assert_eq(gimme_three(), 3)
 
-    let adder = (a, b) -> { a + b }
+    let adder = (a, b) => { a + b }
     OwlUnit.assert_eq(adder(2, 3), 5)
 
     let returned_adder = return_adder()
@@ -87,7 +87,7 @@ module FunctionsTest {
   }
 
   fn curried_adder(x) {
-    (y) -> {
+    (y) => {
       x + y
     }
   }
@@ -95,25 +95,25 @@ module FunctionsTest {
   fn list_giver() {
     let list = [1, 2]
 
-    () -> {
+    () => {
       list
     }
   }
 
   fn nested_curried_adder(a) {
-    (b, c) -> {
-      (d) -> {
+    (b, c) => {
+      (d) => {
         a + b + c + d
       }
     }
   }
 
   fn multiple_closures(a) {
-    let one = (b) -> {
+    let one = (b) => {
       b - a
     }
 
-    let two = (c) -> {
+    let two = (c) => {
       c + a
     }
 
