@@ -1,5 +1,6 @@
 ### Big list of TODO items
 
+* Reference registers and upvalues zero-indexed
 * Ensure that captured functions are called with correct arity (at runtime)
 * Function attributes (testing for example)
 * A graceful way to fatally quit the VM with a message (for example, when function is not found)

@@ -108,14 +108,34 @@ module FunctionsTest {
     }
   }
 
+  fn multiple_closures(a) {
+    let one = (b) -> {
+      b - a
+    }
+
+    let two = (c) -> {
+      c + a
+    }
+
+    (one, two)
+  }
+
+
   fn test_closures() {
     let add5 = curried_adder(5)
-    let getlist = list_giver()
-
     OwlUnit.assert_eq(add5(6), 11)
+
+    let getlist = list_giver()
     OwlUnit.assert_eq(getlist(), [1, 2])
+
     let add3 = nested_curried_adder(3)
     let add10 = add3(4, 3)
     OwlUnit.assert_eq(add10(3), 13)
+
+    let closures = multiple_closures(1)
+    let sub1 = Tuple.nth(closures, 0)
+    OwlUnit.assert_eq(sub1(3), 2)
+    let add1 = Tuple.nth(closures, 1)
+    OwlUnit.assert_eq(add1(3), 4)
   }
 }

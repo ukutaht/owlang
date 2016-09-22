@@ -70,6 +70,21 @@ impl<'a> FnGenerator<'a> {
           .unwrap_or(None)
     }
 
+    fn push_upval(&self, var_ref: VarRef) -> VarRef {
+        let existing = self.upvals.borrow().iter().position(|&u| u == var_ref);
+
+        match existing {
+            Some(index) => {
+                VarRef::Upvalue((index + 1) as u8)
+            },
+            None => {
+                let upval_index = (self.upvals.borrow().len() + 1) as u8;
+                self.upvals.borrow_mut().push(var_ref);
+                VarRef::Upvalue(upval_index)
+            }
+        }
+    }
+
     /// Searches for an identifier in the current scope. If local variable does not
     /// exist, keeps recursively looking through parent functions hoping to grab an upvalue from
     /// one of the parent environments. If the value is found on a parent, every function along the
@@ -80,10 +95,8 @@ impl<'a> FnGenerator<'a> {
             Some(var_ref) => Some(*var_ref),
             None => {
                 match self.search_parent_env(identifier) {
-                    Some(var_ref) => {
-                        let upval_index = (self.upvals.borrow().len() + 1) as u8;
-                        self.upvals.borrow_mut().push(var_ref);
-                        Some(VarRef::Upvalue(upval_index))
+                    Some(upval) => {
+                        Some(self.push_upval(upval))
                     },
                     None => None
                 }
