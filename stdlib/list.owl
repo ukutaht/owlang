@@ -23,18 +23,28 @@ module List {
     slice(list, 1, count(list))
   }
 
+  fn push(list, elem) {
+    list ++ [elem]
+  }
+
   fn filter(list, predicate) {
+    reduce(list, [], (acc, elem) => {
+      if predicate(elem) {
+        push(acc, elem)
+      } else {
+        acc
+      }
+    })
+  }
+
+  fn reduce(list, acc, fun) {
     if empty?(list) {
-      list
+      acc
     } else {
       let first = first(list)
       let rest = rest(list)
 
-      if predicate(first) {
-        [first] ++ filter(rest, predicate)
-      } else {
-        filter(rest, predicate)
-      }
+      reduce(rest, fun(acc, first), fun)
     }
   }
 
@@ -49,14 +59,14 @@ module List {
   }
 
   fn contains?(list, elem) {
-    if !empty?(list) {
+    if empty?(list) {
+      false
+    } else {
       if first(list) == elem {
         true
       } else {
         contains?(rest(list), elem)
       }
-    } else {
-      false
     }
   }
 
