@@ -70,6 +70,11 @@ impl<'a> FnGenerator<'a> {
           .unwrap_or(None)
     }
 
+    /// Searches for an identifier in the current scope. If local variable does not
+    /// exist, keeps recursively looking through parent functions hoping to grab an upvalue from
+    /// one of the parent environments. If the value is found on a parent, every function along the
+    /// way adds the found variable reference to their upvalues so they get copied down when the
+    /// function is constructed in the VM.
     fn search_env(&self, identifier: &str) -> Option<VarRef> {
         match self.env.get(identifier) {
             Some(var_ref) => Some(*var_ref),

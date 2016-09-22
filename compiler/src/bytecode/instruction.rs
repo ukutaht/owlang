@@ -14,6 +14,9 @@ pub enum VarRef {
 }
 
 impl VarRef {
+    /// The most significant bit represents whether we want to access vm registers or
+    /// upvalues of the currently executing function. Adding 128 flips the first bit
+    /// which the VM uses to distinguish between these different access methods.
     pub fn byte(&self) -> u8 {
         match self {
             &VarRef::Register(reg) => reg,
