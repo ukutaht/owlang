@@ -1,7 +1,7 @@
-#include <stdint.h>
-
 #ifndef OWL_FUNCTION_H
-#define OWL_FUNCTION_H 1
+#define OWL_FUNCTION_H
+
+#include <stdint.h>
 
 #define owl_function_from(val) owl_tag_as(val, FUNCTION)
 #define owl_term_to_function(term) ((Function*) (term >> 3))

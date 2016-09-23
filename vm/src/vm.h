@@ -1,12 +1,12 @@
+#ifndef VM_H
+#define VM_H
+
 #include <stdbool.h>
 #include <stdio.h>
 #include <intern/strings.h>
 
 #include "term.h"
 #include "std/owl_function.h"
-
-#ifndef VM_H
-#define VM_H 1
 
 #define REGISTER_COUNT 100
 #define STACK_DEPTH 300

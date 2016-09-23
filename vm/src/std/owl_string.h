@@ -1,5 +1,5 @@
 #ifndef OWL_STRING_H
-#define OWL_STRING_H 1
+#define OWL_STRING_H
 
 #include "term.h"
 

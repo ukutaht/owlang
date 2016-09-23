@@ -1,8 +1,7 @@
-#include "vm.h"
-
 #ifndef VM_OPCODES_H
 #define VM_OPCODES_H 1
 
+#include "vm.h"
 
 /**
  * This enum stores the values of our opcodes.

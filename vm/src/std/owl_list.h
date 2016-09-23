@@ -1,9 +1,8 @@
-#include <stdbool.h>
-
-#include "term.h"
-
 #ifndef OWL_LIST_H
-#define OWL_LIST_H 1
+#define OWL_LIST_H
+
+#include <stdbool.h>
+#include "term.h"
 
 owl_term owl_list_init();
 void owl_list_print(owl_term list);

@@ -1,5 +1,5 @@
 #ifndef OWL_FILE_H
-#define OWL_FILE_H 1
+#define OWL_FILE_H
 
 #include "term.h"
 

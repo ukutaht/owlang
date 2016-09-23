@@ -1,8 +1,8 @@
+#ifndef TERM_H
+#define TERM_H
+
 #include <stdint.h>
 #include <stdbool.h>
-
-#ifndef TERM_H
-#define TERM_H 1
 
 #define owl_extract_ptr(term) ((void*) (term >> 3))
 #define owl_tag_of(term) ((owl_tag) (term & 0x7))

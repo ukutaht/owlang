@@ -1,5 +1,5 @@
 #ifndef ALLOC_H
-#define ALLOC_H 1
+#define ALLOC_H
 
 void* owl_alloc(int n_bytes);
 

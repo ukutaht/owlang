@@ -1,5 +1,5 @@
 #ifndef OWL_CODE_H
-#define OWL_CODE_H 1
+#define OWL_CODE_H
 
 /*
  Defined in compiler/src/compiler.rs. These functions are
