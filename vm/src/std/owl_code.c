@@ -1,11 +1,10 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <assert.h>
 
 #include "opcodes.h"
 #include "vm.h"
-#include "term.h"
-#include "alloc.h"
 #include "std/owl_code.h"
 #include "std/owl_function.h"
 #include "std/owl_list.h"
