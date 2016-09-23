@@ -1,8 +1,7 @@
 #ifndef TERM_H
 #define TERM_H
 
-#include <stdint.h>
-#include <stdbool.h>
+#include "owl.h"
 
 #define owl_extract_ptr(term) ((void*) (term >> 3))
 #define owl_tag_of(term) ((owl_tag) (term & 0x7))
@@ -28,29 +27,11 @@ values like FALSE and TRUE cannot be confused with integers etc.
 #define OWL_TRUE  4
 #define OWL_NIL  6
 
-typedef uint64_t owl_term;
-
-// pointer: 000
-// int:     001
-// tuple:   010
-// list:    011
-// string:  100
-typedef enum owl_tag {
-    POINTER = 0,
-    INT,
-    TUPLE,
-    LIST,
-    STRING,
-    FUNCTION,
-} owl_tag;
-
-
 owl_term owl_concat(owl_term left, owl_term right);
 owl_term owl_term_to_string(owl_term term);
 void owl_term_print(owl_term term);
 bool owl_terms_eq(owl_term left, owl_term right);
 owl_term owl_type_of(owl_term term);
-
 owl_term owl_tuple_nth(owl_term tuple, uint8_t index);
 
 #endif  // TERM_H
