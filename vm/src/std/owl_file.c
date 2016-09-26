@@ -7,18 +7,17 @@
   #define PATH_MAX 1024
 #endif
 
-#include "term.h"
 #include "std/owl_string.h"
 #include "owl_list.h"
 #include "alloc.h"
 
-owl_term owl_file_pwd(void) {
-  char *cwd = owl_alloc(PATH_MAX);
+owl_term owl_file_pwd(vm_t *vm) {
+  char *cwd = owl_alloc(vm, PATH_MAX);
   getcwd(cwd, PATH_MAX);
   return owl_string_from(cwd);
 }
 
-owl_term owl_file_ls(owl_term path) {
+owl_term owl_file_ls(vm_t *vm, owl_term path) {
   DIR *d;
   struct dirent *dir;
   owl_term result = owl_list_init();
@@ -28,7 +27,7 @@ owl_term owl_file_ls(owl_term path) {
   if (d) {
     while ((dir = readdir(d)) != NULL) {
       if (strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0) {
-        char *relpath = owl_alloc(strlen(dir->d_name));
+        char *relpath = owl_alloc(vm, strlen(dir->d_name));
         strcpy(relpath, dir->d_name);
         owl_term entry = owl_string_from(relpath);
         result = owl_list_push(result, entry);

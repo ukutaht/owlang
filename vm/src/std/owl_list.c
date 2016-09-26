@@ -49,14 +49,14 @@ owl_term owl_list_concat(owl_term left_list, owl_term right_list) {
   return rrb_to_list(result);
 }
 
-void owl_list_print(owl_term list) {
+void owl_list_print(vm_t *vm, owl_term list) {
   const RRB *rrb = list_to_rrb(list);
 
   uint32_t count = rrb_count(rrb);
 
   printf("[");
   for (uint32_t i = 0; i < count; i++) {
-    owl_term_print((owl_term) rrb_nth(rrb, i));
+    owl_term_print(vm, (owl_term) rrb_nth(rrb, i));
     if (i != count - 1) {
       printf(",");
     }

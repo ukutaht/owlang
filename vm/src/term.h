@@ -27,9 +27,9 @@ values like FALSE and TRUE cannot be confused with integers etc.
 #define OWL_TRUE  4
 #define OWL_NIL  6
 
-owl_term owl_concat(owl_term left, owl_term right);
-owl_term owl_term_to_string(owl_term term);
-void owl_term_print(owl_term term);
+owl_term owl_concat(vm_t *vm, owl_term left, owl_term right);
+owl_term owl_term_to_string(vm_t *vm, owl_term term);
+void owl_term_print(vm_t *vm, owl_term term);
 bool owl_terms_eq(owl_term left, owl_term right);
 owl_term owl_type_of(owl_term term);
 owl_term owl_tuple_nth(owl_term tuple, uint8_t index);

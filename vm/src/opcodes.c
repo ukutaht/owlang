@@ -113,7 +113,7 @@ void op_print(struct vm *vm) {
   debug_print("%04x OP_PRINT\n", vm->ip);
   uint8_t reg = next_byte(vm);
 
-  owl_term_print(get_var(vm, reg));
+  owl_term_print(vm, get_var(vm, reg));
 
   vm->ip += 1;
 }
@@ -209,7 +209,7 @@ void op_tuple(struct vm *vm) {
   uint8_t reg  = next_byte(vm);
   uint8_t size = next_byte(vm);
 
-  owl_term *ary = owl_alloc(sizeof(owl_term) * (size + 1));
+  owl_term *ary = owl_alloc(vm, sizeof(owl_term) * (size + 1));
   ary[0] = size;
 
   for(uint8_t i = 1; i <= size; i++) {
@@ -346,7 +346,7 @@ void op_file_pwd(struct vm *vm) {
   debug_print("%04x OP_FILE_PWD\n", vm->ip);
   uint8_t reg = next_byte(vm);
 
-  set_reg(vm, reg, owl_file_pwd());
+  set_reg(vm, reg, owl_file_pwd(vm));
 
   vm->ip += 1;
 }
@@ -356,7 +356,7 @@ void op_file_ls(struct vm *vm) {
   uint8_t result_reg = next_byte(vm);
   owl_term path = get_var(vm, next_byte(vm));
 
-  set_reg(vm, result_reg, owl_file_ls(path));
+  set_reg(vm, result_reg, owl_file_ls(vm, path));
 
   vm->ip += 1;
 }
@@ -367,7 +367,7 @@ void op_concat(struct vm *vm) {
   owl_term left = get_var(vm, next_byte(vm));
   owl_term right = get_var(vm, next_byte(vm));
 
-  set_reg(vm, result_reg, owl_concat(left, right));
+  set_reg(vm, result_reg, owl_concat(vm, left, right));
 
   vm->ip += 1;
 }
@@ -444,7 +444,7 @@ void op_string_slice(struct vm *vm) {
   owl_term from = get_var(vm, next_byte(vm));
   owl_term to = get_var(vm, next_byte(vm));
 
-  owl_term sliced = owl_string_slice(string, from, to);
+  owl_term sliced = owl_string_slice(vm, string, from, to);
   set_reg(vm, ret_reg, sliced);
 
   vm->ip += 1;
@@ -502,7 +502,7 @@ void op_to_string(struct vm *vm) {
   uint8_t ret_reg = next_byte(vm);
   owl_term term = get_var(vm, next_byte(vm));
 
-  owl_term res = owl_term_to_string(term);
+  owl_term res = owl_term_to_string(vm, term);
   set_reg(vm, ret_reg, res);
 
   vm->ip += 1;
@@ -515,7 +515,7 @@ void op_anon_fn(struct vm *vm) {
   next_byte(vm); // arity
   uint8_t n_upvals = next_byte(vm);
 
-  Function* fun = owl_anon_function_init(vm->ip + n_upvals + 1);
+  Function* fun = owl_anon_function_init(vm, vm->ip + n_upvals + 1);
 
   for (int i = 0; i < n_upvals; i++) {
     owl_term value = get_var(vm, next_byte(vm));
