@@ -32,11 +32,23 @@
 * Dead code analysis
 * Pattern matching
 * Benchmarks
-* Direct threaded VM
-* Register windowing
-* Linear-Scan register allocation in compiler
 * Custom garbage collection
 * FFI (at least C)
 * Lightweight concurrency (CSP? Actors?)
 * Macros
 * dare I say tracing JIT?
+
+### Optimisation ideas
+
+Reducing bytecode footprint:
+  * Don't need to include module name in every function name (put it in a header section)
+
+Interpreter:
+  * Direct threaded VM
+  * Register windowing
+
+General:
+  * Remove unnecessary `mov` instructions.
+  * Linear-scan register allocation in the compiler
+  * Load all code statically at boot-time
+  * Remove closure overhead when can be avoided
