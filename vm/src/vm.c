@@ -8,6 +8,20 @@
 #include "util/file.h"
 #include "std/owl_code.h"
 
+GCState* gc_init(uint64_t size) {
+  GCState* gc = malloc(sizeof(GCState));
+  void* mem = malloc(size);
+
+  gc->mem = mem;
+  gc->to_space = mem;
+  gc->from_space = mem + size / 2;
+  gc->alloc_ptr = gc->to_space;
+  gc->scan_ptr = gc->to_space;
+  gc->size = size;
+
+  return gc;
+}
+
 vm_t *vm_new() {
   vm_t *vm;
 
@@ -23,6 +37,10 @@ vm_t *vm_new() {
   }
   memset(vm->code, '\0', 0xFFFF);
   vm->code_size = 0;
+
+  // Allocate a 64k heap
+  GCState* gc = gc_init(0xFFFF);
+  vm->gc = gc;
 
   vm->function_names = strings_new();
   vm->intern_pool = strings_new();

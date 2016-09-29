@@ -32,9 +32,19 @@ typedef enum owl_tag {
     FUNCTION,
 } owl_tag;
 
+typedef struct GCState {
+  uint64_t* mem;
+  void* to_space;
+  void* from_space;
+  void* alloc_ptr;
+  void* scan_ptr;
+  uint64_t size;
+} GCState;
+
 typedef struct Function {
   uint64_t location;
   const char* name;
+  bool on_gc_heap;
   owl_term upvalues[128];
 } Function;
 
@@ -57,6 +67,7 @@ struct vm {
     struct strings *intern_pool;         // General intern pool
     Function* functions[MAX_FUNCTIONS];   // Function lookup table
     Function* current_function;
+    GCState* gc;
 };
 
 
