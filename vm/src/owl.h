@@ -5,6 +5,7 @@
 #define STACK_DEPTH 300
 #define MAX_FUNCTIONS 255
 #define NO_FUNCTION UINT64_MAX
+#define MAX_UPVALUES 128
 
 #define DEBUG false
 #define debug_print(fmt, ...) \

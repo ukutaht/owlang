@@ -232,7 +232,7 @@ void op_list(struct vm *vm) {
   owl_term list = owl_list_init();
 
   for(uint8_t i = 0; i < size; i++) {
-    list = owl_list_push(list, get_var(vm, next_byte(vm)));
+    list = owl_list_push(vm, list, get_var(vm, next_byte(vm)));
   }
 
   set_reg(vm, reg, list);
@@ -431,7 +431,7 @@ void op_list_slice(struct vm *vm) {
   owl_term from = get_var(vm, next_byte(vm));
   owl_term to = get_var(vm, next_byte(vm));
 
-  owl_term sliced = owl_list_slice(list, from, to);
+  owl_term sliced = owl_list_slice(vm, list, from, to);
   set_reg(vm, ret_reg, sliced);
 
   vm->ip += 1;

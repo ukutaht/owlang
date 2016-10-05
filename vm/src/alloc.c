@@ -1,58 +1,156 @@
+// Using a standard Chaney's copying garbage collector
+// https://en.wikipedia.org/wiki/Cheney%27s_algorithm
+// Missing forwarding pointers
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <gc/gc.h>
+#include "std/owl_list.h"
 #include "alloc.h"
 #include "term.h"
 
-owl_term copy_tuple(owl_term tuple, GCState* gc) {
-  owl_term *ary = owl_extract_ptr(tuple);
-  uint64_t tuple_length = ary[0];
-  uint64_t mem_size = (tuple_length + 1) * sizeof(owl_term);
-  void* copied = gc->alloc_ptr;
-  gc->alloc_ptr += mem_size;
-  memcpy(copied, (void*) ary, mem_size);
-  return owl_tag_as(copied, TUPLE);
+#define ALIGNMENT 8
+#define ALIGN(size) size + (ALIGNMENT - (size % ALIGNMENT))
+
+owl_term copy(owl_term term, GCState* gc);
+
+void die(const char* message) {
+  puts(message);
+  exit(1);
 }
 
-owl_term copy_string(owl_term string, GCState* gc) {
-  char *str = owl_extract_ptr(string);
-  uint64_t mem_size = strlen(str);
-  void* copied = gc->alloc_ptr;
-  gc->alloc_ptr += mem_size;
-  memcpy(copied, (void*) str, mem_size);
-  return owl_tag_as(copied, STRING);
-}
-
-owl_term copy_function(owl_term f, GCState* gc) {
-  Function *fun = owl_extract_ptr(f);
-
-  if (!fun->on_gc_heap) {
-    return f;
-  }
-
-  uint64_t mem_size = sizeof(Function);
-  void* copied = gc->alloc_ptr;
-  gc->alloc_ptr += mem_size;
-  memcpy(copied, (void*) fun, mem_size);
-  return owl_tag_as(copied, FUNCTION);
-}
-
-owl_term copy(owl_term term, GCState* gc) {
+// Returns the number of bytes that this term takes up on the heap
+// For terms that are not heap-allocated, returns 0
+uint32_t heap_size_of(owl_term term) {
   if (term == OWL_FALSE || term == OWL_TRUE || term == OWL_NIL) {
-    return term;
+    return 0;
   }
 
   switch(owl_tag_of(term)) {
     case TUPLE:
-      return copy_tuple(term, gc);
+      {
+        owl_term *ary = owl_extract_ptr(term);
+        uint64_t tuple_length = ary[0];
+        return ALIGN((tuple_length + 1) * sizeof(owl_term));
+      }
     case STRING:
-      return copy_string(term, gc);
+      return ALIGN(strlen(owl_extract_ptr(term)));
     case FUNCTION:
-      return copy_function(term, gc);
+      {
+        Function *fun = owl_extract_ptr(term);
+
+        if (!fun->on_gc_heap) {
+          return 0;
+        }
+
+        return ALIGN(sizeof(Function));
+      }
+    case LIST:
+      return ALIGN(sizeof(RRB));
+    case INT:
+      return 0;
+    case POINTER:
+      die("POINTER");
     default:
-      return term;
+      return 0;
   }
+}
+
+void* bump_cpy(GCState *gc, void *from, int size) {
+  void* copied = gc->alloc_ptr;
+  gc->alloc_ptr += size;
+  memcpy(copied, from, size);
+  memset(from, 0, size);
+  return copied;
+}
+
+TreeNode* copy_list_node(TreeNode *node, GCState *gc) {
+  if (node->type == LEAF_NODE) {
+    LeafNode *leaf = (LeafNode*) node;
+
+    for (uint32_t i = 0; i < leaf->len; i++) {
+      leaf->child[i] = (void*) copy((owl_term) leaf->child[i], gc);
+    }
+
+    return bump_cpy(gc, leaf, sizeof(LeafNode) + leaf->len * sizeof(void *));
+  } else if (node->type == INTERNAL_NODE) {
+    InternalNode *internal = (InternalNode*) node;
+
+    for (uint32_t i = 0; i < internal->len; i++) {
+      internal->child[i] = (InternalNode*) copy_list_node((TreeNode*) internal->child[i], gc);
+    }
+
+    if (internal->size_table) {
+      internal->size_table = bump_cpy(gc, internal->size_table, sizeof(RRBSizeTable) + internal->len * sizeof(uint32_t));
+    }
+    return bump_cpy(gc, internal, sizeof(InternalNode) + internal->len * sizeof(InternalNode *));
+  }
+  die("Unknown list node type");
+}
+
+void copy_list_refs(owl_term term, GCState *gc) {
+  RRB *rrb = owl_extract_ptr(term);
+  if (rrb->root) {
+    rrb->root = copy_list_node(rrb->root, gc);
+  }
+  rrb->tail = (LeafNode*) copy_list_node((TreeNode*) rrb->tail, gc);
+}
+
+void copy_refs(owl_term term, GCState *gc) {
+  if (term == OWL_FALSE || term == OWL_TRUE || term == OWL_NIL) {
+    return;
+  }
+
+  switch(owl_tag_of(term)) {
+    case INT:
+    case STRING:
+      return;
+    case TUPLE:
+      {
+        owl_term *ary = owl_extract_ptr(term);
+        uint32_t tuple_length = ary[0];
+        for(uint32_t i = 1; i <= tuple_length; i++) {
+          ary[i] = copy(ary[i], gc);
+        }
+        return;
+      }
+    case FUNCTION:
+      {
+        Function *fun = owl_extract_ptr(term);
+
+        if (!fun->on_gc_heap) {
+          return;
+        }
+
+        for(int i = 0; i < MAX_UPVALUES; i++) {
+          fun->upvalues[i] = copy(fun->upvalues[i], gc);
+        }
+        return;
+      }
+    case LIST:
+      copy_list_refs(term, gc);
+      return;
+    default:
+      die("Cannot copy refs");
+  }
+}
+
+
+owl_term copy(owl_term term, GCState* gc) {
+  uint32_t heap_size = heap_size_of(term);
+
+  // Non-heap allocated object. No need to copy
+  if (heap_size == 0) {
+    return term;
+  }
+
+  void* copied = gc->alloc_ptr;
+  gc->alloc_ptr += heap_size;
+  memcpy(copied, owl_extract_ptr(term), heap_size);
+  owl_term copied_term = owl_tag_as(copied, owl_tag_of(term));
+  copy_refs(copied_term, gc);
+  return copied_term;
 }
 
 void swap_spaces(GCState* gc) {
@@ -64,37 +162,31 @@ void swap_spaces(GCState* gc) {
 void collect(vm_t *vm) {
   swap_spaces(vm->gc);
   vm->gc->alloc_ptr = vm->gc->to_space;
-  vm->gc->scan_ptr = vm->gc->to_space;
 
-  for (uint64_t i = 0; i < vm->current_frame; i++) {
+  for (uint64_t i = 0; i <= vm->current_frame; i++) {
     frame_t frame = vm->frames[i];
 
     for (uint64_t j = 0; j < REGISTER_COUNT; j++) {
       owl_term object = frame.registers[j];
       if (object) {
-        frame.registers[j] = copy(object, vm->gc);
+        vm->frames[i].registers[j] = copy(object, vm->gc);
       }
     }
   }
 }
 
-void* allocate(vm_t* vm, int N) {
-  if (vm->gc->alloc_ptr + N > vm->gc->to_space + vm->gc->size / 2) {
+void* owl_alloc(vm_t *vm, int N) {
+  int block_size = ALIGN(N);
+
+  if (vm->gc->alloc_ptr + block_size > vm->gc->to_space + vm->gc->size / 2) {
     collect(vm);
   }
-  if (vm->gc->alloc_ptr + N > vm->gc->to_space + vm->gc->size / 2) {
-    puts("insufficient memory");
-    exit(1);
+  if (vm->gc->alloc_ptr + block_size > vm->gc->to_space + vm->gc->size / 2) {
+    die("Insufficient memory");
   }
 
   void* object = vm->gc->alloc_ptr;
-  vm->gc->alloc_ptr += N;
+  vm->gc->alloc_ptr += block_size;
 
-  printf("%llu\n", (vm->gc->alloc_ptr - vm->gc->to_space));
   return object;
-}
-
-void* owl_alloc(vm_t *vm, int n_bytes) {
-  allocate(vm, n_bytes);
-  return GC_memalign(8, n_bytes);
 }

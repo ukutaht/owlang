@@ -10,6 +10,7 @@
 #include "std/owl_string.h"
 #include "owl_list.h"
 #include "alloc.h"
+#include "term.h"
 
 owl_term owl_file_pwd(vm_t *vm) {
   char *cwd = owl_alloc(vm, PATH_MAX);
@@ -30,7 +31,7 @@ owl_term owl_file_ls(vm_t *vm, owl_term path) {
         char *relpath = owl_alloc(vm, strlen(dir->d_name));
         strcpy(relpath, dir->d_name);
         owl_term entry = owl_string_from(relpath);
-        result = owl_list_push(result, entry);
+        result = owl_list_push(vm, result, entry);
       }
     }
 

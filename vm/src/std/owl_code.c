@@ -156,7 +156,7 @@ owl_term owl_load_module(vm_t *vm, uint8_t *bytecode, size_t size) {
         const char *function_name = strings_lookup_id(vm->function_names, id);
 
         Function* fun = owl_function_init(function_name, instruction);
-        function_list = owl_list_push(function_list, owl_function_from(fun));
+        function_list = owl_list_push(vm, function_list, owl_function_from(fun));
         vm->functions[id] = fun;
         break;
         }

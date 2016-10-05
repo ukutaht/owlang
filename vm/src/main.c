@@ -25,26 +25,51 @@ void init_load_path() {
   }
 }
 
-int main(int argc, char **argv) {
-  if (argc < 2) {
-    printf("Usage: %s input-file\n", argv[0]);
-    return 0;
-  }
+#include "std/owl_list.h"
+#include "std/owl_string.h"
+#include "term.h"
+#include "alloc.h"
 
-  GC_init();
-
-  init_load_path();
-
+int main() {
   vm_t *vm = vm_new();
 
-  vm_load_module_from_file(vm, argv[1]);
+  owl_term list = owl_list_init();
+  vm->frames[0].registers[0] = list;
+  vm->current_frame = 0;
 
-  char *main_module = module_name_from_filename(argv[1]);
-  char main_function[strlen(main_module) + 7];
-  sprintf(main_function, "%s.main\\0", main_module);
+  char *thing = "Hello";
 
-  vm_run_function(vm, main_function);
-  free(main_module);
+  for (int i = 0; i < 70; i++) {
+    char *heapstr = owl_alloc(vm, strlen(thing));
+    strcpy(heapstr, thing);
+    owl_term entry = owl_string_from(heapstr);
+    vm->frames[0].registers[0] = owl_list_push(vm, vm->frames[0].registers[0], entry);
+    collect(vm);
+  }
 
-  return 0;
+  owl_term_print(vm, vm->frames[0].registers[0]);
 }
+
+//int main(int argc, char **argv) {
+//  if (argc < 2) {
+//    printf("Usage: %s input-file\n", argv[0]);
+//    return 0;
+//  }
+//
+//  GC_init();
+//
+//  init_load_path();
+//
+//  vm_t *vm = vm_new();
+//
+//  vm_load_module_from_file(vm, argv[1]);
+//
+//  char *main_module = module_name_from_filename(argv[1]);
+//  char main_function[strlen(main_module) + 7];
+//  sprintf(main_function, "%s.main\\0", main_module);
+//
+//  vm_run_function(vm, main_function);
+//  free(main_module);
+//
+//  return 0;
+//}

@@ -23,7 +23,7 @@ owl_term owl_concat(vm_t *vm, owl_term left, owl_term right) {
   if (left_tag == STRING) {
     return owl_string_concat(vm, left, right);
   } else if (left_tag == LIST) {
-    return owl_list_concat(left, right);
+    return owl_list_concat(vm, left, right);
   } else {
     puts("Concat not defined for this type");
     exit(1);
