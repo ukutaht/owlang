@@ -5,15 +5,15 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <gc/gc.h>
 #include "std/owl_list.h"
 #include "alloc.h"
 #include "term.h"
+#include "stack.h"
 
 #define ALIGNMENT 8
 #define ALIGN(size) size + (ALIGNMENT - (size % ALIGNMENT))
 
-owl_term copy(owl_term term, GCState* gc);
+static owl_term copy(owl_term term, GCState* gc);
 
 void die(const char* message) {
   puts(message);
@@ -22,7 +22,7 @@ void die(const char* message) {
 
 // Returns the number of bytes that this term takes up on the heap
 // For terms that are not heap-allocated, returns 0
-uint32_t heap_size_of(owl_term term) {
+static uint32_t heap_size_of(owl_term term) {
   if (term == OWL_FALSE || term == OWL_TRUE || term == OWL_NIL) {
     return 0;
   }
@@ -57,7 +57,7 @@ uint32_t heap_size_of(owl_term term) {
   }
 }
 
-void* bump_cpy(GCState *gc, void *from, int size) {
+static void* bump_cpy(GCState *gc, void *from, int size) {
   void* copied = gc->alloc_ptr;
   gc->alloc_ptr += size;
   memcpy(copied, from, size);
@@ -65,7 +65,7 @@ void* bump_cpy(GCState *gc, void *from, int size) {
   return copied;
 }
 
-TreeNode* copy_list_node(TreeNode *node, GCState *gc) {
+static TreeNode* copy_list_node(TreeNode *node, GCState *gc) {
   if (node->type == LEAF_NODE) {
     LeafNode *leaf = (LeafNode*) node;
 
@@ -89,7 +89,7 @@ TreeNode* copy_list_node(TreeNode *node, GCState *gc) {
   die("Unknown list node type");
 }
 
-void copy_list_refs(owl_term term, GCState *gc) {
+static void copy_list_refs(owl_term term, GCState *gc) {
   RRB *rrb = owl_extract_ptr(term);
   if (rrb->root) {
     rrb->root = copy_list_node(rrb->root, gc);
@@ -97,7 +97,7 @@ void copy_list_refs(owl_term term, GCState *gc) {
   rrb->tail = (LeafNode*) copy_list_node((TreeNode*) rrb->tail, gc);
 }
 
-void copy_refs(owl_term term, GCState *gc) {
+static void copy_refs(owl_term term, GCState *gc) {
   if (term == OWL_FALSE || term == OWL_TRUE || term == OWL_NIL) {
     return;
   }
@@ -137,7 +137,7 @@ void copy_refs(owl_term term, GCState *gc) {
 }
 
 
-owl_term copy(owl_term term, GCState* gc) {
+static owl_term copy(owl_term term, GCState* gc) {
   uint32_t heap_size = heap_size_of(term);
 
   // Non-heap allocated object. No need to copy
@@ -153,15 +153,22 @@ owl_term copy(owl_term term, GCState* gc) {
   return copied_term;
 }
 
-void swap_spaces(GCState* gc) {
+static void swap_spaces(GCState* gc) {
   void* temp = gc->to_space;
   gc->to_space = gc->from_space;
   gc->from_space = temp;
 }
 
 void collect(vm_t *vm) {
+  puts("COLLECT");
   swap_spaces(vm->gc);
   vm->gc->alloc_ptr = vm->gc->to_space;
+
+  for(uint32_t a = 0; a < stack_size(vm->gc->protect); a++) {
+    RRB** protected = stack_get_indirect(vm->gc->protect, a);
+    owl_term copied = copy(rrb_to_list(*protected), vm->gc);
+    *protected = list_to_rrb(copied);
+  }
 
   for (uint64_t i = 0; i <= vm->current_frame; i++) {
     frame_t frame = vm->frames[i];
@@ -173,6 +180,15 @@ void collect(vm_t *vm) {
       }
     }
   }
+}
+
+void** gc_protect(vm_t* vm, void* item) {
+  stack_push(vm->gc->protect, item);
+  return stack_peek_indirect(vm->gc->protect);
+}
+
+void* gc_unprotect(vm_t* vm) {
+  return stack_pop(vm->gc->protect);
 }
 
 void* owl_alloc(vm_t *vm, int N) {

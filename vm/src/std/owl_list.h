@@ -5,6 +5,9 @@
 #include "owl.h"
 #include <stdint.h>
 
+#define rrb_to_list(rrb) owl_tag_as(rrb, LIST)
+#define list_to_rrb(list) ((RRB*) owl_extract_ptr(list))
+
 #define RRB_BITS 5
 #define RRB_MAX_HEIGHT 6
 

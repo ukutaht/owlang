@@ -2,12 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <libgen.h>
-#include <gc/gc.h>
 
 #include "util/file.h"
 #include "vm.h"
 
-void init_load_path() {
+static void init_load_path() {
   char *load_path = getenv("OWL_LOAD_PATH");
   char *this_dir = dirname(__FILE__);
   char *relative_stdlib = "../../.build/stdlib";
@@ -39,12 +38,11 @@ int main() {
 
   char *thing = "Hello";
 
-  for (int i = 0; i < 70; i++) {
+  for (int i = 0; i < 160; i++) {
     char *heapstr = owl_alloc(vm, strlen(thing));
     strcpy(heapstr, thing);
     owl_term entry = owl_string_from(heapstr);
     vm->frames[0].registers[0] = owl_list_push(vm, vm->frames[0].registers[0], entry);
-    collect(vm);
   }
 
   owl_term_print(vm, vm->frames[0].registers[0]);

@@ -160,7 +160,58 @@ bool owl_terms_eq(owl_term left, owl_term right) {
   }
 }
 
+#define print(t) fputs(t, stdout);
+
 void owl_term_print(vm_t *vm, owl_term term) {
-  owl_term string = owl_term_to_string(vm, term);
-  fputs(owl_extract_ptr(string), stdout);
+  switch(term) {
+  case OWL_TRUE:
+    print("true");
+    return;
+  case OWL_FALSE:
+    print("false");
+    return;
+  case OWL_NIL:
+    print("nil");
+    return;
+  }
+
+  switch(owl_tag_of(term)) {
+    case INT:
+      printf("%d", (int) int_from_owl_int(term));
+      return;
+    case TUPLE:
+    {
+      owl_term *ary = owl_extract_ptr(term);
+      uint8_t size = ary[0];
+      for(uint8_t i = 1; i <= size; i++) {
+        owl_term_print(vm, ary[i]);
+        if (i != size) {
+          print(", ");
+        }
+      }
+      return;
+    }
+    case LIST:
+    {
+      uint64_t count = int_from_owl_int(owl_list_count(term));
+      print("[");
+      for(uint64_t i = 0; i < count; i++) {
+        owl_term_print(vm, owl_list_nth(term, owl_int_from(i)));
+        if (i != count - 1) {
+          print(", ");
+        }
+      }
+      print("]");
+      return;
+    }
+    case STRING:
+      print(owl_extract_ptr(term));
+      return;
+    case FUNCTION:
+      print(owl_extract_ptr(owl_function_name(term)));
+      return;
+    default:
+      puts("Unable to convert to string");
+      exit(1);
+  }
 }
