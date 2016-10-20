@@ -37,7 +37,7 @@ void scanner_read(void * address, uintptr_t size, scanner_t *scanner) {
   memcpy(address, &scanner->mem[scanner->index], size);
   scanner->index += size;
 }
-
+__attribute__((no_sanitize("address")))
 owl_term owl_load_module(vm_t *vm, uint8_t *bytecode, size_t size) {
   uint8_t ch;
 

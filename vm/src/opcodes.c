@@ -66,7 +66,7 @@ Function* load_function(vm_t *vm, uint8_t function_id) {
   return function;
 }
 
-void setup_next_stackframe(vm_t *vm, uint8_t arity, uint8_t ret_reg) {
+void setup_next_stackframe(vm_t *vm, Function* fun, uint8_t arity, uint8_t ret_reg) {
   assert(vm->current_frame + 1 < STACK_DEPTH);
 
   unsigned int next_frame = vm->current_frame + 1;
@@ -78,6 +78,7 @@ void setup_next_stackframe(vm_t *vm, uint8_t arity, uint8_t ret_reg) {
 
   vm->frames[next_frame].ret_address = vm->ip + 1;
   vm->frames[next_frame].ret_register = ret_reg;
+  vm->frames[next_frame].function = fun;
   vm->current_frame += 1;
 }
 
@@ -167,10 +168,10 @@ void op_call(struct vm *vm) {
     debug_print("%04x OP_CALL: %s\n", vm->ip, strings_lookup_id(vm->function_names, function_id));
   #endif
 
+  gc_safepoint(vm);
   Function* fun = load_function(vm, function_id);
   vm->current_function = fun;
-
-  setup_next_stackframe(vm, arity, ret_reg);
+  setup_next_stackframe(vm, fun, arity, ret_reg);
 
   vm->ip = fun->location;
 }
@@ -394,9 +395,9 @@ void op_call_local(struct vm *vm) {
     exit(1);
   }
 
-  setup_next_stackframe(vm, arity, ret_reg);
   Function* fun = owl_term_to_function(function);
   vm->current_function = fun;
+  setup_next_stackframe(vm, fun, arity, ret_reg);
 
   vm->ip = fun->location;
 }
@@ -404,7 +405,8 @@ void op_call_local(struct vm *vm) {
 void op_list_nth(struct vm *vm) {
   debug_print("%04x OP_LIST_NTH\n", vm->ip);
   uint8_t ret_reg = next_byte(vm);
-  owl_term list = get_var(vm, next_byte(vm));
+  uint8_t list_reg = next_byte(vm);
+  owl_term list = get_var(vm, list_reg);
   owl_term index = get_var(vm, next_byte(vm));
 
   owl_term elem = owl_list_nth(list, index);

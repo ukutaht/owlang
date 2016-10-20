@@ -26,5 +26,8 @@ check: check-compiler check-test-cases
 check-compiler: compiler
 	cd compiler && cargo test
 
+tests:
+	compiler/target/debug/owlc test_cases -o .build/test_cases
+
 check-test-cases: vm stdlib
 	vm/target/debug/vm .build/stdlib/OwlUnitRunner.owlc

@@ -601,16 +601,15 @@ static uint32_t size_sub_trie(TreeNode *node, uint32_t shift) {
 static inline RRB* rrb_tail_push(vm_t *vm, const RRB *restrict rrb, const void *restrict elt);
 
 static inline RRB* rrb_tail_push(vm_t *vm, const RRB *restrict rrb, const void *restrict elt) {
-  RRB* clone = rrb_head_clone(vm, rrb);
-  RRB** new_rrb = (RRB**) gc_protect(vm, clone);
+  RRB* new_rrb = rrb_head_clone(vm, rrb);
 
   LeafNode *new_tail = leaf_node_inc(vm, rrb->tail);
 
-  new_tail->child[(*new_rrb)->tail_len] = elt;
-  (*new_rrb)->cnt++;
-  (*new_rrb)->tail_len++;
-  (*new_rrb)->tail = new_tail;
-  return gc_unprotect(vm);
+  new_tail->child[new_rrb->tail_len] = elt;
+  new_rrb->cnt++;
+  new_rrb->tail_len++;
+  new_rrb->tail = new_tail;
+  return new_rrb;
 }
 
 static InternalNode** copy_first_k(vm_t *vm, const RRB *rrb, RRB *new_rrb, const uint32_t k,

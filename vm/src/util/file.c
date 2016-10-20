@@ -17,7 +17,7 @@ char* module_name_from_filename(char *filename) {
     module_name++;
   }
 
-  char *cpy = malloc(strlen(module_name));
+  char *cpy = malloc(strlen(module_name) + 1);
   strcpy(cpy, module_name);
   *rindex(cpy, '.') = '\0';
 

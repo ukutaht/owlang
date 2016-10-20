@@ -32,6 +32,10 @@ owl_term owl_function_get_upvalue(Function* fun, uint8_t index) {
 }
 
 owl_term owl_function_name(owl_term function) {
+  if (owl_tag_of(function) != FUNCTION) {
+    puts("Type Error in function name");
+    exit(1);
+  }
   Function* fun = owl_term_to_function(function);
   return owl_string_from(fun->name);
 }

@@ -11,9 +11,8 @@
 
 GCState* gc_init(uint64_t size) {
   GCState* gc = malloc(sizeof(GCState));
-  void* mem = malloc(size);
+  uint8_t* mem = malloc(size);
 
-  gc->mem = mem;
   gc->to_space = mem;
   gc->from_space = mem + size / 2;
   gc->alloc_ptr = gc->to_space;
@@ -40,7 +39,7 @@ vm_t *vm_new() {
   vm->code_size = 0;
 
   // Allocate a 64k heap
-  GCState* gc = gc_init(0xFFFF);
+  GCState* gc = gc_init(0xFFFF * 2);
   vm->gc = gc;
 
   vm->function_names = strings_new();
@@ -95,7 +94,7 @@ bool find_module_from_dir(char *buffer, char *dirname, const char *module_name) 
 
 bool find_file_for_module(char *buffer, const char *module_name) {
   char *env_load_path = getenv("OWL_LOAD_PATH");
-  char load_path[strlen(env_load_path)];
+  char load_path[strlen(env_load_path) + 1];
   strcpy(load_path, env_load_path);
 
   char *load_dir = strtok(load_path, ":");
@@ -145,5 +144,27 @@ void vm_run_function(vm_t *vm, const char *function_name) {
   } else {
     printf("Function %s not found\n", function_name);
     exit(1);
+  }
+}
+
+#include <stdio.h>
+void vm_dump_regs(vm_t* vm) {
+  puts("========  VM REG DUMP ========");
+  printf("Current func: %s\n", vm->current_function->name);
+  for (uint64_t i = 1; i <= vm->current_frame; i++) {
+    frame_t frame = vm->frames[i];
+    if (frame.function) {
+      printf("%d: %s =>", i, frame.function->name);
+    } else {
+      printf("%d: Wat =>", i);
+    }
+
+    for (uint64_t j = 0; j < REGISTER_COUNT; j++) {
+      owl_term object = frame.registers[j];
+      if (object) {
+        printf(" %llu (%d) : ", (uint64_t) object, owl_tag_of(object));
+      }
+    }
+    puts("");
   }
 }

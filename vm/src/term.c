@@ -211,7 +211,6 @@ void owl_term_print(vm_t *vm, owl_term term) {
       print(owl_extract_ptr(owl_function_name(term)));
       return;
     default:
-      puts("Unable to convert to string");
-      exit(1);
+      print("???");
   }
 }

@@ -88,4 +88,42 @@ module ListsTest {
 
     OwlUnit.assert_eq(sum, 6)
   }
+
+  fn main() {
+    IO.println("Identity")
+    test_identity()
+
+    IO.println("Nth")
+    test_nth()
+
+    IO.println("Count")
+    test_count()
+
+    IO.println("First")
+    test_first()
+
+    IO.println("Last")
+    test_last()
+
+    IO.println("Rest")
+    test_rest()
+
+    IO.println("Slice")
+    test_slice()
+
+    IO.println("Empty")
+    test_empty()
+
+    IO.println("Concat")
+    test_concat()
+
+    IO.println("Filter")
+    test_filter()
+
+    IO.println("Contains")
+    test_filter()
+
+    IO.println("Reduce")
+    test_reduce()
+  }
 }

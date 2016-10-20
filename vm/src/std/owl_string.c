@@ -21,8 +21,10 @@ owl_term owl_string_slice(vm_t *vm, owl_term string, owl_term from, owl_term to)
     printf("Slice size must be more over 0");
     exit(1);
   }
-  char *sliced = owl_alloc(vm, slice_size);
+
+  char *sliced = owl_alloc(vm, slice_size + 1);
   memcpy(sliced, the_string + from_int, slice_size);
+  sliced[slice_size] = '\0';
 
   return owl_string_from(sliced);
 }

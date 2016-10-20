@@ -1,9 +1,6 @@
 module IO {
   fn println(term) {
-    print(to_string(term) ++ "\n")
-  }
-
-  fn to_string(term) {
-    term_to_string(term)
+    print(term)
+    print("\n")
   }
 }
