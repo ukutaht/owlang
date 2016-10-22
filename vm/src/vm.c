@@ -146,25 +146,3 @@ void vm_run_function(vm_t *vm, const char *function_name) {
     exit(1);
   }
 }
-
-#include <stdio.h>
-void vm_dump_regs(vm_t* vm) {
-  puts("========  VM REG DUMP ========");
-  printf("Current func: %s\n", vm->current_function->name);
-  for (uint64_t i = 1; i <= vm->current_frame; i++) {
-    frame_t frame = vm->frames[i];
-    if (frame.function) {
-      printf("%d: %s =>", i, frame.function->name);
-    } else {
-      printf("%d: Wat =>", i);
-    }
-
-    for (uint64_t j = 0; j < REGISTER_COUNT; j++) {
-      owl_term object = frame.registers[j];
-      if (object) {
-        printf(" %llu (%d) : ", (uint64_t) object, owl_tag_of(object));
-      }
-    }
-    puts("");
-  }
-}
