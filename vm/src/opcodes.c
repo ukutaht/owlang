@@ -218,7 +218,7 @@ void op_tuple(struct vm *vm) {
   }
 
   owl_term tuple = (owl_term) ary;
-  owl_term tagged_tuple =  (tuple << 3) | TUPLE;
+  owl_term tagged_tuple =  owl_tag_as(tuple, TUPLE);
 
   set_reg(vm, reg, tagged_tuple);
 

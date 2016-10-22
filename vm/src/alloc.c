@@ -7,11 +7,9 @@
 #include "std/owl_list.h"
 #include "alloc.h"
 #include "term.h"
-#include "stack.h"
 
 #define ALIGNMENT 8
 #define ALIGN(size) size + (ALIGNMENT - (size % ALIGNMENT))
-
 #define BUFFER_PERCENT 10
 
 static owl_term copy(owl_term term, GCState* gc);
@@ -160,9 +158,13 @@ static void swap_spaces(GCState* gc) {
   gc->alloc_ptr = gc->to_space;
 }
 
+static uint32_t gc_usage(vm_t *vm) {
+  return vm->gc->alloc_ptr - vm->gc->to_space;
+}
+
 void collect(vm_t *vm) {
   puts("COLLECT");
-  printf("Memory usage before collection: %lu\n", vm->gc->alloc_ptr - vm->gc->to_space);
+  printf("Memory usage before collection: %d\n", gc_usage(vm));
   swap_spaces(vm->gc);
 
   for (uint32_t i = 0; i <= vm->current_frame; i++) {
@@ -174,7 +176,7 @@ void collect(vm_t *vm) {
     }
   }
 
-  printf("Memory usage after collection: %lu\n", vm->gc->alloc_ptr - vm->gc->to_space);
+  printf("Memory usage after collection: %d\n", gc_usage(vm));
 }
 
 void gc_safepoint(vm_t* vm) {

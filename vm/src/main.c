@@ -24,31 +24,6 @@ static void init_load_path() {
   }
 }
 
-//#include "std/owl_list.h"
-//#include "std/owl_string.h"
-//#include "term.h"
-//#include "alloc.h"
-//
-//int main() {
-//  vm_t *vm = vm_new();
-//
-//  owl_term list = owl_list_init();
-//  vm->frames[0].registers[0] = list;
-//  vm->current_frame = 0;
-//
-//  char *thing = "Hello";
-//
-//  for (int i = 0; i < 200; i++) {
-//    gc_safepoint(vm);
-//    char *heapstr = owl_alloc(vm, strlen(thing));
-//    strcpy(heapstr, thing);
-//    owl_term entry = owl_string_from(heapstr);
-//    vm->frames[0].registers[0] = owl_list_push(vm, vm->frames[0].registers[0], entry);
-//  }
-//
-//  owl_term_print(vm, vm->frames[0].registers[0]);
-//}
-
 int main(int argc, char **argv) {
   if (argc < 2) {
     printf("Usage: %s input-file\n", argv[0]);

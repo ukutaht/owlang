@@ -7,7 +7,6 @@
 #include "opcodes.h"
 #include "util/file.h"
 #include "std/owl_code.h"
-#include "stack.h"
 
 GCState* gc_init(uint64_t size) {
   GCState* gc = malloc(sizeof(GCState));
@@ -17,7 +16,6 @@ GCState* gc_init(uint64_t size) {
   gc->from_space = mem + size / 2;
   gc->alloc_ptr = gc->to_space;
   gc->size = size;
-  gc->protect = stack_create(16);
 
   return gc;
 }

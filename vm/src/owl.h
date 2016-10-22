@@ -15,7 +15,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <intern/strings.h>
-#include "stack.h"
 
 typedef uint64_t owl_term;
 typedef struct vm vm_t;
@@ -39,7 +38,6 @@ typedef struct GCState {
   uint8_t* from_space;
   uint8_t* alloc_ptr;
   uint64_t size;
-  stack* protect;
 } GCState;
 
 typedef struct Function {
