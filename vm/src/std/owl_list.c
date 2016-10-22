@@ -1,18 +1,11 @@
 #include "term.h"
 #include "alloc.h"
 #include <stdlib.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
 #include <stdio.h>
 #include "std/owl_list.h"
-
-#ifndef true
-#define true 1
-#endif
-
-#ifndef false
-#define false 0
-#endif
 
 #ifndef MAX
 #define MAX(a,b) (((a)>(b))?(a):(b))

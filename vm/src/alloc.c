@@ -1,6 +1,5 @@
 // Using a standard Chaney's copying garbage collector
 // https://en.wikipedia.org/wiki/Cheney%27s_algorithm
-// Missing forwarding pointers
 
 #include <stdlib.h>
 #include <stdio.h>
