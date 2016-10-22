@@ -3,8 +3,9 @@
 
 #include "owl.h"
 
-void collect(vm_t *vm);
+void gc_collect(vm_t *vm);
 void gc_safepoint(vm_t *vm);
-void* owl_alloc(vm_t *vm, int n_bytes);
+uint32_t gc_usage(vm_t *vm);
+void* owl_alloc(vm_t *vm, uint32_t n_bytes);
 
 #endif  // ALLOC_H

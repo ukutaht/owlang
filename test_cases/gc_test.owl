@@ -1,0 +1,70 @@
+module GcTest {
+  fn test_keeps_int_alive() {
+    let int = 1
+
+    VM.gc_collect()
+
+    OwlUnit.assert_eq(int, 1)
+  }
+
+  fn test_keeps_string_alive() {
+    let string = "Hello"
+
+    VM.gc_collect()
+
+    OwlUnit.assert_eq(string, "Hello")
+  }
+
+  fn test_keeps_tuple_alive() {
+    let tuple = (1, "Hello")
+
+    VM.gc_collect()
+
+    OwlUnit.assert_eq(tuple, (1, "Hello"))
+  }
+
+  fn test_keeps_nested_tuple_alive() {
+    let tuple = (1, ("Hello"))
+
+    VM.gc_collect()
+
+    OwlUnit.assert_eq(tuple, (1, ("Hello")))
+  }
+
+  fn test_keeps_list_alive() {
+    let list = [1, 2]
+
+    VM.gc_collect()
+
+    OwlUnit.assert_eq(list, [1, 2])
+  }
+
+  fn test_keeps_nested_list_alive() {
+    let list = [[[[[["Hi"]]]]]]
+
+    VM.gc_collect()
+
+    OwlUnit.assert_eq(list, [[[[[["Hi"]]]]]])
+  }
+
+  fn test_keeps_anonymous_function_alive() {
+    let function = (a) => { a + 1 }
+
+    VM.gc_collect()
+
+    let result = function(1)
+
+    OwlUnit.assert_eq(result, 2)
+  }
+
+  fn test_keeps_anonymous_function_with_upvalues_alive() {
+    let world = "World!"
+    let function = (hello) => { hello ++ world }
+
+    VM.gc_collect()
+
+    let result = function("Hello ")
+
+    OwlUnit.assert_eq(result, "Hello World!")
+  }
+}

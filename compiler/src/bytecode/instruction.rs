@@ -73,6 +73,7 @@ pub enum Instruction {
     ToString(VarRef, VarRef),
     GetUpval(VarRef, VarRef),
     AnonFn(VarRef, Jump, Arity, Vec<VarRef>),
+    GcCollect(VarRef),
 }
 
 impl Instruction {
@@ -172,6 +173,9 @@ impl Instruction {
             }
             &Instruction::StoreTrue(reg) => {
                 out.write(&[opcodes::STORE_TRUE, reg.byte()]).unwrap();
+            }
+            &Instruction::GcCollect(reg) => {
+                out.write(&[opcodes::GC_COLLECT, reg.byte()]).unwrap();
             }
             &Instruction::StoreFalse(reg) => {
                 out.write(&[opcodes::STORE_FALSE, reg.byte()]).unwrap();
@@ -335,6 +339,10 @@ impl Instruction {
                 let string = format!("{} = store_true\n", reg);
                 out.write(&string.as_bytes()).unwrap();
             },
+            &Instruction::GcCollect(reg) => {
+                let string = format!("{} = gc_collect\n", reg);
+                out.write(&string.as_bytes()).unwrap();
+            },
             &Instruction::StoreFalse(reg) => {
                 let string = format!("{} = store_false\n", reg);
                 out.write(&string.as_bytes()).unwrap();
@@ -434,6 +442,7 @@ impl Instruction {
             &Instruction::ToString(_, _)        => 3,
             &Instruction::AnonFn(_, _, _, ref upvals) => 5 + (upvals.len() as u8),
             &Instruction::GetUpval(_, _)        => 3,
+            &Instruction::GcCollect(_)          => 2,
         }
     }
 }

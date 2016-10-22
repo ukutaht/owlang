@@ -540,6 +540,20 @@ void op_get_upvalue(struct vm *vm) {
   vm->ip += 1;
 }
 
+void op_gc_collect(struct vm *vm) {
+  debug_print("%04x OP_GC_COLLECT\n", vm->ip);
+  uint8_t ret_reg = next_byte(vm);
+
+  uint32_t usage_before = gc_usage(vm);
+  gc_collect(vm);
+  uint32_t usage_after = gc_usage(vm);
+  owl_term collected_bytes = owl_int_from(usage_before - usage_after);
+
+  set_reg(vm, ret_reg, collected_bytes);
+
+  vm->ip += 1;
+}
+
 void opcode_init(vm_t * vm) {
   for (int i = 0; i < 255; i++)
     vm->opcodes[i] = op_unknown;
@@ -581,4 +595,5 @@ void opcode_init(vm_t * vm) {
   vm->opcodes[OP_TO_STRING] = op_to_string;
   vm->opcodes[OP_ANON_FN] = op_anon_fn;
   vm->opcodes[OP_GETUPVAL] = op_get_upvalue;
+  vm->opcodes[OP_GC_COLLECT] = op_gc_collect;
 }

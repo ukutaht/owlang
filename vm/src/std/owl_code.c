@@ -63,6 +63,7 @@ owl_term owl_load_module(vm_t *vm, uint8_t *bytecode, size_t size) {
       case OP_STORE_FALSE:
       case OP_STORE_NIL:
       case OP_JMP:
+      case OP_GC_COLLECT:
         *code_ptr++ = ch;
         *code_ptr++ = scanner_next(scanner);
         vm->code_size += 2;

@@ -55,6 +55,7 @@ typedef struct RRB {
   TreeNode *root;
 } RRB;
 
+
 owl_term owl_list_init();
 void owl_list_print(vm_t *vm, owl_term list);
 owl_term owl_list_push(vm_t *vm, owl_term list, owl_term elem);
@@ -63,5 +64,6 @@ owl_term owl_list_count(owl_term list);
 owl_term owl_list_slice(vm_t *vm, owl_term list, owl_term from, owl_term to);
 owl_term owl_list_concat(vm_t *vm, owl_term left, owl_term right);
 bool owl_list_eq(owl_term left, owl_term right);
+bool owl_list_is_empty(owl_term list);
 
 #endif  // OWL_LIST_H

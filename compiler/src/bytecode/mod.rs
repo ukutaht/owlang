@@ -242,6 +242,7 @@ impl<'a> FnGenerator<'a> {
             "function_name" => vec![Instruction::FunctionName(ret_loc, args[0])],
             "string_contains" => vec![Instruction::StringContains(ret_loc, args[0], args[1])],
             "term_to_string" => vec![Instruction::ToString(ret_loc, args[0])],
+            "gc_collect" => vec![Instruction::GcCollect(ret_loc)],
             _   => {
                 self.generic_apply(ap, ret_loc, args)
             }

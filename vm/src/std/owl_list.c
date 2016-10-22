@@ -1376,6 +1376,10 @@ void owl_list_print(vm_t *vm, owl_term list) {
   printf("]\n");
 }
 
+bool owl_list_is_empty(owl_term list) {
+  return list_to_rrb(list) == &EMPTY_RRB;
+}
+
 bool owl_list_eq(owl_term left_list, owl_term right_list) {
   const RRB *left = list_to_rrb(left_list);
   const RRB *right = list_to_rrb(right_list);
