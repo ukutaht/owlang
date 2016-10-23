@@ -1,6 +1,5 @@
 ### Big list of TODO items
 
-* Fix alignment
 * Reference registers and upvalues zero-indexed
 * Ensure that captured functions are called with correct arity (at runtime)
 * Function attributes (testing for example)
