@@ -28,7 +28,7 @@ owl_term owl_file_ls(vm_t *vm, owl_term path) {
   if (d) {
     while ((dir = readdir(d)) != NULL) {
       if (strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0) {
-        char *relpath = owl_alloc(vm, strlen(dir->d_name));
+        char *relpath = owl_alloc(vm, strlen(dir->d_name) + 1);
         strcpy(relpath, dir->d_name);
         owl_term entry = owl_string_from(relpath);
         result = owl_list_push(vm, result, entry);

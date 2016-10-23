@@ -9,7 +9,7 @@
 // https://en.wikipedia.org/wiki/Cheney%27s_algorithm
 
 #define ALIGNMENT 8
-#define ALIGN(size) size + (ALIGNMENT - (size % ALIGNMENT))
+#define ALIGN(size) size % ALIGNMENT == 0 ? size : size + (ALIGNMENT - (size % ALIGNMENT))
 #define ENFORE_MINIMUM(size) size < 8 ? 8 : size
 
 #define BUFFER_PERCENT 10
@@ -55,6 +55,9 @@ static uint32_t heap_size_of(owl_term term) {
         return ALIGN((tuple_length + 1) * sizeof(owl_term));
       }
     case STRING:
+      puts(owl_extract_ptr(term));
+      printf("%d\n", strlen(owl_extract_ptr(term)));
+      printf("%d\n", ALIGN(strlen(owl_extract_ptr(term))));
       return ALIGN(strlen(owl_extract_ptr(term)));
     case FUNCTION:
       return ALIGN(sizeof(Function));

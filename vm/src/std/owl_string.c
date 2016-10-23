@@ -34,9 +34,9 @@ owl_term owl_string_concat(vm_t *vm, owl_term left, owl_term right) {
   const char *right_str = owl_extract_ptr(right);
 
   size_t left_len = strlen(left_str);
-  size_t total_len = left_len + strlen(right_str);
+  size_t total_len = left_len + strlen(right_str) + 1;
   char *result = owl_alloc(vm, total_len);
-  strcpy(result, left_str);
+  memcpy(result, left_str, left_len);
   strcpy(result + left_len, right_str);
 
   return owl_string_from(result);
