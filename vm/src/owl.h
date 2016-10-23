@@ -43,7 +43,8 @@ typedef struct GCState {
 typedef struct Function {
   uint64_t location;
   const char* name;
-  owl_term upvalues[128];
+  uint8_t n_upvalues;
+  owl_term upvalues[];
 } Function;
 
 typedef struct frame_t {

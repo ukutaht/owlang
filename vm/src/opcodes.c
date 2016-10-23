@@ -184,6 +184,7 @@ void op_return(struct vm *vm) {
   unsigned int ret_address = curr_frame->ret_address;
 
   prev_frame->registers[curr_frame->ret_register] = curr_frame->registers[0];
+  memset(curr_frame->registers, 0, REGISTER_COUNT * sizeof(owl_term));
 
   vm->current_frame -= 1;
   vm->ip = ret_address;
@@ -518,7 +519,7 @@ void op_anon_fn(struct vm *vm) {
   next_byte(vm); // arity
   uint8_t n_upvals = next_byte(vm);
 
-  Function* fun = owl_anon_function_init(vm, vm->ip + n_upvals + 1);
+  Function* fun = owl_anon_function_init(vm, vm->ip + n_upvals + 1, n_upvals);
 
   for (int i = 0; i < n_upvals; i++) {
     owl_term value = get_var(vm, next_byte(vm));

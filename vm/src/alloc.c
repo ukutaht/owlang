@@ -9,7 +9,6 @@
 // https://en.wikipedia.org/wiki/Cheney%27s_algorithm
 
 #define ALIGNMENT 8
-#define ALIGN(size) size % ALIGNMENT == 0 ? size : size + (ALIGNMENT - (size % ALIGNMENT))
 #define ENFORE_MINIMUM(size) size < 8 ? 8 : size
 
 #define BUFFER_PERCENT 10
@@ -22,6 +21,10 @@
 
 uint64_t bytes_allocated = 0;
 static owl_term copy(owl_term term, vm_t* vm);
+
+static inline uint32_t align(uint32_t size) {
+  return size % ALIGNMENT == 0 ? size : size + (ALIGNMENT - (size % ALIGNMENT));
+}
 
 void die(const char* message) {
   puts(message);
@@ -52,17 +55,20 @@ static uint32_t heap_size_of(owl_term term) {
       {
         owl_term *ary = owl_extract_ptr(term);
         uint64_t tuple_length = ary[0];
-        return ALIGN((tuple_length + 1) * sizeof(owl_term));
+        return align((tuple_length + 1) * sizeof(owl_term));
       }
     case STRING:
-      return ALIGN(strlen(owl_extract_ptr(term)));
+      return align(strlen(owl_extract_ptr(term)));
     case FUNCTION:
-      return ALIGN(sizeof(Function));
+      {
+        Function* fun = owl_extract_ptr(term);
+        return align(sizeof(Function) + fun->n_upvalues * sizeof(owl_term));
+      }
     case LIST:
       if (owl_list_is_empty(term)) {
         return 0;
       } else {
-        return ALIGN(sizeof(RRB));
+        return align(sizeof(RRB));
       }
     case POINTER:
       die("POINTER");
@@ -126,7 +132,7 @@ static void copy_refs(owl_term term, vm_t *vm) {
       {
         Function *fun = owl_extract_ptr(term);
 
-        for(int i = 0; i < MAX_UPVALUES; i++) {
+        for(int i = 0; i < fun->n_upvalues; i++) {
           if (fun->upvalues[i]) {
             fun->upvalues[i] = copy(fun->upvalues[i], vm);
           }
@@ -217,7 +223,7 @@ uint64_t gc_bytes_allocated() {
 }
 
 void* owl_alloc(vm_t *vm, uint32_t N) {
-  uint32_t block_size = ALIGN(N) + 1;
+  uint32_t block_size = align(N) + 1;
 
   gc_check_overlflow(vm, block_size);
 

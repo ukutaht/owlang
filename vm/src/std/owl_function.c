@@ -8,15 +8,17 @@ Function* owl_function_init(const char* name, uint64_t location) {
   Function* function = malloc(sizeof(Function));
   function->location = location;
   function->name = name;
+  function->n_upvalues = 0;
 
   return function;
 }
 
-Function* owl_anon_function_init(vm_t *vm, uint64_t location) {
+Function* owl_anon_function_init(vm_t *vm, uint64_t location, uint8_t n_upvalues) {
   // Anonymous functions are subject to garbage collection, hence using `owl_alloc`
-  Function* function = owl_alloc(vm, sizeof(Function));
+  Function* function = owl_alloc(vm, sizeof(Function) + n_upvalues * sizeof(owl_term));
   function->location = location;
   function->name = "Anonymous";
+  function->n_upvalues = n_upvalues;
 
   return function;
 }
