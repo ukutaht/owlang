@@ -17,7 +17,6 @@
 * Dynamically grow the code array
 * Dynamically grow register array
 * Dynamically grow function table
-* Provide allocator for c-rrb
 * Signed ints
 * Floats
 * Strings
