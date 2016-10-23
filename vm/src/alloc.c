@@ -55,9 +55,6 @@ static uint32_t heap_size_of(owl_term term) {
         return ALIGN((tuple_length + 1) * sizeof(owl_term));
       }
     case STRING:
-      puts(owl_extract_ptr(term));
-      printf("%d\n", strlen(owl_extract_ptr(term)));
-      printf("%d\n", ALIGN(strlen(owl_extract_ptr(term))));
       return ALIGN(strlen(owl_extract_ptr(term)));
     case FUNCTION:
       return ALIGN(sizeof(Function));
