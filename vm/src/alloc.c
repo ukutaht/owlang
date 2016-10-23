@@ -1,6 +1,3 @@
-// Using a standard Chaney's copying garbage collector
-// https://en.wikipedia.org/wiki/Cheney%27s_algorithm
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -8,9 +5,20 @@
 #include "alloc.h"
 #include "term.h"
 
+// Using a standard Chaney's copying garbage collector
+// https://en.wikipedia.org/wiki/Cheney%27s_algorithm
+
 #define ALIGNMENT 8
 #define ALIGN(size) size + (ALIGNMENT - (size % ALIGNMENT))
+#define ENFORE_MINIMUM(size) size < 8 ? 8 : size
+
 #define BUFFER_PERCENT 10
+
+#define FORWARD_FLAG(ptr) *(((uint8_t*) ptr) - 1)
+#define SET_FORWARD_FLAG(ptr, val) FORWARD_FLAG(ptr) = val
+#define FORWARD_ADDRESS(ptr) *((void**) ptr)
+#define SET_FORWARD_ADDRESS(ptr, val) FORWARD_ADDRESS(ptr) = val
+#define ON_HEAP(gc, ptr) (((uint8_t*) ptr) >= gc->from_space && ((uint8_t*) ptr) <= gc->from_space + gc->size)
 
 static owl_term copy(owl_term term, vm_t* vm);
 
@@ -23,6 +31,12 @@ void gc_check_overlflow(vm_t *vm, uint32_t block_size) {
   if (vm->gc->alloc_ptr + block_size > vm->gc->to_space + vm->gc->size / 2) {
     die("Insufficient memory");
   }
+}
+
+void forward(void* old, void* new) {
+  SET_FORWARD_FLAG(new, false);
+  SET_FORWARD_ADDRESS(old, new);
+  SET_FORWARD_FLAG(old, true);
 }
 
 // Returns the number of bytes that this term takes up on the heap
@@ -42,15 +56,7 @@ static uint32_t heap_size_of(owl_term term) {
     case STRING:
       return ALIGN(strlen(owl_extract_ptr(term)));
     case FUNCTION:
-      {
-        Function *fun = owl_extract_ptr(term);
-
-        if (!fun->on_gc_heap) {
-          return 0;
-        }
-
-        return ALIGN(sizeof(Function));
-      }
+      return ALIGN(sizeof(Function));
     case LIST:
       if (owl_list_is_empty(term)) {
         return 0;
@@ -65,14 +71,21 @@ static uint32_t heap_size_of(owl_term term) {
 }
 
 static void* bump_cpy(vm_t *vm, void *from, uint32_t size) {
-  gc_check_overlflow(vm, size);
-  void* copied = vm->gc->alloc_ptr;
-  vm->gc->alloc_ptr += size;
-  memcpy(copied, from, size);
+  uint32_t block_size = ENFORE_MINIMUM(size);
+
+  gc_check_overlflow(vm, block_size + 1);
+  void* copied = vm->gc->alloc_ptr + 1;
+  vm->gc->alloc_ptr += block_size + 1;
+  memcpy(copied, from, block_size);
+  forward(from, copied);
   return copied;
 }
 
 static TreeNode* copy_list_node(TreeNode *node, vm_t* vm) {
+  if (FORWARD_FLAG(node)) {
+    return (TreeNode*) FORWARD_ADDRESS(node);
+  }
+
   if (node->type == LEAF_NODE) {
     LeafNode *leaf = (LeafNode*) node;
 
@@ -112,10 +125,6 @@ static void copy_refs(owl_term term, vm_t *vm) {
       {
         Function *fun = owl_extract_ptr(term);
 
-        if (!fun->on_gc_heap) {
-          return;
-        }
-
         for(int i = 0; i < MAX_UPVALUES; i++) {
           if (fun->upvalues[i]) {
             fun->upvalues[i] = copy(fun->upvalues[i], vm);
@@ -138,6 +147,16 @@ static void copy_refs(owl_term term, vm_t *vm) {
 }
 
 static owl_term copy(owl_term term, vm_t* vm) {
+  void* object = owl_extract_ptr(term);
+
+  if(!ON_HEAP(vm->gc, object)) {
+    return term;
+  }
+
+  if (FORWARD_FLAG(object)) {
+    return owl_tag_as(FORWARD_ADDRESS(object), owl_tag_of(term));
+  }
+
   uint32_t heap_size = heap_size_of(term);
 
   // Non-heap allocated object. Nothing to copy
@@ -147,11 +166,13 @@ static owl_term copy(owl_term term, vm_t* vm) {
 
   gc_check_overlflow(vm, heap_size);
 
-  void* copied = vm->gc->alloc_ptr;
-  vm->gc->alloc_ptr += heap_size;
-  memcpy(copied, owl_extract_ptr(term), heap_size);
+  void* copied = vm->gc->alloc_ptr + 1;
+  vm->gc->alloc_ptr += heap_size + 1;
+  memcpy(copied, object, heap_size);
   owl_term copied_term = owl_tag_as(copied, owl_tag_of(term));
   copy_refs(copied_term, vm);
+
+  forward(object, copied);
 
   return copied_term;
 }
@@ -195,13 +216,13 @@ void gc_safepoint(vm_t* vm) {
 }
 
 void* owl_alloc(vm_t *vm, uint32_t N) {
-  uint32_t block_size = ALIGN(N);
+  uint32_t block_size = ALIGN(N) + 1;
 
   gc_check_overlflow(vm, block_size);
 
-  void* object = vm->gc->alloc_ptr;
+  uint8_t* object = vm->gc->alloc_ptr;
   vm->gc->alloc_ptr += block_size;
   memset(object, 0, block_size);
 
-  return object;
+  return object + 1;
 }

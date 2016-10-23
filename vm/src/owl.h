@@ -41,7 +41,6 @@ typedef struct GCState {
 } GCState;
 
 typedef struct Function {
-  bool on_gc_heap;
   uint64_t location;
   const char* name;
   owl_term upvalues[128];

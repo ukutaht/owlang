@@ -8,7 +8,6 @@ Function* owl_function_init(const char* name, uint64_t location) {
   Function* function = malloc(sizeof(Function));
   function->location = location;
   function->name = name;
-  function->on_gc_heap = false;
 
   return function;
 }
@@ -18,7 +17,6 @@ Function* owl_anon_function_init(vm_t *vm, uint64_t location) {
   Function* function = owl_alloc(vm, sizeof(Function));
   function->location = location;
   function->name = "Anonymous";
-  function->on_gc_heap = true;
 
   return function;
 }
