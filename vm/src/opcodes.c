@@ -97,6 +97,7 @@ void op_unknown(vm_t * vm) {
 void op_exit(vm_t *vm) {
   debug_print("%04x OP_EXIT\n", vm->ip);
   uint8_t exit_code = next_byte(vm);
+  printf("Bytes allocated: %llu\n", gc_bytes_allocated());
 
   exit(exit_code);
 }

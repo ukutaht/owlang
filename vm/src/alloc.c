@@ -20,6 +20,7 @@
 #define SET_FORWARD_ADDRESS(ptr, val) FORWARD_ADDRESS(ptr) = val
 #define ON_HEAP(gc, ptr) (((uint8_t*) ptr) >= gc->from_space && ((uint8_t*) ptr) <= gc->from_space + gc->size)
 
+uint64_t bytes_allocated = 0;
 static owl_term copy(owl_term term, vm_t* vm);
 
 void die(const char* message) {
@@ -189,8 +190,6 @@ uint32_t gc_usage(vm_t *vm) {
 }
 
 void gc_collect(vm_t *vm) {
-  puts("COLLECT");
-  printf("Memory usage before collection: %d\n", gc_usage(vm));
   swap_spaces(vm->gc);
 
   for (uint32_t i = 0; i <= vm->current_frame; i++) {
@@ -201,8 +200,6 @@ void gc_collect(vm_t *vm) {
       }
     }
   }
-
-  printf("Memory usage after collection: %d\n", gc_usage(vm));
 }
 
 void gc_safepoint(vm_t* vm) {
@@ -215,6 +212,10 @@ void gc_safepoint(vm_t* vm) {
   }
 }
 
+uint64_t gc_bytes_allocated() {
+  return bytes_allocated;
+}
+
 void* owl_alloc(vm_t *vm, uint32_t N) {
   uint32_t block_size = ALIGN(N) + 1;
 
@@ -223,6 +224,7 @@ void* owl_alloc(vm_t *vm, uint32_t N) {
   uint8_t* object = vm->gc->alloc_ptr;
   vm->gc->alloc_ptr += block_size;
   memset(object, 0, block_size);
+  bytes_allocated += block_size;
 
   return object + 1;
 }
