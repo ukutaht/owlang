@@ -1,11 +1,10 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <assert.h>
 
 #include "opcodes.h"
 #include "vm.h"
-#include "term.h"
-#include "alloc.h"
 #include "std/owl_code.h"
 #include "std/owl_function.h"
 #include "std/owl_list.h"
@@ -38,7 +37,7 @@ void scanner_read(void * address, uintptr_t size, scanner_t *scanner) {
   memcpy(address, &scanner->mem[scanner->index], size);
   scanner->index += size;
 }
-
+__attribute__((no_sanitize("address")))
 owl_term owl_load_module(vm_t *vm, uint8_t *bytecode, size_t size) {
   uint8_t ch;
 
@@ -64,6 +63,7 @@ owl_term owl_load_module(vm_t *vm, uint8_t *bytecode, size_t size) {
       case OP_STORE_FALSE:
       case OP_STORE_NIL:
       case OP_JMP:
+      case OP_GC_COLLECT:
         *code_ptr++ = ch;
         *code_ptr++ = scanner_next(scanner);
         vm->code_size += 2;
@@ -157,7 +157,7 @@ owl_term owl_load_module(vm_t *vm, uint8_t *bytecode, size_t size) {
         const char *function_name = strings_lookup_id(vm->function_names, id);
 
         Function* fun = owl_function_init(function_name, instruction);
-        function_list = owl_list_push(function_list, owl_function_from(fun));
+        function_list = owl_list_push(vm, function_list, owl_function_from(fun));
         vm->functions[id] = fun;
         break;
         }

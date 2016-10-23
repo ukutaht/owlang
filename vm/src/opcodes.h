@@ -1,8 +1,7 @@
-#include "vm.h"
-
 #ifndef VM_OPCODES_H
 #define VM_OPCODES_H 1
 
+#include "owl.h"
 
 /**
  * This enum stores the values of our opcodes.
@@ -52,6 +51,7 @@ enum opcode_values {
     OP_TO_STRING,
     OP_ANON_FN,
     OP_GETUPVAL,
+    OP_GC_COLLECT,
 };
 
 void opcode_init(vm_t *vm);

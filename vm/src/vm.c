@@ -8,6 +8,18 @@
 #include "util/file.h"
 #include "std/owl_code.h"
 
+GCState* gc_init(uint64_t size) {
+  GCState* gc = malloc(sizeof(GCState));
+  uint8_t* mem = malloc(size);
+
+  gc->to_space = mem;
+  gc->from_space = mem + size / 2;
+  gc->alloc_ptr = gc->to_space;
+  gc->size = size;
+
+  return gc;
+}
+
 vm_t *vm_new() {
   vm_t *vm;
 
@@ -23,6 +35,10 @@ vm_t *vm_new() {
   }
   memset(vm->code, '\0', 0xFFFF);
   vm->code_size = 0;
+
+  // Allocate a 64k heap
+  GCState* gc = gc_init(0xFFFF * 2);
+  vm->gc = gc;
 
   vm->function_names = strings_new();
   vm->intern_pool = strings_new();
@@ -76,7 +92,7 @@ bool find_module_from_dir(char *buffer, char *dirname, const char *module_name) 
 
 bool find_file_for_module(char *buffer, const char *module_name) {
   char *env_load_path = getenv("OWL_LOAD_PATH");
-  char load_path[strlen(env_load_path)];
+  char load_path[strlen(env_load_path) + 1];
   strcpy(load_path, env_load_path);
 
   char *load_dir = strtok(load_path, ":");

@@ -1,0 +1,5 @@
+module VM {
+  fn gc_collect() {
+    gc_collect()
+  }
+}

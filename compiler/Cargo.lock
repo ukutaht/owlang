@@ -38,3 +38,9 @@ name = "getopts"
 version = "0.2.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
+[metadata]
+"checksum bitflags 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)" = "4f67931368edf3a9a51d29886d245f1c3db2f1ef0dcc9e35ff70341b78c10d23"
+"checksum chomp 0.2.6 (registry+https://github.com/rust-lang/crates.io-index)" = "ddaa7d0f00d5a7a93d5ce73b3739f12a9be18c3848a4196d7209166480f23361"
+"checksum conv 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)" = "78ff10625fd0ac447827aa30ea8b861fead473bb60aeb73af6c1c58caf0d1299"
+"checksum custom_derive 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)" = "ea1262be99f6e841c8ff80887a156a35fadec70b94011900364eaee73d5f8c26"
+"checksum getopts 0.2.14 (registry+https://github.com/rust-lang/crates.io-index)" = "d9047cfbd08a437050b363d35ef160452c5fe8ea5187ae0a624708c91581d685"

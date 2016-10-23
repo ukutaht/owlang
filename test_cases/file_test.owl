@@ -6,6 +6,6 @@ module FileTest {
 
   fn test_ls() {
     let files = File.ls("vm/lib")
-    OwlUnit.assert_eq(files, ["c-rrb", "intern", "target"])
+    OwlUnit.assert_eq(files, ["intern", "target"])
   }
 }

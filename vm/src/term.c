@@ -11,7 +11,7 @@
 
 #define INT_MAX_DIGITS 20
 
-owl_term owl_concat(owl_term left, owl_term right) {
+owl_term owl_concat(vm_t *vm, owl_term left, owl_term right) {
   owl_tag left_tag = owl_tag_of(left);
   owl_tag right_tag = owl_tag_of(right);
 
@@ -21,9 +21,9 @@ owl_term owl_concat(owl_term left, owl_term right) {
   }
 
   if (left_tag == STRING) {
-    return owl_string_concat(left, right);
+    return owl_string_concat(vm, left, right);
   } else if (left_tag == LIST) {
-    return owl_list_concat(left, right);
+    return owl_list_concat(vm, left, right);
   } else {
     puts("Concat not defined for this type");
     exit(1);
@@ -60,7 +60,7 @@ owl_term owl_type_of(owl_term term) {
   }
 }
 
-owl_term owl_term_to_string(owl_term term) {
+owl_term owl_term_to_string(vm_t *vm, owl_term term) {
   switch(term) {
   case OWL_TRUE:
     return owl_string_from("true");
@@ -73,7 +73,7 @@ owl_term owl_term_to_string(owl_term term) {
   switch(owl_tag_of(term)) {
     case INT:
     {
-      char *buf = owl_alloc(INT_MAX_DIGITS + 1);
+      char *buf = owl_alloc(vm, INT_MAX_DIGITS + 1);
       sprintf(buf, "%llu", int_from_owl_int(term));
       return owl_string_from(buf);
     }
@@ -84,7 +84,7 @@ owl_term owl_term_to_string(owl_term term) {
       owl_term *ary = owl_extract_ptr(term);
       uint8_t size = ary[0];
       for(uint8_t i = 1; i <= size; i++) {
-        buffer = owl_concat(buffer, owl_term_to_string(ary[i]));
+        buffer = owl_concat(vm, buffer, owl_term_to_string(vm, ary[i]));
       }
       return buffer;
     }
@@ -93,12 +93,12 @@ owl_term owl_term_to_string(owl_term term) {
       owl_term buffer = owl_string_from("[");
       uint64_t count = int_from_owl_int(owl_list_count(term));
       for(uint64_t i = 0; i < count; i++) {
-        buffer = owl_string_concat(buffer, owl_term_to_string(owl_list_nth(term, owl_int_from(i))));
+        buffer = owl_string_concat(vm, buffer, owl_term_to_string(vm, owl_list_nth(term, owl_int_from(i))));
         if (i != count - 1) {
-          buffer = owl_string_concat(buffer, owl_string_from(", "));
+          buffer = owl_string_concat(vm, buffer, owl_string_from(", "));
         }
       }
-      buffer = owl_string_concat(buffer, owl_string_from("]"));
+      buffer = owl_string_concat(vm, buffer, owl_string_from("]"));
       return buffer;
     }
     case STRING:
@@ -160,7 +160,57 @@ bool owl_terms_eq(owl_term left, owl_term right) {
   }
 }
 
-void owl_term_print(owl_term term) {
-  owl_term string = owl_term_to_string(term);
-  fputs(owl_extract_ptr(string), stdout);
+#define print(t) fputs(t, stdout);
+
+void owl_term_print(vm_t *vm, owl_term term) {
+  switch(term) {
+  case OWL_TRUE:
+    print("true");
+    return;
+  case OWL_FALSE:
+    print("false");
+    return;
+  case OWL_NIL:
+    print("nil");
+    return;
+  }
+
+  switch(owl_tag_of(term)) {
+    case INT:
+      printf("%d", (int) int_from_owl_int(term));
+      return;
+    case TUPLE:
+    {
+      owl_term *ary = owl_extract_ptr(term);
+      uint8_t size = ary[0];
+      for(uint8_t i = 1; i <= size; i++) {
+        owl_term_print(vm, ary[i]);
+        if (i != size) {
+          print(", ");
+        }
+      }
+      return;
+    }
+    case LIST:
+    {
+      uint64_t count = int_from_owl_int(owl_list_count(term));
+      print("[");
+      for(uint64_t i = 0; i < count; i++) {
+        owl_term_print(vm, owl_list_nth(term, owl_int_from(i)));
+        if (i != count - 1) {
+          print(", ");
+        }
+      }
+      print("]");
+      return;
+    }
+    case STRING:
+      print(owl_extract_ptr(term));
+      return;
+    case FUNCTION:
+      print(owl_extract_ptr(owl_function_name(term)));
+      return;
+    default:
+      print("???");
+  }
 }

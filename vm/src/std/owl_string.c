@@ -9,7 +9,7 @@
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
 
-owl_term owl_string_slice(owl_term string, owl_term from, owl_term to) {
+owl_term owl_string_slice(vm_t *vm, owl_term string, owl_term from, owl_term to) {
   char *the_string = owl_extract_ptr(string);
 
   int from_int = int_from_owl_int(from);
@@ -21,20 +21,22 @@ owl_term owl_string_slice(owl_term string, owl_term from, owl_term to) {
     printf("Slice size must be more over 0");
     exit(1);
   }
-  char *sliced = owl_alloc(slice_size);
+
+  char *sliced = owl_alloc(vm, slice_size + 1);
   memcpy(sliced, the_string + from_int, slice_size);
+  sliced[slice_size] = '\0';
 
   return owl_string_from(sliced);
 }
 
-owl_term owl_string_concat(owl_term left, owl_term right) {
+owl_term owl_string_concat(vm_t *vm, owl_term left, owl_term right) {
   const char *left_str = owl_extract_ptr(left);
   const char *right_str = owl_extract_ptr(right);
 
   size_t left_len = strlen(left_str);
-  size_t total_len = left_len + strlen(right_str);
-  char *result = owl_alloc(total_len);
-  strcpy(result, left_str);
+  size_t total_len = left_len + strlen(right_str) + 1;
+  char *result = owl_alloc(vm, total_len);
+  memcpy(result, left_str, left_len);
   strcpy(result + left_len, right_str);
 
   return owl_string_from(result);

@@ -1,12 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <assert.h>
 #include <string.h>
 
 #include "opcodes.h"
 #include "vm.h"
-#include "term.h"
 #include "alloc.h"
 #include "std/owl_list.h"
 #include "std/owl_file.h"
@@ -68,7 +66,7 @@ Function* load_function(vm_t *vm, uint8_t function_id) {
   return function;
 }
 
-void setup_next_stackframe(vm_t *vm, uint8_t arity, uint8_t ret_reg) {
+void setup_next_stackframe(vm_t *vm, Function* fun, uint8_t arity, uint8_t ret_reg) {
   assert(vm->current_frame + 1 < STACK_DEPTH);
 
   unsigned int next_frame = vm->current_frame + 1;
@@ -80,6 +78,7 @@ void setup_next_stackframe(vm_t *vm, uint8_t arity, uint8_t ret_reg) {
 
   vm->frames[next_frame].ret_address = vm->ip + 1;
   vm->frames[next_frame].ret_register = ret_reg;
+  vm->frames[next_frame].function = fun;
   vm->current_frame += 1;
 }
 
@@ -98,6 +97,7 @@ void op_unknown(vm_t * vm) {
 void op_exit(vm_t *vm) {
   debug_print("%04x OP_EXIT\n", vm->ip);
   uint8_t exit_code = next_byte(vm);
+  printf("Bytes allocated: %llu\n", gc_bytes_allocated());
 
   exit(exit_code);
 }
@@ -115,7 +115,7 @@ void op_print(struct vm *vm) {
   debug_print("%04x OP_PRINT\n", vm->ip);
   uint8_t reg = next_byte(vm);
 
-  owl_term_print(get_var(vm, reg));
+  owl_term_print(vm, get_var(vm, reg));
 
   vm->ip += 1;
 }
@@ -169,10 +169,10 @@ void op_call(struct vm *vm) {
     debug_print("%04x OP_CALL: %s\n", vm->ip, strings_lookup_id(vm->function_names, function_id));
   #endif
 
+  gc_safepoint(vm);
   Function* fun = load_function(vm, function_id);
   vm->current_function = fun;
-
-  setup_next_stackframe(vm, arity, ret_reg);
+  setup_next_stackframe(vm, fun, arity, ret_reg);
 
   vm->ip = fun->location;
 }
@@ -211,7 +211,7 @@ void op_tuple(struct vm *vm) {
   uint8_t reg  = next_byte(vm);
   uint8_t size = next_byte(vm);
 
-  owl_term *ary = owl_alloc(sizeof(owl_term) * (size + 1));
+  owl_term *ary = owl_alloc(vm, sizeof(owl_term) * (size + 1));
   ary[0] = size;
 
   for(uint8_t i = 1; i <= size; i++) {
@@ -219,7 +219,7 @@ void op_tuple(struct vm *vm) {
   }
 
   owl_term tuple = (owl_term) ary;
-  owl_term tagged_tuple =  (tuple << 3) | TUPLE;
+  owl_term tagged_tuple =  owl_tag_as(tuple, TUPLE);
 
   set_reg(vm, reg, tagged_tuple);
 
@@ -234,7 +234,7 @@ void op_list(struct vm *vm) {
   owl_term list = owl_list_init();
 
   for(uint8_t i = 0; i < size; i++) {
-    list = owl_list_push(list, get_var(vm, next_byte(vm)));
+    list = owl_list_push(vm, list, get_var(vm, next_byte(vm)));
   }
 
   set_reg(vm, reg, list);
@@ -348,7 +348,7 @@ void op_file_pwd(struct vm *vm) {
   debug_print("%04x OP_FILE_PWD\n", vm->ip);
   uint8_t reg = next_byte(vm);
 
-  set_reg(vm, reg, owl_file_pwd());
+  set_reg(vm, reg, owl_file_pwd(vm));
 
   vm->ip += 1;
 }
@@ -358,7 +358,7 @@ void op_file_ls(struct vm *vm) {
   uint8_t result_reg = next_byte(vm);
   owl_term path = get_var(vm, next_byte(vm));
 
-  set_reg(vm, result_reg, owl_file_ls(path));
+  set_reg(vm, result_reg, owl_file_ls(vm, path));
 
   vm->ip += 1;
 }
@@ -369,7 +369,7 @@ void op_concat(struct vm *vm) {
   owl_term left = get_var(vm, next_byte(vm));
   owl_term right = get_var(vm, next_byte(vm));
 
-  set_reg(vm, result_reg, owl_concat(left, right));
+  set_reg(vm, result_reg, owl_concat(vm, left, right));
 
   vm->ip += 1;
 }
@@ -396,9 +396,9 @@ void op_call_local(struct vm *vm) {
     exit(1);
   }
 
-  setup_next_stackframe(vm, arity, ret_reg);
   Function* fun = owl_term_to_function(function);
   vm->current_function = fun;
+  setup_next_stackframe(vm, fun, arity, ret_reg);
 
   vm->ip = fun->location;
 }
@@ -406,7 +406,8 @@ void op_call_local(struct vm *vm) {
 void op_list_nth(struct vm *vm) {
   debug_print("%04x OP_LIST_NTH\n", vm->ip);
   uint8_t ret_reg = next_byte(vm);
-  owl_term list = get_var(vm, next_byte(vm));
+  uint8_t list_reg = next_byte(vm);
+  owl_term list = get_var(vm, list_reg);
   owl_term index = get_var(vm, next_byte(vm));
 
   owl_term elem = owl_list_nth(list, index);
@@ -433,7 +434,7 @@ void op_list_slice(struct vm *vm) {
   owl_term from = get_var(vm, next_byte(vm));
   owl_term to = get_var(vm, next_byte(vm));
 
-  owl_term sliced = owl_list_slice(list, from, to);
+  owl_term sliced = owl_list_slice(vm, list, from, to);
   set_reg(vm, ret_reg, sliced);
 
   vm->ip += 1;
@@ -446,7 +447,7 @@ void op_string_slice(struct vm *vm) {
   owl_term from = get_var(vm, next_byte(vm));
   owl_term to = get_var(vm, next_byte(vm));
 
-  owl_term sliced = owl_string_slice(string, from, to);
+  owl_term sliced = owl_string_slice(vm, string, from, to);
   set_reg(vm, ret_reg, sliced);
 
   vm->ip += 1;
@@ -504,7 +505,7 @@ void op_to_string(struct vm *vm) {
   uint8_t ret_reg = next_byte(vm);
   owl_term term = get_var(vm, next_byte(vm));
 
-  owl_term res = owl_term_to_string(term);
+  owl_term res = owl_term_to_string(vm, term);
   set_reg(vm, ret_reg, res);
 
   vm->ip += 1;
@@ -517,7 +518,7 @@ void op_anon_fn(struct vm *vm) {
   next_byte(vm); // arity
   uint8_t n_upvals = next_byte(vm);
 
-  Function* fun = owl_anon_function_init(vm->ip + n_upvals + 1);
+  Function* fun = owl_anon_function_init(vm, vm->ip + n_upvals + 1);
 
   for (int i = 0; i < n_upvals; i++) {
     owl_term value = get_var(vm, next_byte(vm));
@@ -536,6 +537,20 @@ void op_get_upvalue(struct vm *vm) {
   owl_term value = owl_function_get_upvalue(vm->current_function, upval_index);
 
   set_reg(vm, ret_reg, value);
+
+  vm->ip += 1;
+}
+
+void op_gc_collect(struct vm *vm) {
+  debug_print("%04x OP_GC_COLLECT\n", vm->ip);
+  uint8_t ret_reg = next_byte(vm);
+
+  uint32_t usage_before = gc_usage(vm);
+  gc_collect(vm);
+  uint32_t usage_after = gc_usage(vm);
+  owl_term collected_bytes = owl_int_from(usage_before - usage_after);
+
+  set_reg(vm, ret_reg, collected_bytes);
 
   vm->ip += 1;
 }
@@ -581,4 +596,5 @@ void opcode_init(vm_t * vm) {
   vm->opcodes[OP_TO_STRING] = op_to_string;
   vm->opcodes[OP_ANON_FN] = op_anon_fn;
   vm->opcodes[OP_GETUPVAL] = op_get_upvalue;
+  vm->opcodes[OP_GC_COLLECT] = op_gc_collect;
 }
