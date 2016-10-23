@@ -69,7 +69,6 @@ owl_term owl_load_module(vm_t *vm, uint8_t *bytecode, size_t size) {
         vm->code_size += 2;
         break;
       case OP_MOV:
-      case OP_GETUPVAL:
       case OP_FILE_LS:
       case OP_NOT:
       case OP_LIST_COUNT:

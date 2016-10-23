@@ -538,8 +538,8 @@ fn generates_anonymous_function_with_upvalues() {
     assert_eq!(res.code, vec![
         Instruction::StoreInt(VarRef::Register(2), 1),
         Instruction::AnonFn(VarRef::Register(0), 12, 0, vec![VarRef::Register(1), VarRef::Register(2)]),
-        Instruction::Mov(VarRef::Register(1), VarRef::Upvalue(1)),
-        Instruction::Mov(VarRef::Register(2), VarRef::Upvalue(2)),
+        Instruction::Mov(VarRef::Register(1), VarRef::Upvalue(0)),
+        Instruction::Mov(VarRef::Register(2), VarRef::Upvalue(1)),
         Instruction::Add(VarRef::Register(0), VarRef::Register(1), VarRef::Register(2)),
         Instruction::Return,
         Instruction::Return

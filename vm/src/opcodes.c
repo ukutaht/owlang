@@ -35,7 +35,7 @@ owl_term next_int(vm_t *vm) {
 }
 
 owl_term get_var(vm_t *vm, uint8_t reg) {
-  if (reg > 128) {
+  if (reg >= 128) {
     uint8_t upval_index = reg - 128;
     return vm->current_function->upvalues[upval_index];
   } else {
@@ -522,23 +522,12 @@ void op_anon_fn(struct vm *vm) {
 
   for (int i = 0; i < n_upvals; i++) {
     owl_term value = get_var(vm, next_byte(vm));
-    owl_function_set_upvalue(fun, i + 1, value);
+    owl_function_set_upvalue(fun, i, value);
   }
 
   set_reg(vm, ret_reg, owl_function_from(fun));
 
   vm->ip += jmp;
-}
-
-void op_get_upvalue(struct vm *vm) {
-  debug_print("%04x OP_GETUPVAL\n", vm->ip);
-  uint8_t ret_reg = next_byte(vm);
-  uint8_t upval_index = next_byte(vm);
-  owl_term value = owl_function_get_upvalue(vm->current_function, upval_index);
-
-  set_reg(vm, ret_reg, value);
-
-  vm->ip += 1;
 }
 
 void op_gc_collect(struct vm *vm) {
@@ -595,6 +584,5 @@ void opcode_init(vm_t * vm) {
   vm->opcodes[OP_STRING_CONTAINS] = op_string_contains;
   vm->opcodes[OP_TO_STRING] = op_to_string;
   vm->opcodes[OP_ANON_FN] = op_anon_fn;
-  vm->opcodes[OP_GETUPVAL] = op_get_upvalue;
   vm->opcodes[OP_GC_COLLECT] = op_gc_collect;
 }

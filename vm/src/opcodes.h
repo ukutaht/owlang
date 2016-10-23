@@ -50,7 +50,6 @@ enum opcode_values {
     OP_STRING_CONTAINS,
     OP_TO_STRING,
     OP_ANON_FN,
-    OP_GETUPVAL,
     OP_GC_COLLECT,
 };
 

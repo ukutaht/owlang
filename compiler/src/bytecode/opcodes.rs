@@ -35,5 +35,4 @@ pub const STRING_COUNT: u8    = 0x21;
 pub const STRING_CONTAINS: u8 = 0x22;
 pub const TO_STRING: u8       = 0x23;
 pub const ANON_FN: u8         = 0x24;
-pub const GET_UPVAL: u8       = 0x25;
-pub const GC_COLLECT: u8      = 0x26;
+pub const GC_COLLECT: u8      = 0x25;

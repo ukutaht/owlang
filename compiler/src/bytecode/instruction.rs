@@ -71,7 +71,6 @@ pub enum Instruction {
     StringCount(VarRef, VarRef),
     StringContains(VarRef, VarRef, VarRef),
     ToString(VarRef, VarRef),
-    GetUpval(VarRef, VarRef),
     AnonFn(VarRef, Jump, Arity, Vec<VarRef>),
     GcCollect(VarRef),
 }
@@ -93,9 +92,6 @@ impl Instruction {
             }
             &Instruction::Mov(to, from) => {
                 out.write(&[opcodes::MOV, to.byte(), from.byte()]).unwrap();
-            },
-            &Instruction::GetUpval(to, address) => {
-                out.write(&[opcodes::GET_UPVAL, to.byte(), address.byte()]).unwrap();
             },
             &Instruction::Concat(to, left, right) => {
                 out.write(&[opcodes::CONCAT, to.byte(), left.byte(), right.byte()]).unwrap();
@@ -249,10 +245,6 @@ impl Instruction {
             }
             &Instruction::Mov(to, from) => {
                 let string = format!("{} = mov {}\n", to, from);
-                out.write(&string.as_bytes()).unwrap();
-            }
-            &Instruction::GetUpval(to, address) => {
-                let string = format!("{} = get_upval {}\n", to, address);
                 out.write(&string.as_bytes()).unwrap();
             }
             &Instruction::Concat(to, left, right) => {
@@ -441,7 +433,6 @@ impl Instruction {
             &Instruction::LoadString(_, _)      => 3, // Content only counts for 1 byte because it is interned at load-time
             &Instruction::ToString(_, _)        => 3,
             &Instruction::AnonFn(_, _, _, ref upvals) => 5 + (upvals.len() as u8),
-            &Instruction::GetUpval(_, _)        => 3,
             &Instruction::GcCollect(_)          => 2,
         }
     }

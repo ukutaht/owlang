@@ -74,10 +74,10 @@ impl<'a> FnGenerator<'a> {
 
         match existing {
             Some(index) => {
-                VarRef::Upvalue((index + 1) as u8)
+                VarRef::Upvalue((index) as u8)
             },
             None => {
-                let upval_index = (self.upvals.borrow().len() + 1) as u8;
+                let upval_index = self.upvals.borrow().len() as u8;
                 self.upvals.borrow_mut().push(var_ref);
                 VarRef::Upvalue(upval_index)
             }
